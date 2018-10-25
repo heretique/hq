@@ -1,5 +1,5 @@
 #include "Hq/JobManager.h"
-#include "fmt/printf.h"
+#include <iostream>
 #include <thread>
 
 namespace hq
@@ -11,14 +11,14 @@ void JobManager::init()
     if (_cpuCount > 2)
         _cpuCount -= 2;  // substract main an rendering threads;
 
-    fmt::print("Starting {} worker threads...\n", _cpuCount);
+    std::cout << "Starting " << _cpuCount << " worker threads...\n";
 
     _running.test_and_set(std::memory_order_acquire);
 
     for (size_t i = 0; i < _cpuCount; ++i)
     {
         _runners.emplace_back(std::thread([&]() {
-            fmt::print("Starting worker thread...\n");
+            std::cout << "Starting worker thread...\n";
             Job job;
             while (_running.test_and_set(std::memory_order_acquire) == true)
             {
@@ -35,7 +35,7 @@ void JobManager::init()
                         _pendingTasks.fetch_add(-1, std::memory_order_release);
                 }
             }
-            fmt::print("Exiting worker thread...\n");
+            std::cout << "Exiting worker thread...\n";
             _running.clear();
         }));
     }

@@ -13,31 +13,37 @@ target_sources(hq
         src/Rng.cpp
         src/StackAllocator.cpp
         src/StringHash.cpp
+        src/Math/Utils.cpp
     PUBLIC
-        include/Hq/Allocator.h
-        include/Hq/CompileMurmur.h
-        include/Hq/concurrentqueue.h
-        include/Hq/DynFreeList.h
-        include/Hq/FreeList.h
-        include/Hq/FreelistAllocator.h
-        include/Hq/Handle.h
-        include/Hq/Hash.h
-        include/Hq/Hq.h
-        include/Hq/IdPool.h
-        include/Hq/JobManager.h
-        include/Hq/LinearAllocator.h
-        include/Hq/NonCopyable.h
-        include/Hq/PackUtils.h
-        include/Hq/PoolAllocator.h
-        include/Hq/PrintContainers.h
-        include/Hq/ProxyAllocator.h
-        include/Hq/Rng.h
-        include/Hq/SpinLock.h
-        include/Hq/StackAllocator.h
-        include/Hq/Streams.h
-        include/Hq/StringHash.h
-        include/Hq/PrintContainers.h
-        include/Hq/Types.h)
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Allocator.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/CompileMurmur.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/concurrentqueue.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/DynFreeList.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/FreeList.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/FreelistAllocator.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Handle.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Hash.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Hq.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/IdPool.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/JobManager.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/LinearAllocator.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/NonCopyable.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/PackUtils.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/PoolAllocator.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/PrintContainers.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/ProxyAllocator.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Rng.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/SpinLock.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/StackAllocator.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Streams.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/StringHash.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/PrintContainers.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Types.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Utils.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/AABB.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/Vector.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/Ray.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/Utils.h)
 
 target_include_directories(hq
     PUBLIC

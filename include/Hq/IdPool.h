@@ -1,6 +1,7 @@
 #pragma once
 #include "Hq/Types.h"
 
+#include <cassert>
 #include <limits>
 #include <set>
 
@@ -39,7 +40,7 @@ public:
         if (id == 0 || id == std::numeric_limits<u32>::max())
             return;
 
-        Interval interval{id, id + 1};
+        Interval interval {id, id + 1};
         auto     it = _free.find(interval);
         if (it != _free.end())
             return;
