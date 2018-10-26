@@ -10,7 +10,6 @@ namespace math
 #undef M_PI
 #define M_PI (3.14159265358979f)
 
-    float    rand01();
     Vector3f RandomInUnitSphere();
     Vector3f RandomInUnitDisk();
     Vector3f reflect(const math::Vector3f& v, const math::Vector3f& n);
