@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hq/Types.h"
+#include "Hq/Handle.h"
 #include <vector>
 
 namespace hq
@@ -89,8 +90,8 @@ private:
     }
 
 private:
-    size_t         _capacity{0};
-    uint32_t       _freeHead{0};
+    size_t         _capacity {0};
+    uint32_t       _freeHead {0};
     std::vector<H> _freeList;
     std::vector<T> _storage;
 };
@@ -236,8 +237,8 @@ private:
     }
 
 private:
-    size_t         _capacity{0};
-    size_t         _freeHead{0};
+    size_t         _capacity {0};
+    size_t         _freeHead {0};
     std::vector<H> _freeList;
     PackedStorage  _storage;
 };

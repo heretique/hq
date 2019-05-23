@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hq/Types.h"
+#include "Hq/Handle.h"
 
 #include <cassert>
 #include <cstddef>
@@ -11,12 +12,8 @@ namespace hq
 template <typename T, bool IsPOD = true>
 struct FreelistConstructor
 {
-    static void construct(T*)
-    {
-    }
-    static void destruct(T*)
-    {
-    }
+    static void construct(T*) {}
+    static void destruct(T*) {}
 };
 // Non-POD
 template <typename T>

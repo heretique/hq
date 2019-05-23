@@ -17,6 +17,12 @@ namespace math
     AABBf    sphereBbox(const math::Vector3f& center, const float radius);
     AABBf    surroundingBbox(const math::AABBf& bbox1, const math::AABBf& bbox2);
 
+    template <typename T>
+    T clamp(const T& n, const T& lower, const T& upper)
+    {
+        return std::max(lower, std::min(n, upper));
+    }
+
 }  // namespace math
 
 }  // namespace hq
