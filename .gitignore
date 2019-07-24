@@ -33,3 +33,5 @@
 .vscode/
 build/
 CMakeLists.txt.user
+*.9-pre1
+*.8-pre1
