@@ -13,6 +13,7 @@ target_sources(hq
         src/Rng.cpp
         src/StackAllocator.cpp
         src/StringHash.cpp
+        src/Math/Math.cpp
         src/Math/Utils.cpp
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Allocator.h
@@ -41,6 +42,8 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Utils.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/AABB.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/MathTypes.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/Math.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/Vector.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/Ray.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Hq/Math/Utils.h)
