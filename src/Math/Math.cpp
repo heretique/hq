@@ -45,16 +45,189 @@ namespace math
         return data[i];
     }
 
-    const Vec2& Vec2::Zero()
+    const Vec2 Vec2::Zero(0.f);
+    const Vec2 Vec2::One(1.f);
+
+    bool isZero(const Vec2& v)
     {
-        static Vec2 zero;
-        return zero;
+        return v.x == 0.f && v.y == 0.f;
     }
 
-    const Vec2& Vec2::One()
+    bool isOne(const Vec2& v)
     {
-        static Vec2 one(1.f);
-        return one;
+        return v.x == 1.f && v.y == 1.f;
+    }
+
+    Vec2 operator-(const Vec2& v)
+    {
+        return Vec2(-v.x, -v.y);
+    }
+
+    Vec2 add(const Vec2& lhs, const Vec2& rhs)
+    {
+        return Vec2(lhs.x + rhs.x, lhs.y + rhs.y);
+    }
+
+    void add(const Vec2& lhs, const Vec2& rhs, Vec2& dst)
+    {
+        dst.x = lhs.x + rhs.x;
+        dst.y = lhs.y + rhs.y;
+    }
+
+    Vec2 sub(const Vec2& lhs, const Vec2& rhs)
+    {
+        return Vec2(lhs.x - rhs.x, lhs.y - rhs.y);
+    }
+
+    void sub(const Vec2& lhs, const Vec2& rhs, Vec2& dst)
+    {
+        dst.x = lhs.x - rhs.x;
+        dst.y = lhs.y - rhs.y;
+    }
+
+    Vec2 mul(const Vec2& lhs, const Vec2& rhs)
+    {
+        return Vec2(lhs.x * rhs.x, lhs.y * rhs.y);
+    }
+
+    void mul(const Vec2& lhs, const Vec2& rhs, Vec2& dst)
+    {
+        dst.x = lhs.x * rhs.x;
+        dst.y = lhs.y * rhs.y;
+    }
+
+    Vec2 div(const Vec2& lhs, const Vec2& rhs)
+    {
+        return Vec2(lhs.x / rhs.x, lhs.y / rhs.y);
+    }
+
+    void div(const Vec2& lhs, const Vec2& rhs, Vec2& dst)
+    {
+        dst.x = lhs.x / rhs.x;
+        dst.y = lhs.y / rhs.y;
+    }
+
+    float angle(const Vec2& v1, const Vec2& v2)
+    {
+        float dz = v1.x * v2.y - v1.y * v2.x;
+        return atan2(abs(dz) + kFloatSmall, dot(v1, v2));
+    }
+
+    Vec2 clamp(const Vec2& v, const Vec2& min, const Vec2& max)
+    {
+        return {clamp(v.x, min.x, max.x),  //
+                clamp(v.y, min.y, max.y)};
+    }
+
+    void clamp(const Vec2& v, const Vec2& min, const Vec2& max, Vec2& dst)
+    {
+        dst.x = clamp(v.x, min.x, max.x);
+        dst.y = clamp(v.y, min.y, max.y);
+    }
+
+    void clampSelf(Vec2& v, const Vec2& min, const Vec2& max)
+    {
+        clamp(v, min, max, v);
+    }
+
+    float dot(const Vec2& v1, const Vec2& v2)
+    {
+        return v1.x * v2.x + v1.y * v2.y;
+    }
+
+    float length(const Vec2& v)
+    {
+        return sqrt(v.x * v.x + v.y * v.y);
+    }
+
+    float lengthSquared(const Vec2& v)
+    {
+        return v.x * v.x + v.y * v.y;
+    }
+
+    float distance(const Vec2& v1, const Vec2& v2)
+    {
+        float dx = v2.x - v1.x;
+        float dy = v2.y - v1.y;
+
+        return sqrt(dx * dx + dy * dy);
+    }
+
+    float distanceSquared(const Vec2& v1, const Vec2& v2)
+    {
+        float dx = v2.x - v1.x;
+        float dy = v2.y - v1.y;
+
+        return (dx * dx + dy * dy);
+    }
+
+    Vec2 normalize(const Vec2& v)
+    {
+        const float invLen = 1.0f / length(v);
+        const Vec2  result = scale(v, invLen);
+        return result;
+    }
+
+    void normalize(const Vec2& v, Vec2& dst)
+    {
+        const float invLen = 1.0f / length(v);
+        scale(v, invLen, dst);
+    }
+
+    void normalizeSelf(Vec2& v)
+    {
+        const float invLen = 1.0f / length(v);
+        scale(v, invLen, v);
+    }
+
+    Vec2 scale(const Vec2& v, float scale)
+    {
+        return {v.x * scale, v.y * scale};
+    }
+
+    void scale(const Vec2& v, float scale, Vec2& dst)
+    {
+        dst.x = v.x * scale;
+        dst.y = v.y * scale;
+    }
+
+    void scaleSelf(Vec2& v, float scale)
+    {
+        v.x = v.x * scale;
+        v.y = v.y * scale;
+    }
+
+    Vec2 rotate(const Vec2& v, const Vec2& point, float angle)
+    {
+        Vec2 result;
+        rotate(v, point, angle, result);
+        return result;
+    }
+
+    void rotate(const Vec2& v, const Vec2& point, float angle, Vec2& dst)
+    {
+        float sinAngle = sin(angle);
+        float cosAngle = cos(angle);
+
+        if (isZero(point))
+        {
+            float tempX = v.x * cosAngle - v.y * sinAngle;
+            dst.y       = v.y * cosAngle + v.x * sinAngle;
+            dst.x       = tempX;
+        }
+        else
+        {
+            float tempX = v.x - point.x;
+            float tempY = v.y - point.y;
+
+            dst.x = tempX * cosAngle - tempY * sinAngle + point.x;
+            dst.y = tempY * cosAngle + tempX * sinAngle + point.y;
+        }
+    }
+
+    void rotateSelf(Vec2& v, const Vec2& point, float angle)
+    {
+        rotate(v, point, angle, v);
     }
 
     ////////////// Vec3 /////////////
@@ -107,16 +280,185 @@ namespace math
         return data[i];
     }
 
-    const Vec3& Vec3::Zero()
+    const Vec3 Vec3::Zero(0.f);
+    const Vec3 Vec3::One(1.f);
+
+    bool isZero(const Vec3& v)
     {
-        static Vec3 zero;
-        return zero;
+        return v.x == 0.f && v.y == 0.f && v.z == 0.f;
     }
 
-    const Vec3& Vec3::One()
+    bool isOne(const Vec3& v)
     {
-        static Vec3 one(1.f);
-        return one;
+        return v.x == 1.f && v.y == 1.f && v.z == 0.f;
+    }
+
+    Vec3 operator-(const Vec3& v)
+    {
+        return {-v.x, -v.y, -v.z};
+    }
+
+    Vec3 add(const Vec3& lhs, const Vec3& rhs)
+    {
+        return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+    }
+
+    void add(const Vec3& lhs, const Vec3& rhs, Vec3& dst)
+    {
+        dst.x = lhs.x + rhs.x;
+        dst.y = lhs.y + rhs.y;
+        dst.z = lhs.z + rhs.z;
+    }
+
+    Vec3 sub(const Vec3& lhs, const Vec3& rhs)
+    {
+        return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
+    }
+
+    void sub(const Vec3& lhs, const Vec3& rhs, Vec3& dst)
+    {
+        dst.x = lhs.x - rhs.x;
+        dst.y = lhs.y - rhs.y;
+        dst.z = lhs.z - rhs.z;
+    }
+
+    Vec3 mul(const Vec3& lhs, const Vec3& rhs)
+    {
+        return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z};
+    }
+
+    void mul(const Vec3& lhs, const Vec3& rhs, Vec3& dst)
+    {
+        dst.x = lhs.x * rhs.x;
+        dst.y = lhs.y * rhs.y;
+        dst.z = lhs.z * rhs.z;
+    }
+
+    Vec3 div(const Vec3& lhs, const Vec3& rhs)
+    {
+        return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z};
+    }
+
+    void div(const Vec3& lhs, const Vec3& rhs, Vec3& dst)
+    {
+        dst.x = lhs.x / rhs.x;
+        dst.y = lhs.y / rhs.y;
+        dst.z = lhs.z / rhs.z;
+    }
+
+    float angle(const Vec3& v1, const Vec3& v2)
+    {
+        float dx = v1.y * v2.z - v1.z * v2.y;
+        float dy = v1.z * v2.x - v1.x * v2.z;
+        float dz = v1.x * v2.y - v1.y * v2.x;
+
+        return atan2(sqrt(dx * dx + dy * dy + dz * dz) + kFloatSmall, dot(v1, v2));
+    }
+
+    Vec3 clamp(const Vec3& v, const Vec3& min, const Vec3& max)
+    {
+        return {clamp(v.x, min.x, max.x),  //
+                clamp(v.y, min.y, max.y),  //
+                clamp(v.z, min.z, max.z)};
+    }
+
+    void clamp(const Vec3& v, const Vec3& min, const Vec3& max, Vec3& dst)
+    {
+        dst.x = clamp(v.x, min.x, max.x);
+        dst.y = clamp(v.y, min.y, max.y);
+        dst.z = clamp(v.z, min.z, max.z);
+    }
+
+    void clampSelf(Vec3& v, const Vec3& min, const Vec3& max)
+    {
+        clamp(v, min, max, v);
+    }
+
+    Vec3 cross(const Vec3& v1, const Vec3& v2)
+    {
+        return {
+            v1.y * v2.z - v1.z * v2.y,
+            v1.z * v2.x - v1.x * v2.z,
+            v1.x * v2.y - v1.y * v2.x,
+        };
+    }
+
+    void cross(const Vec3& v1, const Vec3& v2, Vec3& dst)
+    {
+        dst.x = v1.y * v2.z - v1.z * v2.y;
+        dst.y = v1.z * v2.x - v1.x * v2.z;
+        dst.z = v1.x * v2.y - v1.y * v2.x;
+    }
+
+    float dot(const Vec3& v1, const Vec3& v2)
+    {
+        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    }
+
+    float length(const Vec3& v)
+    {
+        return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    }
+
+    float lengthSquared(const Vec3& v)
+    {
+        return (v.x * v.x + v.y * v.y + v.z * v.z);
+    }
+
+    float distance(const Vec3& v1, const Vec3& v2)
+    {
+        float dx = v2.x - v1.x;
+        float dy = v2.y - v1.y;
+        float dz = v2.z - v1.z;
+
+        return sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    float distanceSquared(const Vec3& v1, const Vec3& v2)
+    {
+        float dx = v2.x - v1.x;
+        float dy = v2.y - v1.y;
+        float dz = v2.z - v1.z;
+
+        return (dx * dx + dy * dy + dz * dz);
+    }
+
+    Vec3 normalize(const Vec3& v)
+    {
+        const float invLen = 1.0f / length(v);
+        const Vec3  result = scale(v, invLen);
+        return result;
+    }
+
+    void normalize(const Vec3& v, Vec3& dst)
+    {
+        const float invLen = 1.0f / length(v);
+        scale(v, invLen, dst);
+    }
+
+    void normalizeSelf(Vec3& v)
+    {
+        const float invLen = 1.0f / length(v);
+        scale(v, invLen, v);
+    }
+
+    Vec3 scale(const Vec3& v, float scale)
+    {
+        return {v.x * scale, v.y * scale, v.z * scale};
+    }
+
+    void scale(const Vec3& v, float scale, Vec3& dst)
+    {
+        dst.x = v.x * scale;
+        dst.y = v.y * scale;
+        dst.z = v.z * scale;
+    }
+
+    void scaleSelf(Vec3& v, float scale)
+    {
+        v.x = v.x * scale;
+        v.y = v.y * scale;
+        v.z = v.z * scale;
     }
 
     ////////////// Vec4 //////////////
@@ -190,16 +532,182 @@ namespace math
         return data[i];
     }
 
-    const Vec4& Vec4::Zero()
+    const Vec4 Vec4::Zero(0.f);
+    const Vec4 Vec4::One(1.f);
+
+    bool isZero(const Vec4& v)
     {
-        static Vec4 zero;
-        return zero;
+        return v.x == 0.f && v.y == 0.f && v.z == 0.f && v.w == 0.f;
     }
 
-    const Vec4& Vec4::One()
+    bool isOne(const Vec4& v)
     {
-        static Vec4 one(1.f);
-        return one;
+        return v.x == 1.f && v.y == 1.f && v.z == 1.f && v.w == 1.f;
+    }
+
+    Vec4 operator-(const Vec4& v)
+    {
+        return {-v.x, -v.y, -v.z, -v.w};
+    }
+
+    Vec4 add(const Vec4& lhs, const Vec4& rhs)
+    {
+        return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};
+    }
+
+    void add(const Vec4& lhs, const Vec4& rhs, Vec4& dst)
+    {
+        dst.x = lhs.x + rhs.x;
+        dst.y = lhs.y + rhs.y;
+        dst.z = lhs.z + rhs.z;
+        dst.w = lhs.w + rhs.w;
+    }
+
+    Vec4 sub(const Vec4& lhs, const Vec4& rhs)
+    {
+        return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w};
+    }
+
+    void sub(const Vec4& lhs, const Vec4& rhs, Vec4& dst)
+    {
+        dst.x = lhs.x - rhs.x;
+        dst.y = lhs.y - rhs.y;
+        dst.z = lhs.z - rhs.z;
+        dst.w = lhs.w - rhs.w;
+    }
+
+    Vec4 mul(const Vec4& lhs, const Vec4& rhs)
+    {
+        return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w};
+    }
+
+    void mul(const Vec4& lhs, const Vec4& rhs, Vec4& dst)
+    {
+        dst.x = lhs.x * rhs.x;
+        dst.y = lhs.y * rhs.y;
+        dst.z = lhs.z * rhs.z;
+        dst.w = lhs.w * rhs.w;
+    }
+
+    Vec4 div(const Vec4& lhs, const Vec4& rhs)
+    {
+        return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w};
+    }
+
+    void div(const Vec4& lhs, const Vec4& rhs, Vec4& dst)
+    {
+        dst.x = lhs.x / rhs.x;
+        dst.y = lhs.y / rhs.y;
+        dst.z = lhs.z / rhs.z;
+        dst.w = lhs.w / rhs.w;
+    }
+
+    float angle(const Vec4& v1, const Vec4& v2)
+    {
+        float dx = v1.w * v2.x - v1.x * v2.w - v1.y * v2.z + v1.z * v2.y;
+        float dy = v1.w * v2.y - v1.y * v2.w - v1.z * v2.x + v1.x * v2.z;
+        float dz = v1.w * v2.z - v1.z * v2.w - v1.x * v2.y + v1.y * v2.x;
+
+        return atan2(sqrt(dx * dx + dy * dy + dz * dz) + kFloatSmall, dot(v1, v2));
+    }
+
+    Vec4 clamp(const Vec4& v, const Vec4& min, const Vec4& max)
+    {
+        return {clamp(v.x, min.x, max.x),  //
+                clamp(v.y, min.y, max.y),  //
+                clamp(v.z, min.z, max.z),  //
+                clamp(v.w, min.w, max.w)};
+    }
+
+    void clamp(const Vec4& v, const Vec4& min, const Vec4& max, Vec4& dst)
+    {
+        dst.x = clamp(v.x, min.x, max.x);
+        dst.y = clamp(v.y, min.y, max.y);
+        dst.z = clamp(v.z, min.z, max.z);
+        dst.w = clamp(v.w, min.w, max.w);
+    }
+
+    void clampSelf(Vec4& v, const Vec4& min, const Vec4& max)
+    {
+        clamp(v, min, max, v);
+    }
+
+    float dot(const Vec4& v1, const Vec4& v2)
+    {
+        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
+    }
+
+    float length(const Vec4& v)
+    {
+        return sqrt(v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w);
+    }
+
+    float lengthSquared(const Vec4& v)
+    {
+        return (v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w);
+    }
+
+    float distance(const Vec4& v1, const Vec4& v2)
+    {
+        float dx = v2.x - v1.x;
+        float dy = v2.y - v1.y;
+        float dz = v2.z - v1.z;
+        float dw = v2.w - v1.w;
+
+        return sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
+    }
+
+    float distanceSquared(const Vec4& v1, const Vec4& v2)
+    {
+        float dx = v2.x - v1.x;
+        float dy = v2.y - v1.y;
+        float dz = v2.z - v1.z;
+        float dw = v2.w - v1.w;
+
+        return (dx * dx + dy * dy + dz * dz + dw * dw);
+    }
+
+    Vec4 normalize(const Vec4& v)
+    {
+        const float invLen = 1.0f / length(v);
+        const Vec4  result = scale(v, invLen);
+        return result;
+    }
+
+    void normalize(const Vec4& v, Vec4& dst)
+    {
+        const float invLen = 1.0f / length(v);
+        scale(v, invLen, dst);
+    }
+
+    void normalizeSelf(Vec4& v)
+    {
+        const float invLen = 1.0f / length(v);
+        scale(v, invLen, v);
+    }
+
+    Vec4 scale(const Vec4& v, float scale)
+    {
+        return {v.x * scale,  //
+                v.y * scale,  //
+                v.z * scale,  //
+                v.w * scale};
+    }
+
+    void scale(const Vec4& v, float scale, Vec4& dst)
+    {
+        dst.x = v.x * scale;
+        dst.y = v.y * scale;
+        dst.z = v.z * scale;
+        dst.w = v.w * scale;
+    }
+
+    void scaleSelf(Vec4& v, float scale)
+    {
+        v.x = v.x * scale;
+        v.y = v.y * scale;
+        v.z = v.z * scale;
+        v.w = v.w * scale;
     }
 
     ////////////////// Rect /////////////////////
@@ -286,11 +794,11 @@ namespace math
     {
     }
 
-    const Mat3x3& Mat3x3::Identity()
+    const Mat3x3& Mat3x3::IdentiT()
     {
-        static Mat3x3 identity;
-        identity.data[0] = identity.data[4] = identity.data[8] = 1.f;
-        return identity;
+        static Mat3x3 identiT;
+        identiT.data[0] = identiT.data[4] = identiT.data[8] = 1.f;
+        return identiT;
     }
 
     ///////////////////// Mat4x4 //////////////////////
@@ -317,11 +825,11 @@ namespace math
         this->c4 = c4;
     }
 
-    const Mat4x4& Mat4x4::Identity()
+    const Mat4x4& Mat4x4::IdentiT()
     {
-        static Mat4x4 identity;
-        identity.data[0] = identity.data[5] = identity.data[10] = identity.data[15] = 1.f;
-        return identity;
+        static Mat4x4 identiT;
+        identiT.data[0] = identiT.data[5] = identiT.data[10] = identiT.data[15] = 1.f;
+        return identiT;
     }
 
     ///////////////// Quat /////////////////////////////
@@ -451,5 +959,6 @@ namespace math
         , radius(radius)
     {
     }
+
 }
 }

@@ -26,8 +26,8 @@ namespace math
         float&       operator[](size_t i);
         const float& operator[](size_t i) const;
 
-        static const Vec2& Zero();
-        static const Vec2& One();
+        static const Vec2 Zero;
+        static const Vec2 One;
 
     private:
         operator bool();
@@ -57,8 +57,8 @@ namespace math
         float&       operator[](size_t i);
         const float& operator[](size_t i) const;
 
-        static const Vec3& Zero();
-        static const Vec3& One();
+        static const Vec3 Zero;
+        static const Vec3 One;
 
     private:
         operator bool();
@@ -92,8 +92,8 @@ namespace math
         float&       operator[](size_t i);
         const float& operator[](size_t i) const;
 
-        static const Vec4& Zero();
-        static const Vec4& One();
+        static const Vec4 Zero;
+        static const Vec4 One;
 
     private:
         operator bool();
@@ -147,7 +147,7 @@ namespace math
         constexpr Mat3x3(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32,
                          float m33);
 
-        static const Mat3x3& Identity();
+        static const Mat3x3& IdentiT();
     };
 
     // forward define
@@ -173,7 +173,7 @@ namespace math
         Mat4x4(const Quat& rotation, const Vec3& scale, const Vec3& translation);
         Mat4x4(const Vec4& c1, const Vec4& c2, const Vec4& c3, const Vec4& c4);
 
-        static const Mat4x4& Identity();
+        static const Mat4x4& IdentiT();
     };
 
     struct Frustum
