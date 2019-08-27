@@ -11,21 +11,26 @@ namespace math
     // The following basic functions implementations are copied/inspired
     // from https://github.com/bkaradzic/bx
 
-    constexpr float    kPi         = 3.1415926535897932384626433832795f;
-    constexpr float    kPi2        = 6.2831853071795864769252867665590f;
-    constexpr float    kInvPi      = 1.0f / kPi;
-    constexpr float    kPiHalf     = 1.5707963267948966192313216916398f;
-    constexpr float    kPiQuarter  = 0.7853981633974483096156608458199f;
-    constexpr float    kSqrt2      = 1.4142135623730950488016887242097f;
-    constexpr float    kLogNat10   = 2.3025850929940456840179914546844f;
-    constexpr float    kInvLogNat2 = 1.4426950408889634073599246810019f;
-    constexpr float    kLogNat2Hi  = 0.6931471805599453094172321214582f;
-    constexpr float    kLogNat2Lo  = 1.90821492927058770002e-10f;
-    constexpr float    kE          = 2.7182818284590452353602874713527f;
-    constexpr float    kNearZero   = 1.0f / float(1 << 28);
-    constexpr float    kFloatMin   = 1.175494e-38f;
-    constexpr float    kFloatMax   = 3.402823e+38f;
-    constexpr float    kFloatSmall = 1.0e-37f;
+    constexpr float kPi             = 3.1415926535897932384626433832795f;
+    constexpr float kPi2            = 6.2831853071795864769252867665590f;
+    constexpr float kInvPi          = 1.0f / kPi;
+    constexpr float kPiHalf         = 1.5707963267948966192313216916398f;
+    constexpr float kPiQuarter      = 0.7853981633974483096156608458199f;
+    constexpr float kSqrt2          = 1.4142135623730950488016887242097f;
+    constexpr float kLogNat10       = 2.3025850929940456840179914546844f;
+    constexpr float kInvLogNat2     = 1.4426950408889634073599246810019f;
+    constexpr float kLogNat2Hi      = 0.6931471805599453094172321214582f;
+    constexpr float kLogNat2Lo      = 1.90821492927058770002e-10f;
+    constexpr float kE              = 2.7182818284590452353602874713527f;
+    constexpr float kNearZero       = 1.0f / float(1 << 28);
+    constexpr float kFloatMin       = 1.175494e-38f;
+    constexpr float kFloatMax       = 3.402823e+38f;
+    constexpr float kFloatSmall     = 1.0e-37f;
+    constexpr float kFloatTolerance = 2e-37f;
+    constexpr float kEpsilon        = 1e-6f;
+    constexpr float kDegToRad       = (kPi / 180.0f);
+    constexpr float kRadToDeg       = (180.0f / kPi);
+
     extern const float kInfinity;
 
     template <typename T>
@@ -237,7 +242,7 @@ namespace math
     float angle(const Vec2& v1, const Vec2& v2);
     Vec2  clamp(const Vec2& v, const Vec2& min, const Vec2& max);
     void  clamp(const Vec2& v, const Vec2& min, const Vec2& max, Vec2& dst);
-    void  clampSelf(Vec2& v, const Vec2& min, const Vec2& max);
+    void  clamp(Vec2& v, const Vec2& min, const Vec2& max);
     float dot(const Vec2& v1, const Vec2& v2);
     float length(const Vec2& v);
     float lengthSquared(const Vec2& v);
@@ -245,13 +250,13 @@ namespace math
     float distanceSquared(const Vec2& v1, const Vec2& v2);
     Vec2  normalize(const Vec2& v);
     void  normalize(const Vec2& v, Vec2& dst);
-    void  normalizeSelf(Vec2& v);
+    void  normalize(Vec2& v);
     Vec2  scale(const Vec2& v, float scale);
     void  scale(const Vec2& v, float scale, Vec2& dst);
-    void  scaleSelf(Vec2& v, float scale);
+    void  scale(Vec2& v, float scale);
     Vec2  rotate(const Vec2& v, const Vec2& point, float angle);
     void  rotate(const Vec2& v, const Vec2& point, float angle, Vec2& dst);
-    void  rotateSelf(Vec2& v, const Vec2& point, float angle);
+    void  rotate(Vec2& v, const Vec2& point, float angle);
 
     //////////////////////// Vec3 //////////////////////////
 
@@ -270,7 +275,7 @@ namespace math
     float angle(const Vec3& v1, const Vec3& v2);
     Vec3  clamp(const Vec3& v, const Vec3& min, const Vec3& max);
     void  clamp(const Vec3& v, const Vec3& min, const Vec3& max, Vec3& dst);
-    void  clampSelf(Vec3& v, const Vec3& min, const Vec3& max);
+    void  clamp(Vec3& v, const Vec3& min, const Vec3& max);
     Vec3  cross(const Vec3& v1, const Vec3& v2);
     void  cross(const Vec3& v1, const Vec3& v2, Vec3& dst);
     float dot(const Vec3& v1, const Vec3& v2);
@@ -280,10 +285,10 @@ namespace math
     float distanceSquared(const Vec3& v1, const Vec3& v2);
     Vec3  normalize(const Vec3& v);
     void  normalize(const Vec3& v, Vec3& dst);
-    void  normalizeSelf(Vec3& v);
+    void  normalize(Vec3& v);
     Vec3  scale(const Vec3& v, float scale);
     void  scale(const Vec3& v, float scale, Vec3& dst);
-    void  scaleSelf(Vec3& v, float scale);
+    void  scale(Vec3& v, float scale);
 
     //////////////////////// Vec4 //////////////////////////
 
@@ -302,7 +307,7 @@ namespace math
     float angle(const Vec4& v1, const Vec4& v2);
     Vec4  clamp(const Vec4& v, const Vec4& min, const Vec4& max);
     void  clamp(const Vec4& v, const Vec4& min, const Vec4& max, Vec4& dst);
-    void  clampSelf(Vec4& v, const Vec4& min, const Vec4& max);
+    void  clamp(Vec4& v, const Vec4& min, const Vec4& max);
     float dot(const Vec4& v1, const Vec4& v2);
     float length(const Vec4& v);
     float lengthSquared(const Vec4& v);
@@ -310,10 +315,103 @@ namespace math
     float distanceSquared(const Vec4& v1, const Vec4& v2);
     Vec4  normalize(const Vec4& v);
     void  normalize(const Vec4& v, Vec4& dst);
-    void  normalizeSelf(Vec4& v);
+    void  normalize(Vec4& v);
     Vec4  scale(const Vec4& v, float scale);
     void  scale(const Vec4& v, float scale, Vec4& dst);
-    void  scaleSelf(Vec4& v, float scale);
+    void  scale(Vec4& v, float scale);
+
+    ///////////////////////// Plane //////////////////////////////
+
+    float distance(const Vec3& point, const Plane& plane);
+    Plane normalize(const Plane& p);
+    void  normalize(const Plane& p, Plane& dst);
+    void  normalize(Plane& p);
+    bool  intersects(const Ray3& ray, const Plane& plane);
+    bool  intersects(const Plane& p1, const Plane& p2);
+    bool  intersects(const Box3& b, const Plane& p);
+    bool  intersects(const Sphere& s, const Plane& p);
+    bool  intersects(const Frustum& f, const Plane& p);
+    bool  intersection(const Plane& p1, const Plane& p2, const Plane& p3, Vec3& dst);
+    bool  intersection(const Plane& p1, const Plane& p2, Ray3& dst);
+    // out distance from sphere center
+    bool intersection(const Sphere& s, const Plane& p, float& distance);
+    bool intersection(const Box3& b, const Plane& p, uint8_t& count, Vec3* dst);
+    bool intersection(const Frustum& f, const Plane& p, uint8_t& count, Vec3* dst);
+
+    Vec3  projectPoint(const Vec3& point, const Plane& plane);
+    void  projectPoint(const Vec3& point, const Plane& plane, Vec3& dst);
+    Plane transform(const Plane& plane, const Mat4x4& tr);
+    void  transform(const Plane& plane, const Mat4x4& tr, Plane& dst);
+    void  transform(Plane& plane, const Mat4x4& tr);
+
+    ///////////////////// Mat3x3 //////////////////////////////////
+
+    //////////////////// Mat4x4 ////////////////////////////////
+    bool  isIdentity(const Mat4x4& matrix);
+    void  setIdentity(Mat4x4& dst);
+    void  mul(const Mat4x4& matrix, float scalar, Mat4x4& dst);
+    void  mul(const Mat4x4& lhs, const Mat4x4& rhs, Mat4x4& dst);
+    void  createLookAt(const Vec3& eyePosition, const Vec3& targetPosition, const Vec3& up, Mat4x4& dst);
+    void  createLookAt(float eyePositionX, float eyePositionY, float eyePositionZ, float targetCenterX,
+                       float targetCenterY, float targetCenterZ, float upX, float upY, float upZ, Mat4x4& dst);
+    void  createPerspective(float fieldOfView, float aspectRatio, float zNearPlane, float zFarPlane, Mat4x4& dst);
+    void  createOrthographic(float width, float height, float zNearPlane, float zFarPlane, Mat4x4& dst);
+    void  createOrthographicOffCenter(float left, float right, float bottom, float top, float zNearPlane,
+                                      float zFarPlane, Mat4x4& dst);
+    void  createBillboard(const Vec3& objectPosition, const Vec3& cameraPosition, const Vec3& cameraUpVector,
+                          Mat4x4& dst);
+    void  createBillboard(const Vec3& objectPosition, const Vec3& cameraPosition, const Vec3& cameraUpVector,
+                          const Vec3& cameraForwardVector, Mat4x4& dst);
+    void  createReflection(const Plane& plane, Mat4x4& dst);
+    void  createScale(const Vec3& scale, Mat4x4& dst);
+    void  createScale(float xScale, float yScale, float zScale, Mat4x4& dst);
+    void  createRotation(const Quat& quat, Mat4x4& dst);
+    void  createRotation(const Vec3& axis, float angle, Mat4x4& dst);
+    void  createRotationX(float angle, Mat4x4& dst);
+    void  createRotationY(float angle, Mat4x4& dst);
+    void  createRotationZ(float angle, Mat4x4& dst);
+    void  createFromEuler(float yaw, float pitch, float roll, Mat4x4& dst);
+    void  createTranslation(const Vec3& translation, Mat4x4& dst);
+    void  createTranslation(float xTranslation, float yTranslation, float zTranslation, Mat4x4& dst);
+    void  decompose(const Mat4x4& matrix, Quat& rotation, Vec3& scale, Vec3& translation);
+    float determinant(const Mat4x4& matrix);
+    void  getScale(const Mat4x4& matrix, Vec3& scale);
+    void  getRotation(const Mat4x4& matrix, Quat& rotation);
+    void  getTranslation(const Mat4x4& matrix, Vec3& translation);
+    void  getUp(const Mat4x4& matrix, Vec3& dst);
+    void  getRight(const Mat4x4& matrix, Vec3& dst);
+    void  getForward(const Mat4x4& matrix, Vec3& dst);
+    bool  canInvert(const Mat4x4& matrix);
+    void  invert(const Mat4x4& matrix, Mat4x4& dst);
+    void  invert(Mat4x4& matrix);
+    void  rotate(const Mat4x4& matrix, const Quat& rotation, Mat4x4& dst);
+    void  rotate(Mat4x4& matrix, const Quat& rotation);
+    void  rotate(const Mat4x4& matrix, const Vec3& axis, float angle, Mat4x4& dst);
+    void  rotate(Mat4x4& matrix, const Vec3& axis, float angle);
+    void  rotateX(const Mat4x4& matrix, float angle, Mat4x4& dst);
+    void  rotateX(Mat4x4& matrix, float angle);
+    void  rotateY(const Mat4x4& matrix, float angle, Mat4x4& dst);
+    void  rotateY(Mat4x4& matrix, float angle);
+    void  rotateZ(const Mat4x4& matrix, float angle, Mat4x4& dst);
+    void  rotateZ(Mat4x4& matrix, float angle);
+    void  scale(const Mat4x4& matrix, float scale, Mat4x4& dst);
+    void  scale(const Mat4x4& matrix, float scaleX, float scaleY, float scaleZ, Mat4x4& dst);
+    void  scale(const Mat4x4& matrix, const Vec3& scale, Mat4x4& dst);
+    void  scale(Mat4x4& matrix, float scale);
+    void  scale(Mat4x4& matrix, float scaleX, float scaleY, float scaleZ);
+    void  scale(Mat4x4& matrix, const Vec3& scale);
+    void  tranformPoint(const Vec3& point, const Mat4x4& matrix, Vec3& dst);
+    void  tranformPoint(Vec3& point, const Mat4x4& matrix);
+    void  tranform(const Vec3& v, const Mat4x4& matrix, Vec3& dst);
+    void  tranform(Vec3& v, const Mat4x4& matrix);
+    void  transform(const Vec4& v, const Mat4x4& matrix, Vec4& dst);
+    void  transform(Vec4& v, const Mat4x4& matrix);
+    void  translate(const Mat4x4& matrix, const Vec3& translation, Mat4x4& dst);
+    void  translate(Mat4x4& matrix, const Vec3& translation);
+    void  translate(const Mat4x4& matrix, float x, float y, float z, Mat4x4& dst);
+    void  translate(Mat4x4& matrix, float x, float y, float z);
+    void  transpose(const Mat4x4& matrix, Mat4x4& dst);
+    void  transpose(Mat4x4& matrix);
 }
 }
 
@@ -322,24 +420,518 @@ namespace hq
 {
 namespace math
 {
-    inline constexpr uint32_t uint32_sra(uint32_t a, int32_t _sa)
+    inline constexpr uint32_t uint32_li(uint32_t _a)
     {
-        return a >> _sa;
+        return _a;
     }
 
-    inline constexpr uint32_t uint32_neg(uint32_t a)
+    inline constexpr uint32_t uint32_dec(uint32_t _a)
     {
-        return -a;
+        return _a - 1;
     }
 
-    inline constexpr uint32_t uint32_or(uint32_t a, uint32_t b)
+    inline constexpr uint32_t uint32_inc(uint32_t _a)
     {
-        return a | b;
+        return _a + 1;
     }
 
-    inline constexpr uint32_t uint32_xor(uint32_t a, uint32_t b)
+    inline constexpr uint32_t uint32_not(uint32_t _a)
     {
-        return a ^ b;
+        return ~_a;
+    }
+
+    inline constexpr uint32_t uint32_neg(uint32_t _a)
+    {
+        return -(int32_t)_a;
+    }
+
+    inline constexpr uint32_t uint32_ext(uint32_t _a)
+    {
+        return ((int32_t)_a) >> 31;
+    }
+
+    inline constexpr uint32_t uint32_and(uint32_t _a, uint32_t _b)
+    {
+        return _a & _b;
+    }
+
+    inline constexpr uint32_t uint32_andc(uint32_t _a, uint32_t _b)
+    {
+        return _a & ~_b;
+    }
+
+    inline constexpr uint32_t uint32_xor(uint32_t _a, uint32_t _b)
+    {
+        return _a ^ _b;
+    }
+
+    inline constexpr uint32_t uint32_xorl(uint32_t _a, uint32_t _b)
+    {
+        return !_a != !_b;
+    }
+
+    inline constexpr uint32_t uint32_or(uint32_t _a, uint32_t _b)
+    {
+        return _a | _b;
+    }
+
+    inline constexpr uint32_t uint32_orc(uint32_t _a, uint32_t _b)
+    {
+        return _a | ~_b;
+    }
+
+    inline constexpr uint32_t uint32_sll(uint32_t _a, int32_t _sa)
+    {
+        return _a << _sa;
+    }
+
+    inline constexpr uint32_t uint32_srl(uint32_t _a, int32_t _sa)
+    {
+        return _a >> _sa;
+    }
+
+    inline constexpr uint32_t uint32_sra(uint32_t _a, int32_t _sa)
+    {
+        return ((int32_t)_a) >> _sa;
+    }
+
+    inline constexpr uint32_t uint32_rol(uint32_t _a, int32_t _sa)
+    {
+        return (_a << _sa) | (_a >> (32 - _sa));
+    }
+
+    inline constexpr uint32_t uint32_ror(uint32_t _a, int32_t _sa)
+    {
+        return (_a >> _sa) | (_a << (32 - _sa));
+    }
+
+    inline constexpr uint32_t uint32_add(uint32_t _a, uint32_t _b)
+    {
+        return _a + _b;
+    }
+
+    inline constexpr uint32_t uint32_iadd(uint32_t _a, uint32_t _b)
+    {
+        return int32_t(_a) + int32_t(_b);
+    }
+
+    inline constexpr uint32_t uint32_sub(uint32_t _a, uint32_t _b)
+    {
+        return _a - _b;
+    }
+
+    inline constexpr uint32_t uint32_isub(uint32_t _a, uint32_t _b)
+    {
+        return int32_t(_a) - int32_t(_b);
+    }
+
+    inline constexpr uint32_t uint32_mul(uint32_t _a, uint32_t _b)
+    {
+        return _a * _b;
+    }
+
+    inline constexpr uint32_t uint32_div(uint32_t _a, uint32_t _b)
+    {
+        return _a / _b;
+    }
+
+    inline constexpr uint32_t uint32_mod(uint32_t _a, uint32_t _b)
+    {
+        return _a % _b;
+    }
+
+    inline constexpr uint32_t uint32_cmpeq(uint32_t _a, uint32_t _b)
+    {
+        return -(_a == _b);
+    }
+
+    inline constexpr uint32_t uint32_cmpneq(uint32_t _a, uint32_t _b)
+    {
+        return -(_a != _b);
+    }
+
+    inline constexpr uint32_t uint32_cmplt(uint32_t _a, uint32_t _b)
+    {
+        return -(_a < _b);
+    }
+
+    inline constexpr uint32_t uint32_cmple(uint32_t _a, uint32_t _b)
+    {
+        return -(_a <= _b);
+    }
+
+    inline constexpr uint32_t uint32_cmpgt(uint32_t _a, uint32_t _b)
+    {
+        return -(_a > _b);
+    }
+
+    inline constexpr uint32_t uint32_cmpge(uint32_t _a, uint32_t _b)
+    {
+        return -(_a >= _b);
+    }
+
+    inline constexpr uint32_t uint32_setnz(uint32_t _a)
+    {
+        return -!!_a;
+    }
+
+    inline constexpr uint32_t uint32_satadd(uint32_t _a, uint32_t _b)
+    {
+        const uint32_t add    = uint32_add(_a, _b);
+        const uint32_t lt     = uint32_cmplt(add, _a);
+        const uint32_t result = uint32_or(add, lt);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_satsub(uint32_t _a, uint32_t _b)
+    {
+        const uint32_t sub    = uint32_sub(_a, _b);
+        const uint32_t le     = uint32_cmple(sub, _a);
+        const uint32_t result = uint32_and(sub, le);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_satmul(uint32_t _a, uint32_t _b)
+    {
+        const uint64_t mul    = (uint64_t)_a * (uint64_t)_b;
+        const uint32_t hi     = mul >> 32;
+        const uint32_t nz     = uint32_setnz(hi);
+        const uint32_t result = uint32_or(uint32_t(mul), nz);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_sels(uint32_t test, uint32_t _a, uint32_t _b)
+    {
+        const uint32_t mask   = uint32_ext(test);
+        const uint32_t sel_a  = uint32_and(_a, mask);
+        const uint32_t sel_b  = uint32_andc(_b, mask);
+        const uint32_t result = uint32_or(sel_a, sel_b);
+
+        return (result);
+    }
+
+    inline constexpr uint32_t uint32_selb(uint32_t _mask, uint32_t _a, uint32_t _b)
+    {
+        const uint32_t sel_a  = uint32_and(_a, _mask);
+        const uint32_t sel_b  = uint32_andc(_b, _mask);
+        const uint32_t result = uint32_or(sel_a, sel_b);
+
+        return (result);
+    }
+
+    inline constexpr uint32_t uint32_imin(uint32_t _a, uint32_t _b)
+    {
+        const uint32_t a_sub_b = uint32_sub(_a, _b);
+        const uint32_t result  = uint32_sels(a_sub_b, _a, _b);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_imax(uint32_t _a, uint32_t _b)
+    {
+        const uint32_t b_sub_a = uint32_sub(_b, _a);
+        const uint32_t result  = uint32_sels(b_sub_a, _a, _b);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_min(uint32_t _a, uint32_t _b)
+    {
+        return _a > _b ? _b : _a;
+    }
+
+    inline constexpr uint32_t uint32_min(uint32_t _a, uint32_t _b, uint32_t _c)
+    {
+        return uint32_min(_a, uint32_min(_b, _c));
+    }
+
+    inline constexpr uint32_t uint32_max(uint32_t _a, uint32_t _b)
+    {
+        return _a > _b ? _a : _b;
+    }
+
+    inline constexpr uint32_t uint32_max(uint32_t _a, uint32_t _b, uint32_t _c)
+    {
+        return uint32_max(_a, uint32_max(_b, _c));
+    }
+
+    inline constexpr uint32_t uint32_clamp(uint32_t _a, uint32_t _min, uint32_t _max)
+    {
+        const uint32_t tmp    = uint32_max(_a, _min);
+        const uint32_t result = uint32_min(tmp, _max);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_iclamp(uint32_t _a, uint32_t _min, uint32_t _max)
+    {
+        const uint32_t tmp    = uint32_imax(_a, _min);
+        const uint32_t result = uint32_imin(tmp, _max);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_incwrap(uint32_t _val, uint32_t _min, uint32_t _max)
+    {
+        const uint32_t inc          = uint32_inc(_val);
+        const uint32_t max_diff     = uint32_sub(_max, _val);
+        const uint32_t neg_max_diff = uint32_neg(max_diff);
+        const uint32_t max_or       = uint32_or(max_diff, neg_max_diff);
+        const uint32_t max_diff_nz  = uint32_ext(max_or);
+        const uint32_t result       = uint32_selb(max_diff_nz, inc, _min);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_decwrap(uint32_t _val, uint32_t _min, uint32_t _max)
+    {
+        const uint32_t dec          = uint32_dec(_val);
+        const uint32_t min_diff     = uint32_sub(_min, _val);
+        const uint32_t neg_min_diff = uint32_neg(min_diff);
+        const uint32_t min_or       = uint32_or(min_diff, neg_min_diff);
+        const uint32_t min_diff_nz  = uint32_ext(min_or);
+        const uint32_t result       = uint32_selb(min_diff_nz, dec, _max);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_cntbits(uint32_t _val)
+    {
+        const uint32_t tmp0   = uint32_srl(_val, 1);
+        const uint32_t tmp1   = uint32_and(tmp0, 0x55555555);
+        const uint32_t tmp2   = uint32_sub(_val, tmp1);
+        const uint32_t tmp3   = uint32_and(tmp2, 0xc30c30c3);
+        const uint32_t tmp4   = uint32_srl(tmp2, 2);
+        const uint32_t tmp5   = uint32_and(tmp4, 0xc30c30c3);
+        const uint32_t tmp6   = uint32_srl(tmp2, 4);
+        const uint32_t tmp7   = uint32_and(tmp6, 0xc30c30c3);
+        const uint32_t tmp8   = uint32_add(tmp3, tmp5);
+        const uint32_t tmp9   = uint32_add(tmp7, tmp8);
+        const uint32_t tmpA   = uint32_srl(tmp9, 6);
+        const uint32_t tmpB   = uint32_add(tmp9, tmpA);
+        const uint32_t tmpC   = uint32_srl(tmpB, 12);
+        const uint32_t tmpD   = uint32_srl(tmpB, 24);
+        const uint32_t tmpE   = uint32_add(tmpB, tmpC);
+        const uint32_t tmpF   = uint32_add(tmpD, tmpE);
+        const uint32_t result = uint32_and(tmpF, 0x3f);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_cntlz(uint32_t _val)
+    {
+        const uint32_t tmp0   = uint32_srl(_val, 1);
+        const uint32_t tmp1   = uint32_or(tmp0, _val);
+        const uint32_t tmp2   = uint32_srl(tmp1, 2);
+        const uint32_t tmp3   = uint32_or(tmp2, tmp1);
+        const uint32_t tmp4   = uint32_srl(tmp3, 4);
+        const uint32_t tmp5   = uint32_or(tmp4, tmp3);
+        const uint32_t tmp6   = uint32_srl(tmp5, 8);
+        const uint32_t tmp7   = uint32_or(tmp6, tmp5);
+        const uint32_t tmp8   = uint32_srl(tmp7, 16);
+        const uint32_t tmp9   = uint32_or(tmp8, tmp7);
+        const uint32_t tmpA   = uint32_not(tmp9);
+        const uint32_t result = uint32_cntbits(tmpA);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_cnttz(uint32_t _val)
+    {
+        const uint32_t tmp0   = uint32_not(_val);
+        const uint32_t tmp1   = uint32_dec(_val);
+        const uint32_t tmp2   = uint32_and(tmp0, tmp1);
+        const uint32_t result = uint32_cntbits(tmp2);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_part1by1(uint32_t _a)
+    {
+        // shuffle:
+        // ---- ---- ---- ---- fedc ba98 7654 3210
+        // to:
+        // -f-e -d-c -b-a -9-8 -7-6 -5-4 -3-2 -1-0
+
+        const uint32_t val = uint32_and(_a, 0xffff);
+
+        const uint32_t tmp0 = uint32_sll(val, 8);
+        const uint32_t tmp1 = uint32_xor(val, tmp0);
+        const uint32_t tmp2 = uint32_and(tmp1, 0x00ff00ff);
+
+        const uint32_t tmp3 = uint32_sll(tmp2, 4);
+        const uint32_t tmp4 = uint32_xor(tmp2, tmp3);
+        const uint32_t tmp5 = uint32_and(tmp4, 0x0f0f0f0f);
+
+        const uint32_t tmp6 = uint32_sll(tmp5, 2);
+        const uint32_t tmp7 = uint32_xor(tmp5, tmp6);
+        const uint32_t tmp8 = uint32_and(tmp7, 0x33333333);
+
+        const uint32_t tmp9   = uint32_sll(tmp8, 1);
+        const uint32_t tmpA   = uint32_xor(tmp8, tmp9);
+        const uint32_t result = uint32_and(tmpA, 0x55555555);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_part1by2(uint32_t _a)
+    {
+        // shuffle:
+        // ---- ---- ---- ---- ---- --98 7654 3210
+        // to:
+        // ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0
+
+        const uint32_t val = uint32_and(_a, 0x3ff);
+
+        const uint32_t tmp0 = uint32_sll(val, 16);
+        const uint32_t tmp1 = uint32_xor(val, tmp0);
+        const uint32_t tmp2 = uint32_and(tmp1, 0xff0000ff);
+
+        const uint32_t tmp3 = uint32_sll(tmp2, 8);
+        const uint32_t tmp4 = uint32_xor(tmp2, tmp3);
+        const uint32_t tmp5 = uint32_and(tmp4, 0x0300f00f);
+
+        const uint32_t tmp6 = uint32_sll(tmp5, 4);
+        const uint32_t tmp7 = uint32_xor(tmp5, tmp6);
+        const uint32_t tmp8 = uint32_and(tmp7, 0x030c30c3);
+
+        const uint32_t tmp9   = uint32_sll(tmp8, 2);
+        const uint32_t tmpA   = uint32_xor(tmp8, tmp9);
+        const uint32_t result = uint32_and(tmpA, 0x09249249);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_testpow2(uint32_t _a)
+    {
+        const uint32_t tmp0   = uint32_dec(_a);
+        const uint32_t tmp1   = uint32_xor(_a, tmp0);
+        const uint32_t tmp2   = uint32_srl(tmp1, 1);
+        const uint32_t result = uint32_cmpeq(tmp2, tmp0);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint32_nextpow2(uint32_t _a)
+    {
+        const uint32_t tmp0   = uint32_dec(_a);
+        const uint32_t tmp1   = uint32_srl(tmp0, 1);
+        const uint32_t tmp2   = uint32_or(tmp0, tmp1);
+        const uint32_t tmp3   = uint32_srl(tmp2, 2);
+        const uint32_t tmp4   = uint32_or(tmp2, tmp3);
+        const uint32_t tmp5   = uint32_srl(tmp4, 4);
+        const uint32_t tmp6   = uint32_or(tmp4, tmp5);
+        const uint32_t tmp7   = uint32_srl(tmp6, 8);
+        const uint32_t tmp8   = uint32_or(tmp6, tmp7);
+        const uint32_t tmp9   = uint32_srl(tmp8, 16);
+        const uint32_t tmpA   = uint32_or(tmp8, tmp9);
+        const uint32_t result = uint32_inc(tmpA);
+
+        return result;
+    }
+
+    inline constexpr uint32_t uint64_cntbits(uint64_t _val)
+    {
+        const uint32_t lo = uint32_t(_val & UINT32_MAX);
+        const uint32_t hi = uint32_t(_val >> 32);
+
+        const uint32_t total = uint32_cntbits(lo) + uint32_cntbits(hi);
+        return total;
+    }
+
+    inline constexpr uint32_t uint64_cntlz(uint64_t _val)
+    {
+        return _val & UINT64_C(0xffffffff00000000) ? uint32_cntlz(uint32_t(_val >> 32))
+                                                   : uint32_cntlz(uint32_t(_val)) + 32;
+    }
+
+    inline constexpr uint32_t uint64_cnttz(uint64_t _val)
+    {
+        return _val & UINT64_C(0xffffffff) ? uint32_cnttz(uint32_t(_val)) : uint32_cnttz(uint32_t(_val >> 32)) + 32;
+    }
+
+    inline constexpr uint64_t uint64_sll(uint64_t _a, int32_t _sa)
+    {
+        return _a << _sa;
+    }
+
+    inline constexpr uint64_t uint64_srl(uint64_t _a, int32_t _sa)
+    {
+        return _a >> _sa;
+    }
+
+    inline constexpr uint64_t uint64_sra(uint64_t _a, int32_t _sa)
+    {
+        return ((int64_t)_a) >> _sa;
+    }
+
+    inline constexpr uint64_t uint64_rol(uint64_t _a, int32_t _sa)
+    {
+        return (_a << _sa) | (_a >> (64 - _sa));
+    }
+
+    inline constexpr uint64_t uint64_ror(uint64_t _a, int32_t _sa)
+    {
+        return (_a >> _sa) | (_a << (64 - _sa));
+    }
+
+    inline constexpr uint64_t uint64_add(uint64_t _a, uint64_t _b)
+    {
+        return _a + _b;
+    }
+
+    inline constexpr uint64_t uint64_sub(uint64_t _a, uint64_t _b)
+    {
+        return _a - _b;
+    }
+
+    inline constexpr uint64_t uint64_mul(uint64_t _a, uint64_t _b)
+    {
+        return _a * _b;
+    }
+
+    inline constexpr uint32_t uint32_gcd(uint32_t _a, uint32_t _b)
+    {
+        do
+        {
+            const uint32_t tmp = uint32_mod(_a, _b);
+            _a                 = _b;
+            _b                 = tmp;
+        } while (_b);
+
+        return _a;
+    }
+
+    inline constexpr uint32_t uint32_lcm(uint32_t _a, uint32_t _b)
+    {
+        return _a * (_b / uint32_gcd(_a, _b));
+    }
+
+    inline constexpr uint32_t strideAlign(uint32_t _offset, uint32_t _stride)
+    {
+        const uint32_t mod    = uint32_mod(_offset, _stride);
+        const uint32_t add    = uint32_sub(_stride, mod);
+        const uint32_t mask   = uint32_cmpeq(mod, 0);
+        const uint32_t tmp    = uint32_selb(mask, 0, add);
+        const uint32_t result = uint32_add(_offset, tmp);
+
+        return result;
+    }
+
+    template <uint32_t Min>
+    inline constexpr uint32_t strideAlign(uint32_t _offset, uint32_t _stride)
+    {
+        const uint32_t align  = uint32_lcm(Min, _stride);
+        const uint32_t mod    = uint32_mod(_offset, align);
+        const uint32_t mask   = uint32_cmpeq(mod, 0);
+        const uint32_t tmp0   = uint32_selb(mask, 0, align);
+        const uint32_t tmp1   = uint32_add(_offset, tmp0);
+        const uint32_t result = uint32_sub(tmp1, mod);
+
+        return result;
     }
 
     inline float toRad(float _deg)

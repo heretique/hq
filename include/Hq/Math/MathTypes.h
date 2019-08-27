@@ -147,7 +147,7 @@ namespace math
         constexpr Mat3x3(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32,
                          float m33);
 
-        static const Mat3x3& IdentiT();
+        static const Mat3x3 Identity;
     };
 
     // forward define
@@ -173,7 +173,7 @@ namespace math
         Mat4x4(const Quat& rotation, const Vec3& scale, const Vec3& translation);
         Mat4x4(const Vec4& c1, const Vec4& c2, const Vec4& c3, const Vec4& c4);
 
-        static const Mat4x4& IdentiT();
+        static const Mat4x4 Identity;
     };
 
     struct Frustum
@@ -209,6 +209,42 @@ namespace math
 
     private:
         operator bool();
+    };
+
+    struct Line2
+    {
+        union {
+            Vec2 data[2];
+            struct
+            {
+                Vec2 p1, p2;
+            };
+        };
+
+        constexpr Line2()
+            : p1()
+            , p2()
+        {
+        }
+        Line2(const Vec2& p1, const Vec2& p2);
+    };
+
+    struct Line3
+    {
+        union {
+            Vec3 data[2];
+            struct
+            {
+                Vec3 p1, p2;
+            };
+        };
+
+        constexpr Line3()
+            : p1()
+            , p2()
+        {
+        }
+        Line3(const Vec3& p1, const Vec3& p2);
     };
 
     struct Ray2
