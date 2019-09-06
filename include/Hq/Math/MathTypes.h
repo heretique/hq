@@ -4,6 +4,7 @@ namespace hq
 {
 namespace math
 {
+    /// Represents a vector or a point in 2D space
     struct Vec2
     {
         union {
@@ -33,6 +34,8 @@ namespace math
         operator bool();
     };
 
+    /// Represents a vector or a point in 3D space.
+    /// Has also r, g, b components representing color
     struct Vec3
     {
         union {
@@ -64,6 +67,9 @@ namespace math
         operator bool();
     };
 
+    /// Represents a vector or a point in 3D space with an additional component w
+    /// Useful for tranformations.
+    /// Has also r, g, b, a components representing color and opacity
     struct Vec4
     {
         union {
@@ -99,6 +105,7 @@ namespace math
         operator bool();
     };
 
+    /// Represents a rectangle in 2D space
     struct Rect
     {
         union {
@@ -117,6 +124,8 @@ namespace math
         Rect(const Vec2& topLeft, const Vec2& size);
     };
 
+    /// Represents a plane in 3D space given by it's distance from origin
+    /// and normal vector
     struct Plane
     {
         Vec3  normal;    // The normal vector of the Plane.
@@ -127,7 +136,7 @@ namespace math
         constexpr Plane(float normalX, float normalY, float normalZ, float distance);
     };
 
-    // column-major
+    /// 3x3 Matric (useful for representing rotations in 3D space)
     struct Mat3x3
     {
         union {
@@ -153,7 +162,7 @@ namespace math
     // forward define
     struct Quat;
 
-    // column-major
+    /// 4x4 Matrix representing 3D transformations
     struct Mat4x4
     {
         union {
@@ -176,6 +185,7 @@ namespace math
         static const Mat4x4 Identity;
     };
 
+    /// Represents a view frustum in 3D space
     struct Frustum
     {
         Plane  near;
@@ -185,8 +195,12 @@ namespace math
         Plane  left;
         Plane  right;
         Mat4x4 matrix;
+
+        Frustum();
+        Frustum(const Mat4x4& matrix);
     };
 
+    /// Quaternion structure representing rotations in 3D space
     struct Quat
     {
         union {
@@ -198,7 +212,7 @@ namespace math
         };
 
         constexpr Quat();
-        constexpr Quat(float x, float y, float z, float w);
+        Quat(float x, float y, float z, float w);
         Quat(const Vec3& axis, float angle);
         Quat(const Mat3x3& rotation);
         // Constructs a quaternion equal to the rotational part of the specified matrix.
@@ -207,10 +221,14 @@ namespace math
         float&       operator[](size_t i);
         const float& operator[](size_t i) const;
 
+        static const Quat Identity;
+        static const Quat Zero;
+
     private:
         operator bool();
     };
 
+    /// Represents a line in 2D space enclosed by 2 points
     struct Line2
     {
         union {
@@ -229,6 +247,7 @@ namespace math
         Line2(const Vec2& p1, const Vec2& p2);
     };
 
+    /// Represents a line in 3D space enclosed by 2 points
     struct Line3
     {
         union {
@@ -247,6 +266,7 @@ namespace math
         Line3(const Vec3& p1, const Vec3& p2);
     };
 
+    /// Represents a ray in 2D space given by a starting point and a direction
     struct Ray2
     {
         Vec2 origin;
@@ -256,6 +276,7 @@ namespace math
         Ray2(const Vec2& origin, const Vec2& direction);
     };
 
+    /// Represents a ray in 3D space given by a starting point and a direction
     struct Ray3
     {
         Vec3 origin;
@@ -265,6 +286,7 @@ namespace math
         Ray3(const Vec3& origin, const Vec3& direction);
     };
 
+    /// Represents a (bounding) box in 2D space
     struct Box2
     {
         Vec2      min;
@@ -275,6 +297,7 @@ namespace math
         Vec2 extent() const;
     };
 
+    /// Represents a (bounding) box in 3D space
     struct Box3
     {
         Vec3      min;
@@ -285,6 +308,7 @@ namespace math
         Vec3 extent() const;
     };
 
+    /// Represents a circle in 2D space
     struct Circle
     {
         Vec2      center;
@@ -294,6 +318,7 @@ namespace math
         constexpr Circle(float xcenter, float ycenter, float radius);
     };
 
+    /// Represents a sphere in 3D space
     struct Sphere
     {
         Vec3      center;
@@ -302,6 +327,5 @@ namespace math
         Sphere(const Vec3& center, float radius);
         constexpr Sphere(float xcenter, float ycenter, float zcenter, float radius);
     };
-
 }
 }

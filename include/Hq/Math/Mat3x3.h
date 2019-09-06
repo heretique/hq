@@ -1,0 +1,10 @@
+#include "MathTypes.h"
+
+namespace hq
+{
+namespace math
+{
+    ///////////////////// Mat3x3 //////////////////////////////////
+
+}
+}

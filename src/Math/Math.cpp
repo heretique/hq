@@ -1,4 +1,22 @@
 #include "Hq/Math/Math.h"
+#include "Hq/Math/Box2.h"
+#include "Hq/Math/Plane.h"
+#include "Hq/Math/Quat.h"
+#include "Hq/Math/Line3.h"
+#include "Hq/Math/Line2.h"
+#include "Hq/Math/Mat4x4.h"
+#include "Hq/Math/Mat3x3.h"
+#include "Hq/Math/Frustum.h"
+#include "Hq/Math/Circle.h"
+#include "Hq/Math/Rect.h"
+#include "Hq/Math/Box3.h"
+#include "Hq/Math/Box2.h"
+#include "Hq/Math/Sphere.h"
+#include "Hq/Math/Ray3.h"
+#include "Hq/Math/Ray2.h"
+#include "Hq/Math/Vec4.h"
+#include "Hq/Math/Vec3.h"
+#include "Hq/Math/Vec2.h"
 #include <cassert>
 #include <cstring>
 #include <cstdio>
@@ -326,6 +344,28 @@ namespace math
         dst.y = lhs.y * rhs.y;
     }
 
+    Vec2 mul(float f, const Vec2& v)
+    {
+        return Vec2(f * v.x, f * v.y);
+    }
+
+    Vec2 mul(const Vec2& v, float f)
+    {
+        return Vec2(f * v.x, f * v.y);
+    }
+
+    void mul(float f, const Vec2& v, Vec2& dst)
+    {
+        dst.x = f * v.x;
+        dst.y = f * v.y;
+    }
+
+    void mul(const Vec2& v, float f, Vec2& dst)
+    {
+        dst.x = f * v.x;
+        dst.y = f * v.y;
+    }
+
     Vec2 div(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x / rhs.x, lhs.y / rhs.y);
@@ -562,6 +602,30 @@ namespace math
         dst.x = lhs.x * rhs.x;
         dst.y = lhs.y * rhs.y;
         dst.z = lhs.z * rhs.z;
+    }
+
+    Vec3 mul(float f, const Vec3& v)
+    {
+        return Vec3(f * v.x, f * v.y, f * v.z);
+    }
+
+    Vec3 mul(const Vec3& v, float f)
+    {
+        return Vec3(f * v.x, f * v.y, f * v.z);
+    }
+
+    void mul(float f, const Vec3& v, Vec3& dst)
+    {
+        dst.x = f * v.x;
+        dst.y = f * v.y;
+        dst.z = f * v.z;
+    }
+
+    void mul(const Vec3& v, float f, Vec3& dst)
+    {
+        dst.x = f * v.x;
+        dst.y = f * v.y;
+        dst.z = f * v.z;
     }
 
     Vec3 div(const Vec3& lhs, const Vec3& rhs)
@@ -1085,7 +1149,29 @@ namespace math
 
     void transform(Plane& plane) {}
 
-    ///////////////// Mat3x3 //////////////////////////
+    int side(const Vec3& point, const Plane& plane)
+    {
+        float d = distance(point, plane);
+        if (d == 0.f)
+            return 0;
+        else if (d > 0.f)
+            return 1;
+        else
+            return -1;
+    }
+
+    int side(const Box3& b, const Plane& p)
+    {
+        return side(b.center(), p);
+    }
+
+    int side(const Sphere& s, const Plane& p)
+    {
+        return side(s.center, p);
+    }
+
+    ///////////////////////////////////// Mat3x3 ////////////////////////////////
+
     Mat3x3::Mat3x3()
     {
         memset(data, 0, sizeof(data));
@@ -2122,7 +2208,91 @@ namespace math
         transpose(matrix, matrix);
     }
 
-    ///////////////// Quat /////////////////////////////
+    //////////////////////////////////////////// FRUSTUM /////////////////////////////////////////////
+
+    Frustum::Frustum() {}
+
+    void updatePlanes(Frustum& f, const Mat4x4& matrix)
+    {
+        const float* m = matrix.data;
+        f.near         = Plane(Vec3(m[3] + m[2], m[7] + m[6], m[11] + m[10]), m[15] + m[14]);
+        f.far          = Plane(Vec3(m[3] - m[2], m[7] - m[6], m[11] - m[10]), m[15] - m[14]);
+        f.bottom       = Plane(Vec3(m[3] + m[1], m[7] + m[5], m[11] + m[9]), m[15] + m[13]);
+        f.top          = Plane(Vec3(m[3] - m[1], m[7] - m[5], m[11] - m[9]), m[15] - m[13]);
+        f.left         = Plane(Vec3(m[3] + m[0], m[7] + m[4], m[11] + m[8]), m[15] + m[12]);
+        f.right        = Plane(Vec3(m[3] - m[0], m[7] - m[4], m[11] - m[8]), m[15] - m[12]);
+    }
+
+    Frustum::Frustum(const Mat4x4& matrix)
+        : matrix(matrix)
+    {
+        updatePlanes(*this, matrix);
+    }
+
+    void getCorners(const Frustum& f, Vec3* dst)
+    {
+        assert(dst);
+        getNearCorners(f, dst);
+        getFarCorners(f, dst + 4);
+    }
+
+    void getNearCorners(const Frustum& f, Vec3* dst)
+    {
+        assert(dst);
+        intersection(f.near, f.left, f.top, *dst);
+        intersection(f.near, f.left, f.bottom, *(dst + 1));
+        intersection(f.near, f.right, f.bottom, *(dst + 2));
+        intersection(f.near, f.right, f.top, *(dst + 3));
+    }
+
+    void getFarCorners(const Frustum& f, Vec3* dst)
+    {
+        assert(dst);
+        intersection(f.far, f.right, f.top, *dst);
+        intersection(f.far, f.right, f.bottom, *(dst + 1));
+        intersection(f.far, f.left, f.bottom, *(dst + 2));
+        intersection(f.far, f.left, f.top, *(dst + 3));
+    }
+
+    bool intersects(const Vec3& point, const Frustum& f)
+    {
+        if (distance(point, f.near) <= 0)
+            return false;
+        if (distance(point, f.far) <= 0)
+            return false;
+        if (distance(point, f.left) <= 0)
+            return false;
+        if (distance(point, f.right) <= 0)
+            return false;
+        if (distance(point, f.top) <= 0)
+            return false;
+        if (distance(point, f.bottom) <= 0)
+            return false;
+
+        return true;
+    }
+
+    bool intersects(const Sphere& s, const Frustum& f)
+    {
+        return intersects(f, s);
+    }
+
+    bool intersects(const Box3& b, const Frustum& f)
+    {
+        return intersects(f, b);
+    }
+
+    bool intersects(const Plane& p, const Frustum& f)
+    {
+        return intersects(f, p);
+    }
+
+    bool intersects(const Ray3& r, const Frustum& f)
+    {
+        return intersects(f, r);
+    }
+
+    ///////////////////////////////////////////// QUAT ///////////////////////////////////////////
 
     constexpr Quat::Quat()
         : x(0.f)
@@ -2132,19 +2302,474 @@ namespace math
     {
     }
 
-    constexpr Quat::Quat(float x, float y, float z, float w)
+    Quat::Quat(float x, float y, float z, float w)
         : x(x)
         , y(y)
         , z(z)
         , w(w)
     {
+        normalize(*this);
     }
 
-    Quat::Quat(const Vec3& axis, float angle) {}
+    Quat::Quat(const Vec3& axis, float angle)
+    {
+        createFromAxisAngle(axis, angle, *this);
+    }
 
     Quat::Quat(const Mat3x3& rotation) {}
 
-    Quat::Quat(const Mat4x4& m) {}
+    Quat::Quat(const Mat4x4& m)
+    {
+        createFromRotationMatrix(m, *this);
+    }
+
+    const Quat Quat::Identity = Quat(0.f, 0.f, 0.f, 1.f);
+    const Quat Quat::Zero     = Quat();
+
+    bool isZero(const Quat& q)
+    {
+        return q.x == 0.0f && q.y == 0.0f && q.z == 0.0f && q.w == 0.0f;
+    }
+
+    bool isIdentity(const Quat& q)
+    {
+        return q.x == 0.0f && q.y == 0.0f && q.z == 0.0f && q.w == 1.0f;
+    }
+
+    Quat createFromEuler(float yaw, float pitch, float roll)
+    {
+        Quat result;
+        pitch *= 0.5f;
+        yaw *= 0.5f;
+        roll *= 0.5f;
+
+        float sinp = sin(pitch);
+        float siny = sin(yaw);
+        float sinr = sin(roll);
+        float cosp = cos(pitch);
+        float cosy = cos(yaw);
+        float cosr = cos(roll);
+
+        result.w = cosp * cosy * cosr + sinp * siny * sinr;
+        result.x = sinp * cosy * cosr - cosp * siny * sinr;
+        result.y = cosp * siny * cosr + sinp * cosy * sinr;
+        result.z = cosp * cosy * sinr - sinp * siny * cosr;
+        return result;
+    }
+
+    void createFromEuler(float yaw, float pitch, float roll, Quat& dst)
+    {
+        pitch *= 0.5f;
+        yaw *= 0.5f;
+        roll *= 0.5f;
+
+        float sinp = sin(pitch);
+        float siny = sin(yaw);
+        float sinr = sin(roll);
+        float cosp = cos(pitch);
+        float cosy = cos(yaw);
+        float cosr = cos(roll);
+
+        dst.w = cosp * cosy * cosr + sinp * siny * sinr;
+        dst.x = sinp * cosy * cosr - cosp * siny * sinr;
+        dst.y = cosp * siny * cosr + sinp * cosy * sinr;
+        dst.z = cosp * cosy * sinr - sinp * siny * cosr;
+    }
+
+    Quat createFromRotationMatrix(const Mat4x4& m)
+    {
+        Quat result;
+        getRotation(m, result);
+        return result;
+    }
+
+    void createFromRotationMatrix(const Mat4x4& m, Quat& dst)
+    {
+        getRotation(m, dst);
+    }
+
+    Quat createFromAxisAngle(const Vec3& axis, float angle)
+    {
+        Quat  result;
+        float halfAngle    = angle * 0.5f;
+        float sinHalfAngle = sinf(halfAngle);
+
+        Vec3 normal(axis);
+        normalize(normal);
+        result.x = normal.x * sinHalfAngle;
+        result.y = normal.y * sinHalfAngle;
+        result.z = normal.z * sinHalfAngle;
+        result.w = cosf(halfAngle);
+        return result;
+    }
+
+    void createFromAxisAngle(const Vec3& axis, float angle, Quat& dst)
+    {
+        float halfAngle    = angle * 0.5f;
+        float sinHalfAngle = sinf(halfAngle);
+
+        Vec3 normal(axis);
+        normalize(normal);
+        dst.x = normal.x * sinHalfAngle;
+        dst.y = normal.y * sinHalfAngle;
+        dst.z = normal.z * sinHalfAngle;
+        dst.w = cosf(halfAngle);
+    }
+
+    Quat conjugate(const Quat& q)
+    {
+        Quat result;
+        conjugate(q, result);
+        return result;
+    }
+
+    void conjugate(const Quat& q, Quat& dst)
+    {
+        dst.x = -q.x;
+        dst.y = -q.y;
+        dst.z = -q.z;
+        dst.w = q.w;
+    }
+
+    void conjugate(Quat& q)
+    {
+        conjugate(q, q);
+    }
+
+    void toEuler(const Quat& q, float& yaw, float& pitch, float& roll)
+    {
+        pitch = atan2(2 * (q.w * q.x + q.y * q.z), 1 - 2 * (q.x * q.x + q.y * q.y));
+        yaw   = asin(2 * (q.w * q.y - q.z * q.x));
+        roll  = atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z));
+    }
+
+    Quat invert(const Quat& q)
+    {
+        Quat result;
+        invert(q, result);
+        return result;
+    }
+
+    void invert(const Quat& q, Quat& dst)
+    {
+        float n = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
+        if (n == 1.0f)
+        {
+            dst.x = -q.x;
+            dst.y = -q.y;
+            dst.z = -q.z;
+            dst.w = q.w;
+        }
+
+        // Too close to zero.
+        if (n < 0.000001f)
+        {
+            printf("Too close to zero");
+            abort();
+        }
+
+        n     = 1.0f / n;
+        dst.x = -q.x * n;
+        dst.y = -q.y * n;
+        dst.z = -q.z * n;
+        dst.w = q.w * n;
+    }
+
+    void invert(Quat& q)
+    {
+        invert(q, q);
+    }
+
+    Quat mul(const Quat& q1, const Quat& q2)
+    {
+        Quat result;
+        mul(q1, q2, result);
+        return result;
+    }
+
+    void mul(const Quat& q1, const Quat& q2, Quat& dst)
+    {
+        float x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
+        float y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x;
+        float z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w;
+        float w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
+
+        dst.x = x;
+        dst.y = y;
+        dst.z = z;
+        dst.w = w;
+    }
+
+    Quat normalize(const Quat& q)
+    {
+        Quat result;
+        normalize(q, result);
+        return result;
+    }
+
+    void normalize(const Quat& q, Quat& dst)
+    {
+        float n = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
+
+        // Already normalized.
+        if (n == 1.0f)
+            return;
+
+        n = sqrt(n);
+        // Too close to zero.
+        if (n < 0.000001f)
+            return;
+
+        n     = 1.0f / n;
+        dst.x = q.x * n;
+        dst.y = q.y * n;
+        dst.z = q.z * n;
+        dst.w = q.w * n;
+    }
+
+    void normalize(Quat& q)
+    {
+        normalize(q, q);
+    }
+
+    Vec3 rotatePoint(const Vec3& point, const Quat& q)
+    {
+        Vec3 result;
+        rotatePoint(point, q, result);
+        return result;
+    }
+
+    void rotatePoint(const Vec3& point, const Quat& q, Vec3& dst)
+    {
+        Quat vecQuat;
+        Quat resQuat;
+        vecQuat.x = point.x;
+        vecQuat.y = point.y;
+        vecQuat.z = point.z;
+        vecQuat.w = 0.0f;
+
+        Quat conQuat;
+        conjugate(q, conQuat);
+
+        mul(vecQuat, conQuat, resQuat);
+        mul(q, resQuat, resQuat);
+
+        dst.x = resQuat.x;
+        dst.y = resQuat.y;
+        dst.z = resQuat.z;
+    }
+
+    float quatToAxisAngle(const Quat& q, Vec3& dst)
+    {
+        float angle;
+        quatToAxisAngle(q, dst, angle);
+        return angle;
+    }
+
+    void quatToAxisAngle(const Quat& q, Vec3& dst, float& angle)
+    {
+        Quat tmp;
+        normalize(q, tmp);
+
+        dst.x = tmp.x;
+        dst.y = tmp.y;
+        dst.z = tmp.z;
+        angle = (2.0f * acos(q.w));
+    }
+
+    Quat lerp(const Quat& q1, const Quat& q2, float t)
+    {
+        Quat result;
+        lerp(q1, q2, t, result);
+        return result;
+    }
+
+    void lerp(const Quat& q1, const Quat& q2, float t, Quat& dst)
+    {
+        assert(!(t < 0.0f || t > 1.0f));
+
+        if (t == 0.0f)
+        {
+            memcpy(&dst, &q1, sizeof(float) * 4);
+            return;
+        }
+        else if (t == 1.0f)
+        {
+            memcpy(&dst, &q2, sizeof(float) * 4);
+            return;
+        }
+
+        float t1 = 1.0f - t;
+
+        dst.x = t1 * q1.x + t * q2.x;
+        dst.y = t1 * q1.y + t * q2.y;
+        dst.z = t1 * q1.z + t * q2.z;
+        dst.w = t1 * q1.w + t * q2.w;
+    }
+
+    Quat slerp(const Quat& q1, const Quat& q2, float t)
+    {
+        Quat result;
+        slerp(q1, q2, t, result);
+        return result;
+    }
+
+    void slerp(const Quat& q1, const Quat& q2, float t, Quat& dst)
+    {
+        // Fast slerp implementation by kwhatmough:
+        // It contains no division operations, no trig, no inverse trig
+        // and no sqrt. Not only does this code tolerate small constraint
+        // errors in the input quaternions, it actually corrects for them.
+        assert(!(t < 0.0f || t > 1.0f));
+
+        if (t == 0.0f)
+        {
+            dst.x = q1.x;
+            dst.y = q1.y;
+            dst.z = q1.z;
+            dst.w = q1.w;
+            return;
+        }
+        else if (t == 1.0f)
+        {
+            dst.x = q2.x;
+            dst.y = q2.y;
+            dst.z = q2.z;
+            dst.w = q2.w;
+            return;
+        }
+
+        if (equal(q1.x, q2.x, kEpsilon) &&  //
+            equal(q1.y, q2.y, kEpsilon) &&  //
+            equal(q1.z, q2.z, kEpsilon) &&  //
+            equal(q1.w, q2.w, kEpsilon))
+        {
+            dst.x = q1.x;
+            dst.y = q1.y;
+            dst.z = q1.z;
+            dst.w = q1.w;
+            return;
+        }
+
+        float halfY, alpha, beta;
+        float u, f1, f2a, f2b;
+        float ratio1, ratio2;
+        float halfSecHalfTheta, versHalfTheta;
+        float sqNotU, sqU;
+
+        float cosTheta = q1.w * q2.w + q1.x * q2.x + q1.y * q2.y + q1.z * q2.z;
+
+        // As usual in all slerp implementations, we fold theta.
+        alpha = cosTheta >= 0 ? 1.0f : -1.0f;
+        halfY = 1.0f + alpha * cosTheta;
+
+        // Here we bisect the interval, so we need to fold t as well.
+        f2b = t - 0.5f;
+        u   = f2b >= 0 ? f2b : -f2b;
+        f2a = u - f2b;
+        f2b += u;
+        u += u;
+        f1 = 1.0f - u;
+
+        // One iteration of Newton to get 1-cos(theta / 2) to good accuracy.
+        halfSecHalfTheta = 1.09f - (0.476537f - 0.0903321f * halfY) * halfY;
+        halfSecHalfTheta *= 1.5f - halfY * halfSecHalfTheta * halfSecHalfTheta;
+        versHalfTheta = 1.0f - halfY * halfSecHalfTheta;
+
+        // Evaluate series expansions of the coefficients.
+        sqNotU = f1 * f1;
+        ratio2 = 0.0000440917108f * versHalfTheta;
+        ratio1 = -0.00158730159f + (sqNotU - 16.0f) * ratio2;
+        ratio1 = 0.0333333333f + ratio1 * (sqNotU - 9.0f) * versHalfTheta;
+        ratio1 = -0.333333333f + ratio1 * (sqNotU - 4.0f) * versHalfTheta;
+        ratio1 = 1.0f + ratio1 * (sqNotU - 1.0f) * versHalfTheta;
+
+        sqU    = u * u;
+        ratio2 = -0.00158730159f + (sqU - 16.0f) * ratio2;
+        ratio2 = 0.0333333333f + ratio2 * (sqU - 9.0f) * versHalfTheta;
+        ratio2 = -0.333333333f + ratio2 * (sqU - 4.0f) * versHalfTheta;
+        ratio2 = 1.0f + ratio2 * (sqU - 1.0f) * versHalfTheta;
+
+        // Perform the bisection and resolve the folding done earlier.
+        f1 *= ratio1 * halfSecHalfTheta;
+        f2a *= ratio2;
+        f2b *= ratio2;
+        alpha *= f1 + f2a;
+        beta = f1 + f2b;
+
+        // Apply final coefficients to a and b as usual.
+        float w = alpha * q1.w + beta * q2.w;
+        float x = alpha * q1.x + beta * q2.x;
+        float y = alpha * q1.y + beta * q2.y;
+        float z = alpha * q1.z + beta * q2.z;
+
+        // This final adjustment to the quaternion's length corrects for
+        // any small constraint error in the inputs q1 and q2 But as you
+        // can see, it comes at the cost of 9 additional multiplication
+        // operations. If this error-correcting feature is not required,
+        // the following code may be removed.
+        f1    = 1.5f - 0.5f * (w * w + x * x + y * y + z * z);
+        dst.w = w * f1;
+        dst.x = x * f1;
+        dst.y = y * f1;
+        dst.z = z * f1;
+    }
+
+    void slerpForSquad(const Quat& q1, const Quat& q2, float t, Quat& dst)
+    {
+        // cos(omega) = q1 * q2;
+        // slerp(q1, q2, t) = (q1*sin((1-t)*omega) + q2*sin(t*omega))/sin(omega);
+        // q1 = +- q2, slerp(q1,q2,t) = q1.
+        // This is a straight-forward implementation of the formula of slerp. It does
+        // not do any sign switching.
+        float c = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+
+        if (abs(c) >= 1.0f)
+        {
+            dst.x = q1.x;
+            dst.y = q1.y;
+            dst.z = q1.z;
+            dst.w = q1.w;
+            return;
+        }
+
+        float omega = acos(c);
+        float s     = sqrt(1.0f - c * c);
+        if (abs(s) <= 0.00001f)
+        {
+            dst.x = q1.x;
+            dst.y = q1.y;
+            dst.z = q1.z;
+            dst.w = q1.w;
+            return;
+        }
+
+        float r1 = sin((1 - t) * omega) / s;
+        float r2 = sin(t * omega) / s;
+        dst.x    = (q1.x * r1 + q2.x * r2);
+        dst.y    = (q1.y * r1 + q2.y * r2);
+        dst.z    = (q1.z * r1 + q2.z * r2);
+        dst.w    = (q1.w * r1 + q2.w * r2);
+    }
+
+    Quat squad(const Quat& q1, const Quat& q2, const Quat& s1, const Quat& s2, float t)
+    {
+        Quat result;
+        squad(q1, q2, s1, s2, t, result);
+        return result;
+    }
+
+    void squad(const Quat& q1, const Quat& q2, const Quat& s1, const Quat& s2, float t, Quat& dst)
+    {
+        assert(!(t < 0.0f || t > 1.0f));
+
+        Quat dstQ(0.0f, 0.0f, 0.0f, 1.0f);
+        Quat dstS(0.0f, 0.0f, 0.0f, 1.0f);
+
+        slerpForSquad(q1, q2, t, dstQ);
+        slerpForSquad(s1, s2, t, dstS);
+        slerpForSquad(dstQ, dstS, 2.0f * t * (1.0f - t), dst);
+    }
 
     /////////////////////////// Line2 //////////////////////////////
 
@@ -2168,6 +2793,67 @@ namespace math
         : origin(origin)
         , direction(direction)
     {
+    }
+
+    Vec3 pointOnRay(const Ray3& r, float distance)
+    {
+        return add(r.origin, mul(distance, r.direction));
+    }
+
+    void pointOnRay(const Ray3& r, float distance, Vec3& dst)
+    {
+        add(r.origin, mul(distance, r.direction), dst);
+    }
+
+    float distance(const Vec3& point, const Ray3& r)
+    {
+        return 0;
+    }
+
+    bool intersects(const Plane& p, const Ray3& r)
+    {
+        const Vec3& normal = p.normal;
+        // If the origin of the ray is on the plane then the distance is zero.
+        float alpha = (dot(normal, r.origin) + p.distance);
+        if (abs(alpha) < kEpsilon)
+        {
+            return 0.0f;
+        }
+
+        float dotP = dot(normal, r.direction);
+
+        // If the dot product of the plane's normal and this ray's direction is zero,
+        // then the ray is parallel to the plane and does not intersect it.
+        if (dotP == 0.0f)
+        {
+            return false;
+        }
+
+        // Calculate the distance along the ray's direction vector to the point where
+        // the ray intersects the plane (if it is negative the plane is behind the
+        // ray).
+        float d = -alpha / dotP;
+        if (d < 0.0f)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool intersects(const Box3& b, const Ray3& r)
+    {
+        return intersects(r, b);
+    }
+
+    bool intersects(const Sphere& s, const Ray3& r)
+    {
+        return intersects(r, s);
+    }
+
+    bool intersects(const Frustum& f, const Ray3& r)
+    {
+        return false;
     }
 
     //////////////////////////// Box2 /////////////////////////////
@@ -2218,6 +2904,71 @@ namespace math
         return result;
     }
 
+    void getCorners(const Box3& b, Vec3* dst)
+    {
+        assert(dst);
+
+        // Near face, specified counter-clockwise looking towards the origin from the
+        // positive z-axis.
+        // Left-top-front.
+        dst[0] = {b.min.x, b.max.y, b.max.z};
+        // Left-bottom-front.
+        dst[1] = {b.min.x, b.min.y, b.max.z};
+        // Right-bottom-front.
+        dst[2] = {b.max.x, b.min.y, b.max.z};
+        // Right-top-front.
+        dst[3] = {b.max.x, b.max.y, b.max.z};
+
+        // Far face, specified counter-clockwise looking towards the origin from the
+        // negative z-axis.
+        // Right-top-back.
+        dst[4] = {b.max.x, b.max.y, b.min.z};
+        // Right-bottom-back.
+        dst[5] = {b.max.x, b.min.y, b.min.z};
+        // Left-bottom-back.
+        dst[6] = {b.min.x, b.min.y, b.min.z};
+        // Left-top-back.
+        dst[7] = {b.min.x, b.max.y, b.min.z};
+    }
+
+    bool intersects(const Box3& b1, const Box3& b2)
+    {
+        return ((b1.min.x >= b2.min.x && b1.min.x <= b2.max.x) || (b2.min.x >= b1.min.x && b2.min.x <= b1.max.x)) &&
+               ((b1.min.y >= b2.min.y && b1.min.y <= b2.max.y) || (b2.min.y >= b1.min.y && b2.min.y <= b1.max.y)) &&
+               ((b1.min.z >= b2.min.z && b1.min.z <= b2.max.z) || (b2.min.z >= b1.min.z && b2.min.z <= b1.max.z));
+    }
+
+    bool intersects(const Sphere& s, const Box3& b)
+    {
+        return intersects(b, s);
+    }
+
+    bool intersects(const Frustum& f, const Box3& b)
+    {
+        return false;
+    }
+
+    bool intersects(const Ray3& r, const Box3& b)
+    {
+        return false;
+    }
+
+    void extend(const Box3& b, const Vec3& point, Box3& dst) {}
+
+    void extend(Box3& b, const Vec3& point) {}
+
+    void merge(const Box3& b, const Sphere& s, Box3& dst) {}
+
+    void merge(Box3& b, const Sphere& s) {}
+
+    void merge(const Box3& b, const Box3& box, Box3& dst) {}
+
+    void merge(Box3& b, const Box3& box) {}
+
+    void transform(const Box3& b, const Mat4x4& m, Box3& dst) {}
+
+    void transform(Box3& b, const Mat4x4& m) {}
+
     ///////////////////////// Circle ///////////////////////////////
 
     constexpr Circle::Circle()
@@ -2256,6 +3007,89 @@ namespace math
         : center(xcenter, ycenter, zcenter)
         , radius(radius)
     {
+    }
+
+    bool intersects(const Sphere& s1, const Sphere& s2)
+    {
+        // If the distance between the spheres' centers is less than or equal
+        // to the sum of their radii, then the spheres intersect.
+        return distance(s1.center, s2.center) <= (s1.radius + s2.radius);
+    }
+
+    bool intersects(const Box3& b, const Sphere& s)
+    {
+        // Determine what point is closest; if the distance to that
+        // point is less than the radius, then this sphere intersects.
+        float cpX = s.center.x;
+        float cpY = s.center.y;
+        float cpZ = s.center.z;
+
+        const Vec3& boxMin = b.min;
+        const Vec3& boxMax = b.max;
+        // Closest x value.
+        if (s.center.x < boxMin.x)
+        {
+            cpX = boxMin.x;
+        }
+        else if (s.center.x > boxMax.x)
+        {
+            cpX = boxMax.x;
+        }
+
+        // Closest y value.
+        if (s.center.y < boxMin.y)
+        {
+            cpY = boxMin.y;
+        }
+        else if (s.center.y > boxMax.y)
+        {
+            cpY = boxMax.y;
+        }
+
+        // Closest z value.
+        if (s.center.z < boxMin.z)
+        {
+            cpZ = boxMin.z;
+        }
+        else if (s.center.z > boxMax.z)
+        {
+            cpZ = boxMax.z;
+        }
+
+        // Find the distance to the closest point and see if it is less than or equal
+        // to the radius.
+        cpX -= s.center.x;
+        cpY -= s.center.y;
+        cpZ -= s.center.z;
+
+        return sqrt(cpX * cpX + cpY * cpY + cpZ * cpZ) <= s.radius;
+    }
+
+    bool intersects(const Frustum& f, const Sphere& s)
+    {
+        // TODO: find a more faster way to test this
+        return ((side(s, f.near) == 1 &&    //
+                 side(s, f.far) == 1 &&     //
+                 side(s, f.left) == 1 &&    //
+                 side(s, f.right) == 1 &&   //
+                 side(s, f.bottom) == 1 &&  //
+                 side(s, f.top) == 1) ||    //
+                intersects(f.near, s) ||    //
+                intersects(f.far, s) ||     //
+                intersects(f.left, s) ||    //
+                intersects(f.right, s) ||   //
+                intersects(f.bottom, s) ||  //
+                intersects(f.top, s));
+    }
+
+    bool intersects(const Plane& p, const Sphere& s)
+    {
+        return abs(distance(s.center, p)) <= s.radius;
+    }
+
+    bool intersects(const Ray3& r, const Sphere& s)
+    {
+        return distance(s.center, r) <= s.radius;
     }
 }
 }

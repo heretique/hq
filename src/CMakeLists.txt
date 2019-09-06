@@ -43,6 +43,23 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/AABB.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/MathTypes.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Math.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Plane.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Quat.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Line3.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Line2.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Mat4x4.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Mat3x3.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Frustum.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Circle.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Rect.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Box3.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Box2.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Sphere.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Ray3.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Ray2.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vec4.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vec3.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vec2.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vector.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Ray.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Utils.h)
