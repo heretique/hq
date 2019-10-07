@@ -1,5 +1,5 @@
 #include "Hq/StringHash.h"
-#include "Hq/Types.h"
+#include "Hq/BasicTypes.h"
 
 #include <cstring>
 

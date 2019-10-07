@@ -1,5 +1,5 @@
 #include "Hq/Rng.h"
-#include "Hq/Types.h"
+#include "Hq/BasicTypes.h"
 
 #include <ctime>
 #include <random>

@@ -38,7 +38,7 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Streams.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/StringHash.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/PrintContainers.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Types.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/BasicTypes.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Utils.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/AABB.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/MathTypes.h
@@ -60,6 +60,7 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vec4.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vec3.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vec2.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Triangle.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vector.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Ray.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Utils.h)

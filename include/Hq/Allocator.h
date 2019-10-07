@@ -4,14 +4,14 @@
 
 #include <cassert>
 #include <new>
-#include <Hq/Types.h>
+#include <Hq/BasicTypes.h>
 
 namespace pointer_math
 {
-void* alignForward(void* address, u8 alignment);
+void*       alignForward(void* address, u8 alignment);
 const void* alignForward(const void* address, u8 alignment);
 
-void* alignBackward(void* address, u8 alignment);
+void*       alignBackward(void* address, u8 alignment);
 const void* alignBackward(const void* address, u8 alignment);
 
 u8 alignForwardAdjustment(const void* address, u8 alignment);
@@ -19,10 +19,10 @@ u8 alignForwardAdjustmentWithHeader(const void* address, u8 alignment, u8 header
 
 u8 alignBackwardAdjustment(const void* address, u8 alignment);
 
-void* add(void* p, size_t x);
+void*       add(void* p, size_t x);
 const void* add(const void* p, size_t x);
 
-void* subtract(void* p, size_t x);
+void*       subtract(void* p, size_t x);
 const void* subtract(const void* p, size_t x);
 }
 

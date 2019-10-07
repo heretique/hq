@@ -105,6 +105,22 @@ namespace math
         operator bool();
     };
 
+    struct Triangle
+    {
+        union {
+            float data[9];
+            struct
+            {
+                Vec3 p1;
+                Vec3 p2;
+                Vec3 p3;
+            };
+        };
+
+        constexpr explicit Triangle(const Vec3& a, const Vec3& b, const Vec3& c);
+        explicit Triangle(const float* data);
+    };
+
     /// Represents a rectangle in 2D space
     struct Rect
     {

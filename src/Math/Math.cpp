@@ -17,6 +17,7 @@
 #include "Hq/Math/Vec4.h"
 #include "Hq/Math/Vec3.h"
 #include "Hq/Math/Vec2.h"
+#include "Hq/Math/Triangle.h"
 #include <cassert>
 #include <cstring>
 #include <cstdio>
@@ -1002,6 +1003,30 @@ namespace math
         v.y = v.y * scale;
         v.z = v.z * scale;
         v.w = v.w * scale;
+    }
+
+    ////////////////////////////// Triangle ///////////////////////////////////
+
+    constexpr Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
+        : p1(a)
+        , p2(b)
+        , p3(c)
+    {
+    }
+
+    Triangle::Triangle(const float* data)
+    {
+        assert(data);
+        memcpy(this->data, data, sizeof(this->data));
+    }
+
+    void barycenter(const Triangle& t, Vec3& dst) {}
+
+    Vec3 barycenter(const Triangle& t)
+    {
+        Vec3 b;
+        barycenter(t, b);
+        return b;
     }
 
     ////////////////// Rect /////////////////////
