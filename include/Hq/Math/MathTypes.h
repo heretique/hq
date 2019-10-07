@@ -152,21 +152,13 @@ namespace math
 
     struct Triangle
     {
-        union {
-            float data[9];
-            struct
-            {
-                Vec3 p1;
-                Vec3 p2;
-                Vec3 p3;
-            };
-        };
+        Vec3 points[3];
 
-        constexpr explicit Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
-            : p1(a)
-            , p2(b)
-            , p3(c)
+        explicit Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
         {
+            points[0] = a;
+            points[1] = b;
+            points[2] = c;
         }
         explicit Triangle(const float* data);
     };
@@ -178,10 +170,6 @@ namespace math
             struct
             {
                 float x, y, width, height;
-            };
-            struct
-            {
-                Vec2 topLeft, size;
             };
         };
         constexpr Rect()
@@ -239,10 +227,6 @@ namespace math
             {
                 float m11, m12, m13, m21, m22, m23, m31, m32, m33;
             };
-            struct
-            {
-                Vec3 c1, c2, c3;
-            };
         };
         Mat3x3();
         Mat3x3(const float* data);
@@ -275,10 +259,6 @@ namespace math
             struct
             {
                 float m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44;
-            };
-            struct
-            {
-                Vec4 c1, c2, c3, c4;
             };
         };
         Mat4x4();
@@ -342,13 +322,8 @@ namespace math
     /// Represents a line in 2D space enclosed by 2 points
     struct Line2
     {
-        union {
-            Vec2 data[2];
-            struct
-            {
-                Vec2 p1, p2;
-            };
-        };
+        Vec2 p1;
+        Vec2 p2;
 
         constexpr Line2()
             : p1()
@@ -361,13 +336,8 @@ namespace math
     /// Represents a line in 3D space enclosed by 2 points
     struct Line3
     {
-        union {
-            Vec3 data[2];
-            struct
-            {
-                Vec3 p1, p2;
-            };
-        };
+        Vec3 p1;
+        Vec3 p2;
 
         constexpr Line3()
             : p1()

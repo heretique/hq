@@ -959,7 +959,7 @@ namespace math
     Triangle::Triangle(const float* data)
     {
         assert(data);
-        memcpy(this->data, data, sizeof(this->data));
+        memcpy(points, data, sizeof(points));
     }
 
     void barycenter(const Triangle& t, Vec3& dst)
@@ -977,8 +977,10 @@ namespace math
     ////////////////// Rect /////////////////////
 
     Rect::Rect(const Vec2& topLeft, const Vec2& size)
-        : topLeft(topLeft)
-        , size(size)
+        : x(topLeft.x)
+        , y(topLeft.y)
+        , width(size.x)
+        , height(size.y)
     {
     }
 
@@ -1142,9 +1144,9 @@ namespace math
 
     Mat3x3::Mat3x3(const Vec3& c1, const Vec3& c2, const Vec3 c3)
     {
-        this->c1 = c1;
-        this->c2 = c2;
-        this->c3 = c3;
+        *reinterpret_cast<Vec3*>(data)     = c1;
+        *reinterpret_cast<Vec3*>(data + 3) = c2;
+        *reinterpret_cast<Vec3*>(data + 6) = c3;
     }
 
     const Mat3x3 Mat3x3::Identity = Mat3x3(Vec3(1.f, 0.f, 0.f),  //
@@ -1220,10 +1222,10 @@ namespace math
 
     Mat4x4::Mat4x4(const Vec4& c1, const Vec4& c2, const Vec4& c3, const Vec4& c4)
     {
-        this->c1 = c1;
-        this->c2 = c2;
-        this->c3 = c3;
-        this->c4 = c4;
+        memcpy(data, &c1, sizeof(c1));
+        memcpy(data + 4, &c2, sizeof(c2));
+        memcpy(data + 8, &c3, sizeof(c3));
+        memcpy(data + 12, &c4, sizeof(c4));
     }
 
     const Mat4x4 Mat4x4::Identity = Mat4x4(Vec4(1.f, 0.f, 0.f, 0.f),  //
