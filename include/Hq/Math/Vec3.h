@@ -9,6 +9,8 @@ namespace math
     bool isZero(const Vec3& v);
     bool isOne(const Vec3& v);
     Vec3 operator-(const Vec3& v);
+    bool less(const Vec3& lhs, const Vec3& rhs);
+    bool greater(const Vec3& lhs, const Vec3& rhs);
     Vec3 add(const Vec3& lhs, const Vec3& rhs);
     void add(const Vec3& lhs, const Vec3& rhs, Vec3& dst);
     Vec3 sub(const Vec3& lhs, const Vec3& rhs);

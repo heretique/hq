@@ -19,10 +19,22 @@ namespace math
             };
         };
 
-        constexpr          Vec2();
-        explicit constexpr Vec2(float a);
+        constexpr Vec2()
+            : x(0.f)
+            , y(0.f)
+        {
+        }
+        explicit constexpr Vec2(float a)
+            : x(a)
+            , y(a)
+        {
+        }
         explicit Vec2(const float* data);
-        constexpr Vec2(float x, float y);
+        constexpr Vec2(float x, float y)
+            : x(x)
+            , y(y)
+        {
+        }
 
         float&       operator[](size_t i);
         const float& operator[](size_t i) const;
@@ -51,11 +63,26 @@ namespace math
             Vec2 xy;
         };
 
-        constexpr          Vec3();
-        explicit constexpr Vec3(float a);
+        constexpr Vec3()
+            : x(0.f)
+            , y(0.f)
+            , z(0.f)
+        {
+        }
+        explicit constexpr Vec3(float a)
+            : x(a)
+            , y(a)
+            , z(a)
+        {
+        }
         explicit Vec3(const float* data);
         Vec3(const Vec2& v, float a);
-        constexpr Vec3(float x, float y, float z);
+        constexpr Vec3(float x, float y, float z)
+            : x(x)
+            , y(y)
+            , z(z)
+        {
+        }
 
         float&       operator[](size_t i);
         const float& operator[](size_t i) const;
@@ -87,13 +114,31 @@ namespace math
             Vec3 rgb;
         };
 
-        constexpr Vec4();
-        constexpr explicit Vec4(float a);
+        constexpr Vec4()
+            : x(0.f)
+            , y(0.f)
+            , z(0.f)
+            , w(0.f)
+        {
+        }
+        constexpr explicit Vec4(float a)
+            : x(a)
+            , y(a)
+            , z(a)
+            , w(a)
+        {
+        }
         explicit Vec4(const float* data);
         Vec4(const Vec2& v, float a);
         Vec4(const Vec2& v, float a, float b);
         Vec4(const Vec3& v, float a);
-        constexpr Vec4(float x, float y, float z, float w);
+        constexpr Vec4(float x, float y, float z, float w)
+            : x(x)
+            , y(y)
+            , z(z)
+            , w(w)
+        {
+        }
 
         float&       operator[](size_t i);
         const float& operator[](size_t i) const;
@@ -117,7 +162,12 @@ namespace math
             };
         };
 
-        constexpr explicit Triangle(const Vec3& a, const Vec3& b, const Vec3& c);
+        constexpr explicit Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
+            : p1(a)
+            , p2(b)
+            , p3(c)
+        {
+        }
         explicit Triangle(const float* data);
     };
 
@@ -134,9 +184,29 @@ namespace math
                 Vec2 topLeft, size;
             };
         };
-        constexpr Rect();
-        constexpr Rect(float width, float height);
-        constexpr Rect(float x, float y, float width, float height);
+        constexpr Rect()
+            : x(0.f)
+            , y(0.f)
+            , width(0.f)
+            , height(0.f)
+        {
+        }
+
+        constexpr Rect(float width, float height)
+            : x(0.f)
+            , y(0.f)
+            , width(width)
+            , height(height)
+        {
+        }
+
+        constexpr Rect(float x, float y, float width, float height)
+            : x(x)
+            , y(y)
+            , width(width)
+            , height(height)
+        {
+        }
         Rect(const Vec2& topLeft, const Vec2& size);
     };
 
@@ -147,9 +217,17 @@ namespace math
         Vec3  normal;    // The normal vector of the Plane.
         float distance;  // The distance of the Plane along its normal from the origin.
 
-        constexpr Plane();
+        constexpr Plane()
+            : normal()
+            , distance(0.f)
+        {
+        }
         Plane(const Vec3& normal, float distance);
-        constexpr Plane(float normalX, float normalY, float normalZ, float distance);
+        constexpr Plane(float normalX, float normalY, float normalZ, float distance)
+            : normal(normalX, normalY, normalZ)
+            , distance(distance)
+        {
+        }
     };
 
     /// 3x3 Matric (useful for representing rotations in 3D space)
@@ -170,7 +248,18 @@ namespace math
         Mat3x3(const float* data);
         Mat3x3(const Vec3& c1, const Vec3& c2, const Vec3 c3);
         constexpr Mat3x3(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32,
-                         float m33);
+                         float m33)
+            : m11(m11)
+            , m12(m12)
+            , m13(m13)
+            , m21(m21)
+            , m22(m22)
+            , m23(m23)
+            , m31(m31)
+            , m32(m32)
+            , m33(m33)
+        {
+        }
 
         static const Mat3x3 Identity;
     };
@@ -227,12 +316,18 @@ namespace math
             };
         };
 
-        constexpr Quat();
+        constexpr Quat()
+            : x(0.f)
+            , y(0.f)
+            , z(0.f)
+            , w(0.f)
+        {
+        }
         Quat(float x, float y, float z, float w);
         Quat(const Vec3& axis, float angle);
-        Quat(const Mat3x3& rotation);
+        explicit Quat(const Mat3x3& rotation);
         // Constructs a quaternion equal to the rotational part of the specified matrix.
-        Quat(const Mat4x4& m);
+        explicit Quat(const Mat4x4& m);
 
         float&       operator[](size_t i);
         const float& operator[](size_t i) const;
@@ -329,9 +424,17 @@ namespace math
     {
         Vec2      center;
         float     radius;
-        constexpr Circle();
+        constexpr Circle()
+            : center(0.f)
+            , radius(0.f)
+        {
+        }
         Circle(const Vec2& center, float radius);
-        constexpr Circle(float xcenter, float ycenter, float radius);
+        constexpr Circle(float xcenter, float ycenter, float radius)
+            : center(xcenter, ycenter)
+            , radius(radius)
+        {
+        }
     };
 
     /// Represents a sphere in 3D space
@@ -339,9 +442,17 @@ namespace math
     {
         Vec3      center;
         float     radius;
-        constexpr Sphere();
+        constexpr Sphere()
+            : center(0.f)
+            , radius(0.f)
+        {
+        }
         Sphere(const Vec3& center, float radius);
-        constexpr Sphere(float xcenter, float ycenter, float zcenter, float radius);
+        constexpr Sphere(float xcenter, float ycenter, float zcenter, float radius)
+            : center(xcenter, ycenter, zcenter)
+            , radius(radius)
+        {
+        }
     };
 }
 }

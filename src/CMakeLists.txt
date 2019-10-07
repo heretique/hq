@@ -28,6 +28,7 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/JobManager.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/LinearAllocator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/NonCopyable.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/NotImplemented.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/PackUtils.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/PoolAllocator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/PrintContainers.h

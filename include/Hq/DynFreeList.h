@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hq/Types.h"
+#include "Hq/BasicTypes.h"
 #include "Hq/Handle.h"
 #include <vector>
 

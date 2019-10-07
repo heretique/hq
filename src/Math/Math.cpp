@@ -1,5 +1,6 @@
 #include "Hq/Math/Math.h"
 #include "Hq/Math/Box2.h"
+#include "Hq/Math/Box3.h"
 #include "Hq/Math/Plane.h"
 #include "Hq/Math/Quat.h"
 #include "Hq/Math/Line3.h"
@@ -18,6 +19,7 @@
 #include "Hq/Math/Vec3.h"
 #include "Hq/Math/Vec2.h"
 #include "Hq/Math/Triangle.h"
+#include "Hq/NotImplemented.h"
 #include <cassert>
 #include <cstring>
 #include <cstdio>
@@ -257,29 +259,11 @@ namespace math
 
     //////////// Vec2 ///////////
 
-    constexpr Vec2::Vec2()
-        : x(0.f)
-        , y(0.f)
-    {
-    }
-
-    constexpr Vec2::Vec2(float a)
-        : x(a)
-        , y(a)
-    {
-    }
-
     Vec2::Vec2(const float* data)
     {
         assert(data);
         x = data[0];
         y = data[1];
-    }
-
-    constexpr Vec2::Vec2(float x, float y)
-        : x(x)
-        , y(y)
-    {
     }
 
     float& Vec2::operator[](size_t i)
@@ -503,20 +487,6 @@ namespace math
 
     ////////////// Vec3 /////////////
 
-    constexpr Vec3::Vec3()
-        : x(0.f)
-        , y(0.f)
-        , z(0.f)
-    {
-    }
-
-    constexpr Vec3::Vec3(float a)
-        : x(a)
-        , y(a)
-        , z(a)
-    {
-    }
-
     Vec3::Vec3(const float* data)
     {
         assert(data);
@@ -529,13 +499,6 @@ namespace math
         : x(v.x)
         , y(v.y)
         , z(a)
-    {
-    }
-
-    constexpr Vec3::Vec3(float x, float y, float z)
-        : x(x)
-        , y(y)
-        , z(z)
     {
     }
 
@@ -567,6 +530,16 @@ namespace math
     Vec3 operator-(const Vec3& v)
     {
         return {-v.x, -v.y, -v.z};
+    }
+
+    bool less(const Vec3& lhs, const Vec3& rhs)
+    {
+        return lhs.x < rhs.x || lhs.y < rhs.y || lhs.z < rhs.z;
+    }
+
+    bool greater(const Vec3& lhs, const Vec3& rhs)
+    {
+        return lhs.x > rhs.x || lhs.y > rhs.y || lhs.z > rhs.z;
     }
 
     Vec3 add(const Vec3& lhs, const Vec3& rhs)
@@ -758,22 +731,6 @@ namespace math
 
     ////////////// Vec4 //////////////
 
-    constexpr Vec4::Vec4()
-        : x(0.f)
-        , y(0.f)
-        , z(0.f)
-        , w(0.f)
-    {
-    }
-
-    constexpr Vec4::Vec4(float a)
-        : x(a)
-        , y(a)
-        , z(a)
-        , w(a)
-    {
-    }
-
     Vec4::Vec4(const float* data)
     {
         assert(data);
@@ -804,14 +761,6 @@ namespace math
         , y(v.y)
         , z(v.z)
         , w(a)
-    {
-    }
-
-    constexpr Vec4::Vec4(float x, float y, float z, float w)
-        : x(x)
-        , y(y)
-        , z(z)
-        , w(w)
     {
     }
 
@@ -1007,20 +956,16 @@ namespace math
 
     ////////////////////////////// Triangle ///////////////////////////////////
 
-    constexpr Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
-        : p1(a)
-        , p2(b)
-        , p3(c)
-    {
-    }
-
     Triangle::Triangle(const float* data)
     {
         assert(data);
         memcpy(this->data, data, sizeof(this->data));
     }
 
-    void barycenter(const Triangle& t, Vec3& dst) {}
+    void barycenter(const Triangle& t, Vec3& dst)
+    {
+        NOT_IMPLEMENTED;
+    }
 
     Vec3 barycenter(const Triangle& t)
     {
@@ -1031,30 +976,6 @@ namespace math
 
     ////////////////// Rect /////////////////////
 
-    constexpr Rect::Rect()
-        : x(0.f)
-        , y(0.f)
-        , width(0.f)
-        , height(0.f)
-    {
-    }
-
-    constexpr Rect::Rect(float width, float height)
-        : x(0.f)
-        , y(0.f)
-        , width(width)
-        , height(height)
-    {
-    }
-
-    constexpr Rect::Rect(float x, float y, float width, float height)
-        : x(x)
-        , y(y)
-        , width(width)
-        , height(height)
-    {
-    }
-
     Rect::Rect(const Vec2& topLeft, const Vec2& size)
         : topLeft(topLeft)
         , size(size)
@@ -1063,20 +984,8 @@ namespace math
 
     ///////////////// Plane /////////////////////////////
 
-    constexpr Plane::Plane()
-        : normal()
-        , distance(0.f)
-    {
-    }
-
     Plane::Plane(const Vec3& normal, float distance)
         : normal(normal)
-        , distance(distance)
-    {
-    }
-
-    constexpr Plane::Plane(float normalX, float normalY, float normalZ, float distance)
-        : normal(normalX, normalY, normalZ)
         , distance(distance)
     {
     }
@@ -1107,72 +1016,96 @@ namespace math
     // TODO: provide implementation for Plane functions
     bool intersects(const Ray3& ray, const Plane& plane)
     {
-        return false;
+        NOT_IMPLEMENTED;
     }
 
     bool intersects(const Plane& p1, const Plane& p2)
     {
-        return false;
+        NOT_IMPLEMENTED;
     }
 
     bool intersects(const Box3& b, const Plane& p)
     {
-        return false;
+        NOT_IMPLEMENTED;
     }
 
     bool intersects(const Sphere& s, const Plane& p)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
     bool intersects(const Frustum& f, const Plane& p)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
     bool intersection(const Plane& p1, const Plane& p2, const Plane& p3, Vec3& dst)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
     bool intersection(const Plane& p1, const Plane& p2, Ray3& dst)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
     bool intersection(const Sphere& s, const Plane& p, float& distance)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
     bool intersection(const Box3& b, const Plane& p, uint8_t& count, Vec3* dst)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
     bool intersection(const Frustum& f, const Plane& p, uint8_t& count, Vec3* dst)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
     Vec3 projectPoint(const Vec3& point, const Plane& plane)
     {
+        NOT_IMPLEMENTED;
+
         return Vec3::Zero;
     }
 
     void projectPoint(const Vec3& point, const Plane& plane, Vec3& dst)
     {
-        dst = Vec3::Zero;
+        NOT_IMPLEMENTED;
     }
 
     Plane transform(const Plane& plane, const Mat4x4& tr)
     {
+        NOT_IMPLEMENTED;
+
         return Plane();
     }
 
-    void transform(const Plane& plane, const Mat4x4& tr, Plane& dst) {}
+    void transform(const Plane& plane, const Mat4x4& tr, Plane& dst)
+    {
+        NOT_IMPLEMENTED;
+    }
 
-    void transform(Plane& plane) {}
+    void transform(Plane& plane)
+    {
+        NOT_IMPLEMENTED;
+    }
 
     int side(const Vec3& point, const Plane& plane)
     {
@@ -1212,20 +1145,6 @@ namespace math
         this->c1 = c1;
         this->c2 = c2;
         this->c3 = c3;
-    }
-
-    constexpr Mat3x3::Mat3x3(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32,
-                             float m33)
-        : m11(m11)
-        , m12(m12)
-        , m13(m13)
-        , m21(m21)
-        , m22(m22)
-        , m23(m23)
-        , m31(m31)
-        , m32(m32)
-        , m33(m33)
-    {
     }
 
     const Mat3x3 Mat3x3::Identity = Mat3x3(Vec3(1.f, 0.f, 0.f),  //
@@ -1369,6 +1288,13 @@ namespace math
         d[13] = m1[1] * m2[12] + m1[5] * m2[13] + m1[9] * m2[14] + m1[13] * m2[15];
         d[14] = m1[2] * m2[12] + m1[6] * m2[13] + m1[10] * m2[14] + m1[14] * m2[15];
         d[15] = m1[3] * m2[12] + m1[7] * m2[13] + m1[11] * m2[14] + m1[15] * m2[15];
+    }
+
+    void mul(Mat4x4& lhs, const Mat4x4& rhs)
+    {
+        Mat4x4 tmp;
+        mul(lhs, rhs, tmp);
+        lhs = tmp;
     }
 
     void createLookAt(const Vec3& eyePosition, const Vec3& targetPosition, const Vec3& up, Mat4x4& dst)
@@ -2153,24 +2079,24 @@ namespace math
         dst.data[2] = z;
     }
 
-    void tranformPoint(const Vec3& point, const Mat4x4& matrix, Vec3& dst)
+    void transformPoint(const Vec3& point, const Mat4x4& matrix, Vec3& dst)
     {
         transform(Vec4(point, 1.f), matrix, dst);
     }
 
-    void tranformPoint(Vec3& point, const Mat4x4& matrix)
+    void transformPoint(Vec3& point, const Mat4x4& matrix)
     {
         transform(Vec4(point, 1.f), matrix, point);
     }
 
-    void tranform(const Vec3& vec, const Mat4x4& matrix, Vec3& dst)
+    void transform(const Vec3& vec, const Mat4x4& matrix, Vec3& dst)
     {
         transform(Vec4(vec, 0.f), matrix, dst);
     }
 
-    void tranform(Vec3& v, const Mat4x4& matrix)
+    void transform(Vec3& v, const Mat4x4& matrix)
     {
-        tranform(v, matrix, v);
+        transform(v, matrix, v);
     }
 
     void transform(const Vec4& vec, const Mat4x4& matrix, Vec4& dst)
@@ -2318,14 +2244,6 @@ namespace math
     }
 
     ///////////////////////////////////////////// QUAT ///////////////////////////////////////////
-
-    constexpr Quat::Quat()
-        : x(0.f)
-        , y(0.f)
-        , z(0.f)
-        , w(0.f)
-    {
-    }
 
     Quat::Quat(float x, float y, float z, float w)
         : x(x)
@@ -2798,11 +2716,19 @@ namespace math
 
     /////////////////////////// Line2 //////////////////////////////
 
-    Line2::Line2(const Vec2& p1, const Vec2& p2) {}
+    Line2::Line2(const Vec2& p1, const Vec2& p2)
+        : p1(p1)
+        , p2(p2)
+    {
+    }
 
     /////////////////////////// Line3 ///////////////////////////////
 
-    Line3::Line3(const Vec3& p1, const Vec3& p2) {}
+    Line3::Line3(const Vec3& p1, const Vec3& p2)
+        : p1(p1)
+        , p2(p2)
+    {
+    }
 
     /////////////////////////// Ray2 ///////////////////////////////
 
@@ -2832,7 +2758,9 @@ namespace math
 
     float distance(const Vec3& point, const Ray3& r)
     {
-        return 0;
+        NOT_IMPLEMENTED;
+
+        return 0.f;
     }
 
     bool intersects(const Plane& p, const Ray3& r)
@@ -2878,6 +2806,8 @@ namespace math
 
     bool intersects(const Frustum& f, const Ray3& r)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
@@ -2970,37 +2900,62 @@ namespace math
 
     bool intersects(const Frustum& f, const Box3& b)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
     bool intersects(const Ray3& r, const Box3& b)
     {
+        NOT_IMPLEMENTED;
+
         return false;
     }
 
-    void extend(const Box3& b, const Vec3& point, Box3& dst) {}
+    void extend(const Box3& b, const Vec3& point, Box3& dst)
+    {
+        if (less(point, b.min))
+            dst.min = point;
+        else if (less(b.max, point))
+            dst.max = point;
+    }
 
-    void extend(Box3& b, const Vec3& point) {}
+    void extend(Box3& b, const Vec3& point)
+    {
+        extend(b, point, b);
+    }
 
-    void merge(const Box3& b, const Sphere& s, Box3& dst) {}
+    void merge(const Box3& b, const Sphere& s, Box3& dst)
+    {
+        NOT_IMPLEMENTED;
+    }
 
-    void merge(Box3& b, const Sphere& s) {}
+    void merge(Box3& b, const Sphere& s)
+    {
+        NOT_IMPLEMENTED;
+    }
 
-    void merge(const Box3& b, const Box3& box, Box3& dst) {}
+    void merge(const Box3& b, const Box3& box, Box3& dst)
+    {
+        NOT_IMPLEMENTED;
+    }
 
-    void merge(Box3& b, const Box3& box) {}
+    void merge(Box3& b, const Box3& box)
+    {
+        NOT_IMPLEMENTED;
+    }
 
-    void transform(const Box3& b, const Mat4x4& m, Box3& dst) {}
+    void transform(const Box3& b, const Mat4x4& m, Box3& dst)
+    {
+        NOT_IMPLEMENTED;
+    }
 
-    void transform(Box3& b, const Mat4x4& m) {}
+    void transform(Box3& b, const Mat4x4& m)
+    {
+        NOT_IMPLEMENTED;
+    }
 
     ///////////////////////// Circle ///////////////////////////////
-
-    constexpr Circle::Circle()
-        : center(0.f)
-        , radius(0.f)
-    {
-    }
 
     Circle::Circle(const Vec2& center, float radius)
         : center(center)
@@ -3008,28 +2963,10 @@ namespace math
     {
     }
 
-    constexpr Circle::Circle(float xcenter, float ycenter, float radius)
-        : center(xcenter, ycenter)
-        , radius(radius)
-    {
-    }
-
     ///////////////////////// Sphere ////////////////////////////////
-
-    constexpr Sphere::Sphere()
-        : center(0.f)
-        , radius(0.f)
-    {
-    }
 
     Sphere::Sphere(const Vec3& center, float radius)
         : center(center)
-        , radius(radius)
-    {
-    }
-
-    constexpr Sphere::Sphere(float xcenter, float ycenter, float zcenter, float radius)
-        : center(xcenter, ycenter, zcenter)
         , radius(radius)
     {
     }

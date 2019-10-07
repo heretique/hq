@@ -14,4 +14,10 @@ float rand01()
 {
     return gDistribution(gRng);
 }
+
+float randMinus11()
+{
+    return -1.f + 2.f * gDistribution(gRng);
+}
+
 }  // namespace hq

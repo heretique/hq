@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hq/Types.h"
+#include "Hq/BasicTypes.h"
 #include <limits>
 
 namespace hq
@@ -34,13 +34,13 @@ struct Handle
 
     uint32_t index() const;
     uint32_t generation() const;
-    void setIndex(uint32_t index);
-    void setGeneration(uint32_t generation);
-    bool operator!=(const Handle& other) const;
-    bool operator==(const Handle& other) const;
-    bool operator<(const Handle& other) const;
-    bool valid() const;
-    operator uint32_t() const
+    void     setIndex(uint32_t index);
+    void     setGeneration(uint32_t generation);
+    bool     operator!=(const Handle& other) const;
+    bool     operator==(const Handle& other) const;
+    bool     operator<(const Handle& other) const;
+    bool     valid() const;
+             operator uint32_t() const
     {
         return _handle;
     }
@@ -59,7 +59,7 @@ private:
 };
 
 template <size_t I, size_t G>
-const Handle<I, G>         Handle<I, G>::invalid;
+const Handle<I, G> Handle<I, G>::invalid;
 
 template <size_t I, size_t G>
 inline uint32_t Handle<I, G>::index() const
@@ -137,9 +137,9 @@ struct TypedHandle
     uint32_t index() const;
     uint32_t generation() const;
     uint32_t type() const;
-    void setIndex(uint32_t index);
-    void setGeneration(uint32_t generation);
-    void setType(uint32_t type);
+    void     setIndex(uint32_t index);
+    void     setGeneration(uint32_t generation);
+    void     setType(uint32_t type);
 
 private:
     uint32_t _index : StorageBits;

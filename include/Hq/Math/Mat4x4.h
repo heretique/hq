@@ -10,6 +10,7 @@ namespace math
     void  setIdentity(Mat4x4& dst);
     void  mul(const Mat4x4& matrix, float scalar, Mat4x4& dst);
     void  mul(const Mat4x4& lhs, const Mat4x4& rhs, Mat4x4& dst);
+    void  mul(Mat4x4& lhs, const Mat4x4& rhs);
     void  createLookAt(const Vec3& eyePosition, const Vec3& targetPosition, const Vec3& up, Mat4x4& dst);
     void  createLookAt(float eyePositionX, float eyePositionY, float eyePositionZ, float targetCenterX,
                        float targetCenterY, float targetCenterZ, float upX, float upY, float upZ, Mat4x4& dst);
@@ -59,10 +60,10 @@ namespace math
     void  scale(Mat4x4& matrix, float scale);
     void  scale(Mat4x4& matrix, float scaleX, float scaleY, float scaleZ);
     void  scale(Mat4x4& matrix, const Vec3& scale);
-    void  tranformPoint(const Vec3& point, const Mat4x4& matrix, Vec3& dst);
-    void  tranformPoint(Vec3& point, const Mat4x4& matrix);
-    void  tranform(const Vec3& v, const Mat4x4& matrix, Vec3& dst);
-    void  tranform(Vec3& v, const Mat4x4& matrix);
+    void  transformPoint(const Vec3& point, const Mat4x4& matrix, Vec3& dst);
+    void  transformPoint(Vec3& point, const Mat4x4& matrix);
+    void  transform(const Vec3& v, const Mat4x4& matrix, Vec3& dst);
+    void  transform(Vec3& v, const Mat4x4& matrix);
     void  transform(const Vec4& v, const Mat4x4& matrix, Vec4& dst);
     void  transform(Vec4& v, const Mat4x4& matrix);
     void  translate(const Mat4x4& matrix, const Vec3& translation, Mat4x4& dst);
