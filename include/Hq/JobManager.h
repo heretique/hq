@@ -4,6 +4,7 @@
 #include <functional>
 #include <mutex>
 #include <vector>
+#include <condition_variable>
 
 namespace hq
 {
@@ -17,7 +18,7 @@ struct Job
     JobFunc func;
     void*   data;
     size_t  count;
-    bool    pending{true};  // used for jobs you wait for
+    bool    pending {true};  // used for jobs you wait for
 };
 
 template <typename DataType, size_t Size>
@@ -68,11 +69,11 @@ public:
 private:
     moodycamel::ConcurrentQueue<Job, ConcurrentQueueTraits> _jobQueue;
     std::vector<std::thread>                                _runners;
-    size_t                                                  _cpuCount{0};
-    std::atomic<size_t>                                     _pendingTasks{0};
+    size_t                                                  _cpuCount {0};
+    std::atomic<size_t>                                     _pendingTasks {0};
     std::atomic_flag                                        _running;
     std::mutex                                              _hasJobsMutex;
-    bool                                                    _hasJobs{false};
+    bool                                                    _hasJobs {false};
     std::condition_variable                                 _hasJobsCondition;
 };
 

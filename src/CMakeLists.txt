@@ -73,4 +73,4 @@ target_include_directories(hq
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_compile_features(hq PUBLIC cxx_std_14)
+target_compile_features(hq PUBLIC cxx_std_17)

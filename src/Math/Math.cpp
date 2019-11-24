@@ -2337,28 +2337,28 @@ namespace math
     {
         Quat  result;
         float halfAngle    = angle * 0.5f;
-        float sinHalfAngle = sinf(halfAngle);
+        float sinHalfAngle = sin(halfAngle);
 
         Vec3 normal(axis);
         normalize(normal);
         result.x = normal.x * sinHalfAngle;
         result.y = normal.y * sinHalfAngle;
         result.z = normal.z * sinHalfAngle;
-        result.w = cosf(halfAngle);
+        result.w = cos(halfAngle);
         return result;
     }
 
     void createFromAxisAngle(const Vec3& axis, float angle, Quat& dst)
     {
         float halfAngle    = angle * 0.5f;
-        float sinHalfAngle = sinf(halfAngle);
+        float sinHalfAngle = sin(halfAngle);
 
         Vec3 normal(axis);
         normalize(normal);
         dst.x = normal.x * sinHalfAngle;
         dst.y = normal.y * sinHalfAngle;
         dst.z = normal.z * sinHalfAngle;
-        dst.w = cosf(halfAngle);
+        dst.w = cos(halfAngle);
     }
 
     Quat conjugate(const Quat& q)
