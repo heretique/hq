@@ -1,5 +1,5 @@
 #pragma once
-#include "Hq/Types.h"
+#include "Hq/BasicTypes.h"
 
 #include <cassert>
 #include <limits>

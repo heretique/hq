@@ -296,7 +296,7 @@ namespace math
         return Vec2(-v.x, -v.y);
     }
 
-    Vec2 add(const Vec2& lhs, const Vec2& rhs)
+    Vec2 operator +(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x + rhs.x, lhs.y + rhs.y);
     }
@@ -307,7 +307,7 @@ namespace math
         dst.y = lhs.y + rhs.y;
     }
 
-    Vec2 sub(const Vec2& lhs, const Vec2& rhs)
+    Vec2 operator -(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x - rhs.x, lhs.y - rhs.y);
     }
@@ -318,7 +318,7 @@ namespace math
         dst.y = lhs.y - rhs.y;
     }
 
-    Vec2 mul(const Vec2& lhs, const Vec2& rhs)
+    Vec2 operator *(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x * rhs.x, lhs.y * rhs.y);
     }
@@ -329,12 +329,12 @@ namespace math
         dst.y = lhs.y * rhs.y;
     }
 
-    Vec2 mul(float f, const Vec2& v)
+    Vec2 operator *(float f, const Vec2& v)
     {
         return Vec2(f * v.x, f * v.y);
     }
 
-    Vec2 mul(const Vec2& v, float f)
+    Vec2 operator *(const Vec2& v, float f)
     {
         return Vec2(f * v.x, f * v.y);
     }
@@ -351,7 +351,7 @@ namespace math
         dst.y = f * v.y;
     }
 
-    Vec2 div(const Vec2& lhs, const Vec2& rhs)
+    Vec2 operator /(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x / rhs.x, lhs.y / rhs.y);
     }
@@ -532,17 +532,17 @@ namespace math
         return {-v.x, -v.y, -v.z};
     }
 
-    bool less(const Vec3& lhs, const Vec3& rhs)
+    bool operator <(const Vec3& lhs, const Vec3& rhs)
     {
         return lhs.x < rhs.x || lhs.y < rhs.y || lhs.z < rhs.z;
     }
 
-    bool greater(const Vec3& lhs, const Vec3& rhs)
+    bool operator >(const Vec3& lhs, const Vec3& rhs)
     {
         return lhs.x > rhs.x || lhs.y > rhs.y || lhs.z > rhs.z;
     }
 
-    Vec3 add(const Vec3& lhs, const Vec3& rhs)
+    Vec3 operator +(const Vec3& lhs, const Vec3& rhs)
     {
         return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
     }
@@ -554,7 +554,7 @@ namespace math
         dst.z = lhs.z + rhs.z;
     }
 
-    Vec3 sub(const Vec3& lhs, const Vec3& rhs)
+    Vec3 operator -(const Vec3& lhs, const Vec3& rhs)
     {
         return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
     }
@@ -566,7 +566,7 @@ namespace math
         dst.z = lhs.z - rhs.z;
     }
 
-    Vec3 mul(const Vec3& lhs, const Vec3& rhs)
+    Vec3 operator *(const Vec3& lhs, const Vec3& rhs)
     {
         return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z};
     }
@@ -578,12 +578,12 @@ namespace math
         dst.z = lhs.z * rhs.z;
     }
 
-    Vec3 mul(float f, const Vec3& v)
+    Vec3 operator *(float f, const Vec3& v)
     {
         return Vec3(f * v.x, f * v.y, f * v.z);
     }
 
-    Vec3 mul(const Vec3& v, float f)
+    Vec3 operator *(const Vec3& v, float f)
     {
         return Vec3(f * v.x, f * v.y, f * v.z);
     }
@@ -602,7 +602,7 @@ namespace math
         dst.z = f * v.z;
     }
 
-    Vec3 div(const Vec3& lhs, const Vec3& rhs)
+    Vec3 operator /(const Vec3& lhs, const Vec3& rhs)
     {
         return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z};
     }
@@ -794,7 +794,7 @@ namespace math
         return {-v.x, -v.y, -v.z, -v.w};
     }
 
-    Vec4 add(const Vec4& lhs, const Vec4& rhs)
+    Vec4 operator +(const Vec4& lhs, const Vec4& rhs)
     {
         return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};
     }
@@ -807,7 +807,7 @@ namespace math
         dst.w = lhs.w + rhs.w;
     }
 
-    Vec4 sub(const Vec4& lhs, const Vec4& rhs)
+    Vec4 operator -(const Vec4& lhs, const Vec4& rhs)
     {
         return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w};
     }
@@ -820,7 +820,7 @@ namespace math
         dst.w = lhs.w - rhs.w;
     }
 
-    Vec4 mul(const Vec4& lhs, const Vec4& rhs)
+    Vec4 operator *(const Vec4& lhs, const Vec4& rhs)
     {
         return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w};
     }
@@ -833,7 +833,7 @@ namespace math
         dst.w = lhs.w * rhs.w;
     }
 
-    Vec4 div(const Vec4& lhs, const Vec4& rhs)
+    Vec4 operator /(const Vec4& lhs, const Vec4& rhs)
     {
         return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w};
     }
@@ -1404,7 +1404,7 @@ namespace math
                                const Vec3* cameraForwardVector,
                                Mat4x4&     dst)
     {
-        Vec3 delta             = sub(cameraPosition, objectPosition);
+        Vec3 delta             = cameraPosition - objectPosition;
         bool isSufficientDelta = lengthSquared(delta) > kEpsilon;
 
         setIdentity(dst);
@@ -1416,7 +1416,7 @@ namespace math
         // either a safe default or a sufficient distance between object and camera.
         if (cameraForwardVector || isSufficientDelta)
         {
-            Vec3 target = isSufficientDelta ? cameraPosition : sub(objectPosition, *cameraForwardVector);
+            Vec3 target = isSufficientDelta ? cameraPosition : objectPosition - (*cameraForwardVector);
 
             // A billboard is the inverse of a lookAt rotation
             Mat4x4 lookAt;
@@ -2425,7 +2425,7 @@ namespace math
         invert(q, q);
     }
 
-    Quat mul(const Quat& q1, const Quat& q2)
+    Quat operator *(const Quat& q1, const Quat& q2)
     {
         Quat result;
         mul(q1, q2, result);
@@ -2750,12 +2750,12 @@ namespace math
 
     Vec3 pointOnRay(const Ray3& r, float distance)
     {
-        return add(r.origin, mul(distance, r.direction));
+        return r.origin + distance * r.direction;
     }
 
     void pointOnRay(const Ray3& r, float distance, Vec3& dst)
     {
-        add(r.origin, mul(distance, r.direction), dst);
+        add(r.origin, distance * r.direction, dst);
     }
 
     float distance(const Vec3& point, const Ray3& r)
@@ -2916,9 +2916,9 @@ namespace math
 
     void extend(const Box3& b, const Vec3& point, Box3& dst)
     {
-        if (less(point, b.min))
+        if (operator <(point, b.min))
             dst.min = point;
-        else if (less(b.max, point))
+        else if (operator <(b.max, point))
             dst.max = point;
     }
 

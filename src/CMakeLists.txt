@@ -7,6 +7,7 @@ target_sources(hq
         Hq.cpp
         LinearAllocator.cpp
         JobManager.cpp
+        JsonSerializer.cpp
         PoolAllocator.cpp
         ProxyAllocator.cpp
         Rng.cpp
@@ -40,6 +41,8 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/StringHash.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/PrintContainers.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/BasicTypes.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/BinarySerializer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/JsonSerializer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Utils.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/AABB.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/MathTypes.h
@@ -64,13 +67,16 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Triangle.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Vector.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Ray.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Utils.h)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Utils.h
+        )
 
 target_include_directories(hq
     PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty>
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR})
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty)
 
 target_compile_features(hq PUBLIC cxx_std_17)

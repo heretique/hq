@@ -52,7 +52,7 @@ struct FreeList
         : _freeHead(0)
         , _storage()
     {
-        for (uint32_t i = 0; i < StorageSize; ++i)
+        for (u32 i = 0; i < StorageSize; ++i)
         {
             _freeList[i].setIndex(i + 1);
             _freeList[i].setGeneration(1);
@@ -61,7 +61,7 @@ struct FreeList
 
     void clear()
     {
-        for (uint32_t i = 0; i < kStorageSize; ++i)
+        for (u32 i = 0; i < kStorageSize; ++i)
         {
             FreelistConstructor<T, IsPOD>::destruct(&_storage[i]);
             FreelistConstructor<T, IsPOD>::construct(&_storage[i]);
@@ -80,7 +80,7 @@ struct FreeList
         if (_freeHead >= StorageSize)
             return H::invalid;
 
-        uint32_t index = _freeHead;
+        u32 index = _freeHead;
         _freeHead      = _freeList[index].index();
         H handle(index, _freeList[index].generation());
         return handle;
@@ -125,7 +125,7 @@ struct FreeList
     }
 
 public:
-    uint32_t _freeHead;
+    u32 _freeHead;
     H        _freeList[StorageSize];
     T        _storage[StorageSize];
 };
@@ -149,8 +149,8 @@ struct PackedFreeList
         // to remove an object with this solution we use the standard trick of swapping it
         // with the last item in the array. Then we update the index so that it points to
         // the new location of the swapped object.
-        uint32_t count;
-        uint32_t indices[StorageSize];
+        u32 count;
+        u32 indices[StorageSize];
         T        array[StorageSize];
     };
 
@@ -164,7 +164,7 @@ struct PackedFreeList
         // first item in the free list is given by _freeHead
         // last by StorageSize - 1 (when they are equal the storage is full
         // and the free list is empty
-        for (uint32_t i = 0; i < StorageSize; ++i)
+        for (u32 i = 0; i < StorageSize; ++i)
         {
             _freeList[i].setIndex(i + 1);
             _freeList[i].setGeneration(1);
@@ -173,7 +173,7 @@ struct PackedFreeList
 
     void clear()
     {
-        for (uint32_t i = 0; i < _storage.count; ++i)
+        for (u32 i = 0; i < _storage.count; ++i)
         {
             FreelistConstructor<T, IsPOD>::destruct(&_storage.array[i]);
             FreelistConstructor<T, IsPOD>::construct(&_storage.array[i]);
@@ -192,11 +192,11 @@ struct PackedFreeList
         if (_freeHead >= StorageSize)
             return H::invalid;
 
-        const uint32_t freeIndex = _freeHead;
+        const u32 freeIndex = _freeHead;
         _freeHead                = _freeList[freeIndex].index();
         // storage location is first element beyond last
         _freeList[freeIndex].setIndex(_storage.count);
-        const uint32_t storageLocation = _freeList[freeIndex].index();
+        const u32 storageLocation = _freeList[freeIndex].index();
         // point back to freelist element
         _storage.indices[storageLocation] = freeIndex;
         _storage.count++;
@@ -215,8 +215,8 @@ struct PackedFreeList
         if (_freeList[handle.index()].generation() == 0)
             _freeList[handle.index()].setGeneration(1);
 
-        uint32_t releasedIndex = _freeList[handle.index()].index();
-        uint32_t lastIndex     = _storage.count - 1;
+        u32 releasedIndex = _freeList[handle.index()].index();
+        u32 lastIndex     = _storage.count - 1;
         // "swap" the released item with the last one to preserve packing
         std::swap(_storage.array[releasedIndex], _storage.array[lastIndex]);
         // swap indices to freelist handle too
@@ -263,7 +263,7 @@ struct PackedFreeList
         return _storage.array[_freeList[handle.index()].index()];
     }
 
-    uint32_t getPackedIndex(const H& handle) const
+    u32 getPackedIndex(const H& handle) const
     {
         if (isValid(handle))
             return _freeList[handle.index()].index();
@@ -271,7 +271,7 @@ struct PackedFreeList
         return kInvalidPackedIndex;
     }
 
-    H getHandleFromPackedIndex(uint32_t index) const
+    H getHandleFromPackedIndex(u32 index) const
     {
         assert(index < _storage.count);
         H handle(_storage.indices[index], _freeList[_storage.indices[index]].generation());
@@ -290,7 +290,7 @@ struct PackedFreeList
     }
 
 private:
-    uint32_t      _freeHead;
+    u32      _freeHead;
     H             _freeList[StorageSize];
     PackedStorage _storage;
 };

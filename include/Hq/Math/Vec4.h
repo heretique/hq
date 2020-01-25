@@ -9,13 +9,13 @@ namespace math
     bool isZero(const Vec4& v);
     bool isOne(const Vec4& v);
     Vec4 operator-(const Vec4& v);
-    Vec4 add(const Vec4& lhs, const Vec4& rhs);
+    Vec4 operator +(const Vec4& lhs, const Vec4& rhs);
     void add(const Vec4& lhs, const Vec4& rhs, Vec4& dst);
-    Vec4 sub(const Vec4& lhs, const Vec4& rhs);
+    Vec4 operator -(const Vec4& lhs, const Vec4& rhs);
     void sub(const Vec4& lhs, const Vec4& rhs, Vec4& dst);
-    Vec4 mul(const Vec4& lhs, const Vec4& rhs);
+    Vec4 operator *(const Vec4& lhs, const Vec4& rhs);
     void mul(const Vec4& lhs, const Vec4& rhs, Vec4& dst);
-    Vec4 div(const Vec4& lhs, const Vec4& rhs);
+    Vec4 operator /(const Vec4& lhs, const Vec4& rhs);
     void div(const Vec4& lhs, const Vec4& rhs, Vec4& dst);
 
     float angle(const Vec4& v1, const Vec4& v2);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include "Hq/BasicTypes.h"
 
 namespace hq
 {
@@ -43,6 +44,13 @@ namespace math
 
         static const Vec2 Zero;
         static const Vec2 One;
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(x);
+            SERIALIZE(y);
+        }
 
     private:
         operator bool();
@@ -91,6 +99,14 @@ namespace math
 
         static const Vec3 Zero;
         static const Vec3 One;
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(x);
+            SERIALIZE(y);
+            SERIALIZE(z);
+        }
 
     private:
         operator bool();
@@ -148,6 +164,15 @@ namespace math
         static const Vec4 Zero;
         static const Vec4 One;
 
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(x);
+            SERIALIZE(y);
+            SERIALIZE(z);
+            SERIALIZE(w);
+        }
+
     private:
         operator bool();
     };
@@ -163,6 +188,12 @@ namespace math
             points[2] = c;
         }
         explicit Triangle(const float* data);
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(points);
+        }
     };
 
     /// Represents a rectangle in 2D space
@@ -198,6 +229,15 @@ namespace math
         {
         }
         Rect(const Vec2& topLeft, const Vec2& size);
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(x);
+            SERIALIZE(y);
+            SERIALIZE(width);
+            SERIALIZE(height);
+        }
     };
 
     /// Represents a plane in 3D space given by it's distance from origin
@@ -217,6 +257,13 @@ namespace math
             : normal(normalX, normalY, normalZ)
             , distance(distance)
         {
+        }
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(normal);
+            SERIALIZE(distance);
         }
     };
 
@@ -248,6 +295,12 @@ namespace math
         }
 
         static const Mat3x3 Identity;
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(data);
+        }
     };
 
     // forward define
@@ -270,6 +323,12 @@ namespace math
         Mat4x4(const Vec4& c1, const Vec4& c2, const Vec4& c3, const Vec4& c4);
 
         static const Mat4x4 Identity;
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(data);
+        }
     };
 
     /// Represents a view frustum in 3D space
@@ -317,6 +376,15 @@ namespace math
         static const Quat Identity;
         static const Quat Zero;
 
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(x);
+            SERIALIZE(y);
+            SERIALIZE(z);
+            SERIALIZE(w);
+        }
+
     private:
         operator bool();
     };
@@ -333,6 +401,13 @@ namespace math
         {
         }
         Line2(const Vec2& p1, const Vec2& p2);
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(p1);
+            SERIALIZE(p2);
+        }
     };
 
     /// Represents a line in 3D space enclosed by 2 points
@@ -347,6 +422,13 @@ namespace math
         {
         }
         Line3(const Vec3& p1, const Vec3& p2);
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(p1);
+            SERIALIZE(p2);
+        }
     };
 
     /// Represents a ray in 2D space given by a starting point and a direction
@@ -357,6 +439,13 @@ namespace math
 
         constexpr Ray2() {}
         Ray2(const Vec2& origin, const Vec2& direction);
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(origin);
+            SERIALIZE(direction);
+        }
     };
 
     /// Represents a ray in 3D space given by a starting point and a direction
@@ -367,6 +456,13 @@ namespace math
 
         constexpr Ray3() {}
         Ray3(const Vec3& origin, const Vec3& direction);
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(origin);
+            SERIALIZE(direction);
+        }
     };
 
     /// Represents a (bounding) box in 2D space
@@ -378,6 +474,13 @@ namespace math
         Box2(const Vec2& min, const Vec2& max);
         Vec2 center() const;
         Vec2 extent() const;
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(min);
+            SERIALIZE(max);
+        }
     };
 
     /// Represents a (bounding) box in 3D space
@@ -389,6 +492,13 @@ namespace math
         Box3(const Vec3& min, const Vec3& max);
         Vec3 center() const;
         Vec3 extent() const;
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(min);
+            SERIALIZE(max);
+        }
     };
 
     /// Represents a circle in 2D space
@@ -407,6 +517,13 @@ namespace math
             , radius(radius)
         {
         }
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(center);
+            SERIALIZE(radius);
+        }
     };
 
     /// Represents a sphere in 3D space
@@ -424,6 +541,13 @@ namespace math
             : center(xcenter, ycenter, zcenter)
             , radius(radius)
         {
+        }
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(center);
+            SERIALIZE(radius);
         }
     };
 }

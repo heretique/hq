@@ -50,7 +50,7 @@ inline StringHash::operator size_t() const
     return _hash;
 }
 
-inline u32 rotl32(u32 x, int8_t r)
+inline u32 rotl32(u32 x, i8 r)
 {
     return (x << r) | (x >> (32 - r));
 }
@@ -71,6 +71,12 @@ inline u32 fmix32(u32 h)
     return h;
 }
 }  // atlas namespace
+
+
+inline hq::StringHash operator""_sh(const char *str, std::size_t) noexcept {
+    return hq::StringHash{str};
+}
+
 
 namespace std
 {

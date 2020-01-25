@@ -21,7 +21,7 @@ namespace math
     Quat  invert(const Quat& q);
     void  invert(const Quat& q, Quat& dst);
     void  invert(Quat& q);
-    Quat  mul(const Quat& q1, const Quat& q2);
+    Quat  operator *(const Quat& q1, const Quat& q2);
     void  mul(const Quat& q1, const Quat& q2, Quat& dst);
     Quat  normalize(const Quat& q);
     void  normalize(const Quat& q, Quat& dst);

@@ -41,7 +41,7 @@ public:
             handle.setGeneration(1);
         }
 
-        uint32_t index = _freeHead;
+        u32 index = _freeHead;
         _freeHead      = _freeList[index].index();
         H handle(index, _freeList[index].generation());
         return handle;
@@ -91,7 +91,7 @@ private:
 
 private:
     size_t         _capacity {0};
-    uint32_t       _freeHead {0};
+    u32       _freeHead {0};
     std::vector<H> _freeList;
     std::vector<T> _storage;
 };
@@ -142,11 +142,11 @@ public:
             handle.setGeneration(1);
         }
 
-        const uint32_t freeIndex = _freeHead;
+        const u32 freeIndex = _freeHead;
         _freeHead                = _freeList[freeIndex].index();
         // storage location is first element beyond last
         _freeList[freeIndex].setIndex(_storage.array.size());
-        const uint32_t storageLocation = _freeList[freeIndex].index();
+        const u32 storageLocation = _freeList[freeIndex].index();
         // point back to freelist element
         _storage.indices[storageLocation] = freeIndex;
 
@@ -164,8 +164,8 @@ public:
         if (_freeList[handle.index()].generation() == 0)
             _freeList[handle.index()].setGeneration(1);
 
-        uint32_t releasedIndex = _freeList[handle.index()].index();
-        uint32_t lastIndex     = _storage.count - 1;
+        u32 releasedIndex = _freeList[handle.index()].index();
+        u32 lastIndex     = _storage.count - 1;
         // "swap" the released item with the last one to preserve packing
         std::swap(_storage.array[releasedIndex], _storage.array[lastIndex]);
         // swap indices to freelist handle too

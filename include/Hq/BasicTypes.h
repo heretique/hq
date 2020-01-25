@@ -17,3 +17,6 @@ using u32 = uint32_t;
 using u64 = uint64_t;
 
 using uptr = uintptr_t;
+
+#define SERIALIZE(x) serializer(x, #x)
+

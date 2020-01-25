@@ -9,19 +9,19 @@ namespace math
     bool isZero(const Vec3& v);
     bool isOne(const Vec3& v);
     Vec3 operator-(const Vec3& v);
-    bool less(const Vec3& lhs, const Vec3& rhs);
-    bool greater(const Vec3& lhs, const Vec3& rhs);
-    Vec3 add(const Vec3& lhs, const Vec3& rhs);
+    bool operator <(const Vec3& lhs, const Vec3& rhs);
+    bool operator >(const Vec3& lhs, const Vec3& rhs);
+    Vec3 operator +(const Vec3& lhs, const Vec3& rhs);
     void add(const Vec3& lhs, const Vec3& rhs, Vec3& dst);
-    Vec3 sub(const Vec3& lhs, const Vec3& rhs);
+    Vec3 operator -(const Vec3& lhs, const Vec3& rhs);
     void sub(const Vec3& lhs, const Vec3& rhs, Vec3& dst);
-    Vec3 mul(const Vec3& lhs, const Vec3& rhs);
+    Vec3 operator *(const Vec3& lhs, const Vec3& rhs);
     void mul(const Vec3& lhs, const Vec3& rhs, Vec3& dst);
-    Vec3 mul(float f, const Vec3& v);
-    Vec3 mul(const Vec3& v, float f);
+    Vec3 operator *(float f, const Vec3& v);
+    Vec3 operator *(const Vec3& v, float f);
     void mul(float f, const Vec3& v, Vec3& dst);
     void mul(const Vec3& v, float f, Vec3& dst);
-    Vec3 div(const Vec3& lhs, const Vec3& rhs);
+    Vec3 operator /(const Vec3& lhs, const Vec3& rhs);
     void div(const Vec3& lhs, const Vec3& rhs, Vec3& dst);
 
     float angle(const Vec3& v1, const Vec3& v2);

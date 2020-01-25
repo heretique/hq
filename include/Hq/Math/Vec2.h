@@ -9,17 +9,17 @@ namespace math
     bool isZero(const Vec2& v);
     bool isOne(const Vec2& v);
     Vec2 operator-(const Vec2& v);
-    Vec2 add(const Vec2& lhs, const Vec2& rhs);
+    Vec2 operator +(const Vec2& lhs, const Vec2& rhs);
     void add(const Vec2& lhs, const Vec2& rhs, Vec2& dst);
-    Vec2 sub(const Vec2& lhs, const Vec2& rhs);
+    Vec2 operator -(const Vec2& lhs, const Vec2& rhs);
     void sub(const Vec2& lhs, const Vec2& rhs, Vec2& dst);
-    Vec2 mul(const Vec2& lhs, const Vec2& rhs);
+    Vec2 operator *(const Vec2& lhs, const Vec2& rhs);
     void mul(const Vec2& lhs, const Vec2& rhs, Vec2& dst);
-    Vec2 mul(float f, const Vec2& v);
-    Vec2 mul(const Vec2& v, float f);
+    Vec2 operator *(float f, const Vec2& v);
+    Vec2 operator *(const Vec2& v, float f);
     void mul(float f, const Vec2& v, Vec2& dst);
     void mul(const Vec2& v, float f, Vec2& dst);
-    Vec2 div(const Vec2& lhs, const Vec2& rhs);
+    Vec2 operator /(const Vec2& lhs, const Vec2& rhs);
     void div(const Vec2& lhs, const Vec2& rhs, Vec2& dst);
 
     float angle(const Vec2& v1, const Vec2& v2);
