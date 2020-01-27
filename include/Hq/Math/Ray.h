@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector.h"
+#include "Vector.h"
 namespace hq
 {
 namespace math

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hq/BasicTypes.h"
+#include <cassert>
 #include <limits>
 
 namespace hq
