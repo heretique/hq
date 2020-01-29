@@ -15,6 +15,7 @@ target_sources(hq
         StringHash.cpp
         Math/Math.cpp
         Math/Utils.cpp
+        ../3rdparty/enkiTS/TaskScheduler.cpp
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Allocator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/CompileMurmur.h
@@ -76,7 +77,6 @@ target_include_directories(hq
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty>
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty)
+        ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_features(hq PUBLIC cxx_std_17)

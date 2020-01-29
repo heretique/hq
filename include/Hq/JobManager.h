@@ -59,10 +59,14 @@ public:
     void release();
 
     // you wait for this kind of jobs
+    void addJob(JobFunc func, void* data, size_t count = 1);
+
     template<typename FuncType, typename DataType>
     void addJob(FuncType func, DataType* data, size_t count = 1);
 
     // you don't wait for this kind of jobs, they'll signal you when they're done
+    void addSignalingJob(JobFunc func, void* data, size_t count, JobDoneFunc callback);
+
     template<typename FuncType, typename DataType>
     void addSignalingJob(FuncType func, DataType* data, size_t count, JobDoneFunc callback);
 
@@ -70,10 +74,6 @@ public:
     void parallel_for(JobFunc func, void* data, size_t count);
 
     void wait();
-
-private:
-    void addJob(JobFunc func, void* data, size_t count = 1);
-    void addSignalingJob(JobFunc func, void* data, size_t count, JobDoneFunc callback);
 
 private:
     moodycamel::ConcurrentQueue<Job, ConcurrentQueueTraits> _jobQueue;
