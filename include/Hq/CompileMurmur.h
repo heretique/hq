@@ -137,4 +137,4 @@ constexpr uint32_t MURMUR3_32(const char (&s)[N], uint32_t seed = 0)
     return murmur::CalculateFinalHash(murmur::Unpack(seed, s, typename murmur::CreateSequence<N - 1>::Type()), N - 1);
 }
 
-}  // atlas namespace
+}  // hq namespace
