@@ -1,6 +1,12 @@
 #pragma once
 
-#include "Hq/Serializer.h"
+#include "Hq/BasicTypes.h"
+#include <memory>
+#include <string>
+#include <istream>
+#include <ostream>
+#include <vector>
+#include <unordered_map>
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/istreamwrapper.h>
@@ -9,50 +15,88 @@
 
 namespace hq {
 
-class JsonSerializer : public Serializer
+struct JsonSerializer
 {
-public:
     JsonSerializer(std::ostream& out);
 	~JsonSerializer();
 
-    bool isDeserializer() const override
+	template <typename Serializable>
+	inline void operator () (Serializable& serializable)
+	{
+        _writer.StartObject();
+		serializable.Serialize(*this);
+        _writer.EndObject();
+	}
+
+	template <typename Serializable>
+	inline void operator () (Serializable& serializable, const std::string& s)
+	{
+        _writer.String(s);
+        _writer.StartObject();
+		serializable.Serialize(*this);
+        _writer.EndObject();
+	}
+
+    template <typename K, typename T>
+    inline void operator() (std::unordered_map<K, T>& value, const std::string& s)
+	{
+        _writer.String(s);
+        _writer.StartArray();
+		for (auto& pair : value)
+		{
+            _writer.StartObject();
+			(*this)(pair.first, "key");
+			(*this)(pair.second, "value");
+            _writer.EndObject();
+		}
+        _writer.EndArray();
+	}
+
+    template <typename T>
+    inline void operator() (std::unique_ptr<T>& value, const std::string& s)
+	{
+		(*this)(*value, s);
+	}
+
+    template <typename T>
+    inline void operator() (std::vector<T>& container, const std::string& s)
     {
-        return false;
+        _writer.String(s);
+        _writer.StartArray();
+        for (auto& value : container)
+        {
+            if (std::is_class_v<T>)
+                _writer.StartObject();
+
+            (*this)(value);
+
+            if (std::is_class_v<T>)
+                _writer.EndObject();
+        }
+        _writer.EndArray();
     }
 
-    void beginObject(const std::string& s) override;
-    void endObject() override;
-    // serializers need to implement this
-    void beginArray(const std::string& s, const size_t count) override;
-    void endArray() override;
+	void operator() (std::string& value, const std::string& s);
+	void operator() (const std::string& value, const std::string& s);
+    void operator() (u8& value, const std::string& s);
+    void operator() (const u8& value, const std::string& s);
+    void operator() (u32& value, const std::string& s);
+    void operator() (const u32& value, const std::string& s);
+    void operator() (u64& value, const std::string& s);
+    void operator() (const u64& value, const std::string& s);
+	void operator() (float& value, const std::string& s);
+	void operator() (double& value, const std::string& s);
 
-    void operator() (std::string& value, const std::string& s) override;
-    void operator() (const std::string& value, const std::string& s) override;
-    void operator() (u8& value, const std::string& s) override;
-    void operator() (const u8& value, const std::string& s) override;
-    void operator() (u32& value, const std::string& s) override;
-    void operator() (const u32& value, const std::string& s) override;
-    void operator() (u64& value, const std::string& s) override;
-    void operator() (const u64& value, const std::string& s) override;
-    void operator() (float& value, const std::string& s) override;
-    void operator() (const float& value, const std::string& s) override;
-    void operator() (double& value, const std::string& s) override;
-    void operator() (const double& value, const std::string& s) override;
-
-
-    void operator() (std::string& value) override;
-    void operator() (const std::string& value) override;
-    void operator() (u8& value) override;
-    void operator() (const u8& value) override;
-    void operator() (u32& value) override;
-    void operator() (const u32& value) override;
-    void operator() (u64& value) override;
-    void operator() (const u64& value) override;
-    void operator() (float& value) override;
-    void operator() (const float& value) override;
-    void operator() (double& value) override;
-    void operator() (const double& value) override;
-
+    void operator() (std::string& value);
+    void operator() (const std::string& value);
+    void operator() (u8& value);
+    void operator() (const u8& value);
+    void operator() (u32& value);
+    void operator() (const u32& value);
+    void operator() (u64& value);
+    void operator() (const u64& value);
+    void operator() (float& value);
+    void operator() (double& value);
 private:
     rapidjson::OStreamWrapper _osw;
     rapidjson::Writer<rapidjson::OStreamWrapper> _writer;
@@ -62,56 +106,116 @@ private:
 
 
 
-struct JsonDeserializer : public Serializer
+struct JsonDeserializer
 {
     JsonDeserializer(std::istream& in);
 	~JsonDeserializer();
 
-    bool isDeserializer() const override
+	template <typename Serializable>
+	inline void operator () (Serializable& serializable)
+	{
+        if (!_document.IsObject())
+			return;
+
+        _stack.push_back(&_document);
+		serializable.Serialize(*this);
+        _stack.pop_back();
+        assert(_stack.empty());
+	}
+
+	template <typename Serializable>
+	inline void operator () (Serializable& serializable, const std::string& s)
+	{
+		using namespace rapidjson;
+        assert(!_stack.empty());
+        if (!_stack.back()->HasMember(s))
+			return;
+
+        const Value& val = (*_stack.back())[s];
+		assert(val.IsObject());
+        _stack.push_back(&val);
+		serializable.Serialize(*this);
+        _stack.pop_back();
+	}
+
+    template <typename T>
+    inline void operator() (std::vector<T>& container, const std::string& s)
     {
-        return true;
+        using namespace rapidjson;
+        assert(!_stack.empty());
+        if (!_stack.back()->HasMember(s))
+            return;
+
+        const Value& val = (*_stack.back())[s];
+        assert(val.IsArray());
+        for (SizeType i = 0; i < val.Size(); ++i)
+        {
+            const Value& element = val[i];
+            if (std::is_class_v<T>)
+            {
+                assert(element.IsObject());
+            }
+            _stack.push_back(&element);
+            T value;
+            (*this)(value);
+            container.emplace_back(value);
+            _stack.pop_back();
+        }
     }
 
-    void beginObject(const std::string& s) override;
-    void beginObject(const size_t index) override;
-    void endObject() override;
-    // deserializers need to implement this
-    size_t beginArray(const std::string& s) override;
-    void endArray() override;
+    template <typename K, typename T>
+    inline void operator() (std::unordered_map<K, T>& value, const std::string& s)
+	{
+		using namespace rapidjson;
+        assert(!_stack.empty());
+        if (!_stack.back()->HasMember(s))
+			return;
 
-    // Serializer interface
-public:
-    void operator ()(std::string& value, const std::string& s) override;
-    void operator ()(const std::string&, const std::string&) override {}
-    void operator ()(u8& value, const std::string& s) override;
-    void operator ()(const u8&, const std::string&) override {}
-    void operator ()(u32& value, const std::string& s) override;
-    void operator ()(const u32&, const std::string&) override {}
-    void operator ()(u64& value, const std::string& s) override;
-    void operator ()(const u64&, const std::string&) override {}
-    void operator ()(float&, const std::string&) override;
-    void operator ()(const float&, const std::string&) override {}
-    void operator ()(double& value, const std::string& s) override;
-    void operator ()(const double& value, const std::string& s) override {}
+        const Value& val = (*_stack.back())[s];
+		assert(val.IsArray());
+		for (SizeType i = 0; i < val.Size(); ++i)
+		{
+			const Value& element = val[i];
+			assert(element.IsObject());
+            _stack.push_back(&element);
+            K key;
+            T mapVal;
+			(*this)(key, "key");
+			(*this)(mapVal, "value");
+			value.insert(std::make_pair(std::move(key), std::move(mapVal)));
+            _stack.pop_back();
+		}
+	}
 
-    void operator ()(std::string& value) override;
-    void operator ()(const std::string&) override {}
-    void operator ()(u8& value) override;
-    void operator ()(const u8&) override {}
-    void operator ()(u32& value) override;
-    void operator ()(const u32&) override {}
-    void operator ()(u64& value) override;
-    void operator ()(const u64&) override {}
-    void operator ()(float& value) override;
-    void operator ()(const float& value) override {}
-    void operator ()(double& value) override;
-    void operator ()(const double& value) override {}
+    template <class T>
+    inline void operator() (std::unique_ptr<T>& value, const std::string& s)
+	{
+		using namespace rapidjson;
+        assert(!_stack.empty());
+        if (!_stack.back()->HasMember(s))
+			return;
 
+        const Value& val = (*_stack.back())[s];
+        value = std::make_unique<T>();
+		(*this)((*value.get()), s);
+	}
+
+    void operator() (std::string& value, const std::string& s);
+    void operator() (u8& value, const std::string& s);
+    void operator() (u32& value, const std::string& s);
+    void operator() (u64& value, const std::string& s);
+    void operator() (float& value, const std::string& s);
+    void operator() (double& value, const std::string& s);
+
+    void operator() (std::string& value);
+    void operator() (u8& value);
+    void operator() (u32& value);
+    void operator() (u64& value);
+    void operator() (float& value);
+    void operator() (double& value);
 private:
     rapidjson::IStreamWrapper _isw;
     std::vector<const rapidjson::Value*> _stack;
     rapidjson::Document _document;
-
-
 };
 } // hq namespace

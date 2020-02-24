@@ -1,9 +1,12 @@
 #pragma once
 
-#include "Hq/Serializer.h"
+#include <string>
+#include <sstream>
+#include <memory>
+#include <unordered_map>
 
 
-class BinarySerializer
+struct BinarySerializer
 {
     BinarySerializer(std::ostream& out) : m_out(out) {}
     ~BinarySerializer() {}
@@ -114,7 +117,7 @@ private:
 };
 
 
-class BinaryDeserializer
+struct BinaryDeserializer
 {
     BinaryDeserializer(std::istream& in) : m_in(in) {};
     ~BinaryDeserializer() {}

@@ -36,8 +36,6 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/PrintContainers.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/ProxyAllocator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Rng.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Serializable.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Serializer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/SpinLock.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/StackAllocator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Streams.h
