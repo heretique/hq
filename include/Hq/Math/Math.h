@@ -1085,5 +1085,24 @@ namespace math
         return a + angleDiff(a, b) * _t;
     }
 
+    inline float max3(float a, float b, float c) {
+        return max(a, max(b, c));
+    }
+
+    inline float max4(float a, float b, float c, float d) {
+        return max(max(a, d), max(b, c));
+    }
+
+    inline float min3(float a, float b, float c) {
+        return min(a, min(b, c));
+    }
+
+    inline float min4(float a, float b, float c, float d) {
+        return min(min(a, d), min(b, c));
+    }
+
+    inline float meanComponent(float a) {
+        return a;
+    }
 }
 }

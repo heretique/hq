@@ -40,5 +40,9 @@ namespace math
     Vec2  rotate(const Vec2& v, const Vec2& point, float angle);
     void  rotate(const Vec2& v, const Vec2& point, float angle, Vec2& dst);
     void  rotate(Vec2& v, const Vec2& point, float angle);
+
+    float maxComponent(const Vec2& v);
+    float minComponent(const Vec2& v);
+    float meanComponent(const Vec2& v);
 }
 }

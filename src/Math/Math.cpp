@@ -485,6 +485,18 @@ namespace math
         rotate(v, point, angle, v);
     }
 
+    float maxComponent(const Vec2& v) {
+        return max(v.x, v.y);
+    }
+
+    float minComponent(const Vec2& v) {
+        return min(v.x, v.y);
+    }
+
+    float meanComponent(const Vec2& v) {
+        return (v.x + v.y) * (1.0f / 2.0f);
+    }
+
     ////////////// Vec3 /////////////
 
     Vec3::Vec3(const float* data)
@@ -729,6 +741,19 @@ namespace math
         v.z = v.z * scale;
     }
 
+    float maxComponent(const Vec3& v) {
+        return max3(v.x, v.y, v.z);
+    }
+
+    float minComponent(const Vec3& v) {
+        return min3(v.x, v.y, v.z);
+    }
+
+
+    float meanComponent(const Vec3& v) {
+        return (v.r + v.g + v.b) * (1.0f / 3.0f);
+    }
+
     ////////////// Vec4 //////////////
 
     Vec4::Vec4(const float* data)
@@ -954,6 +979,18 @@ namespace math
         v.w = v.w * scale;
     }
 
+    float maxComponent(const Vec4& v) {
+        return max4(v.x, v.y, v.z, v.w);
+    }
+
+    float minComponent(const Vec4& v) {
+        return min4(v.x, v.y, v.z, v.w);
+    }
+
+    float meanComponent(const Vec4& v) {
+        return (v.r + v.g + v.b + v.a) * (1.0f / 4.0f);
+    }
+
     ////////////////////////////// Triangle ///////////////////////////////////
 
     Triangle::Triangle(const float* data)
@@ -975,6 +1012,15 @@ namespace math
     }
 
     ////////////////// Rect /////////////////////
+
+    Rect::Rect(const Vec2 &size)
+        : x(0.f)
+        , y(0.f)
+        , width(size.x)
+        , height(size.y)
+    {
+
+    }
 
     Rect::Rect(const Vec2& topLeft, const Vec2& size)
         : x(topLeft.x)
@@ -1016,7 +1062,7 @@ namespace math
     }
 
     // TODO: provide implementation for Plane functions
-    bool intersects(const Ray3& ray, const Plane& plane)
+    bool intersects(const Plane& p, const Ray3& r)
     {
         NOT_IMPLEMENTED;
     }
@@ -1026,19 +1072,19 @@ namespace math
         NOT_IMPLEMENTED;
     }
 
-    bool intersects(const Box3& b, const Plane& p)
+    bool intersects(const Plane& p, const Box3& b)
     {
         NOT_IMPLEMENTED;
     }
 
-    bool intersects(const Sphere& s, const Plane& p)
+    bool intersects(const Plane& p, const Sphere& s)
     {
         NOT_IMPLEMENTED;
 
         return false;
     }
 
-    bool intersects(const Frustum& f, const Plane& p)
+    bool intersects(const Plane& p, const Frustum& f)
     {
         NOT_IMPLEMENTED;
 
@@ -1059,35 +1105,35 @@ namespace math
         return false;
     }
 
-    bool intersection(const Sphere& s, const Plane& p, float& distance)
+    bool intersection(const Plane& p, const Sphere& s, float& distance)
     {
         NOT_IMPLEMENTED;
 
         return false;
     }
 
-    bool intersection(const Box3& b, const Plane& p, uint8_t& count, Vec3* dst)
+    bool intersection(const Plane& p, const Box3& b, uint8_t& count, Vec3* dst)
     {
         NOT_IMPLEMENTED;
 
         return false;
     }
 
-    bool intersection(const Frustum& f, const Plane& p, uint8_t& count, Vec3* dst)
+    bool intersection(const Plane& p, const Frustum& f, uint8_t& count, Vec3* dst)
     {
         NOT_IMPLEMENTED;
 
         return false;
     }
 
-    Vec3 projectPoint(const Vec3& point, const Plane& plane)
+    Vec3 projectPoint(const Plane& plane, const Vec3& point)
     {
         NOT_IMPLEMENTED;
 
         return Vec3::Zero;
     }
 
-    void projectPoint(const Vec3& point, const Plane& plane, Vec3& dst)
+    void projectPoint(const Plane& plane, const Vec3& point, Vec3& dst)
     {
         NOT_IMPLEMENTED;
     }
@@ -2225,24 +2271,24 @@ namespace math
         return true;
     }
 
-    bool intersects(const Sphere& s, const Frustum& f)
+    bool intersects(const Frustum& f, const Sphere& s)
     {
-        return intersects(f, s);
+        return intersects(s, f);
     }
 
-    bool intersects(const Box3& b, const Frustum& f)
+    bool intersects(const Frustum& f, const Box3& b)
     {
-        return intersects(f, b);
+        return intersects(b, f);
     }
 
-    bool intersects(const Plane& p, const Frustum& f)
+    bool intersects(const Frustum& f, const Plane& p)
     {
-        return intersects(f, p);
+        return intersects(p, f);
     }
 
-    bool intersects(const Ray3& r, const Frustum& f)
+    bool intersects(const Frustum& f, const Ray3& r)
     {
-        return intersects(f, r);
+        return intersects(r, f);
     }
 
     ///////////////////////////////////////////// QUAT ///////////////////////////////////////////
@@ -2765,7 +2811,7 @@ namespace math
         return 0.f;
     }
 
-    bool intersects(const Plane& p, const Ray3& r)
+    bool intersects(const Ray3& r, const Plane& p)
     {
         const Vec3& normal = p.normal;
         // If the origin of the ray is on the plane then the distance is zero.
@@ -2796,21 +2842,26 @@ namespace math
         return true;
     }
 
-    bool intersects(const Box3& b, const Ray3& r)
+    bool intersects(const Ray3& r, const Box3& b)
     {
-        return intersects(r, b);
+        return intersects(b, r);
     }
 
-    bool intersects(const Sphere& s, const Ray3& r)
+    bool intersects(const Ray3& r, const Sphere& s)
     {
-        return intersects(r, s);
+        return intersects(s, r);
     }
 
-    bool intersects(const Frustum& f, const Ray3& r)
+    bool intersects(const Ray3& r, const Frustum& f)
     {
         NOT_IMPLEMENTED;
 
         return false;
+    }
+
+    bool intersection(const Ray3& r, const Box3& b, float& distance)
+    {
+        return intersection(b, r, distance);
     }
 
     //////////////////////////// Box2 /////////////////////////////
@@ -2895,36 +2946,59 @@ namespace math
                ((b1.min.z >= b2.min.z && b1.min.z <= b2.max.z) || (b2.min.z >= b1.min.z && b2.min.z <= b1.max.z));
     }
 
-    bool intersects(const Sphere& s, const Box3& b)
+    bool intersects(const Box3& b, const Sphere& s)
     {
-        return intersects(b, s);
+        return intersects(s, b);
     }
 
-    bool intersects(const Frustum& f, const Box3& b)
+    bool intersects(const Box3& b, const Frustum& f)
     {
         NOT_IMPLEMENTED;
 
         return false;
     }
 
-    bool intersects(const Ray3& r, const Box3& b)
+    bool intersects(const Box3& b, const Ray3& r)
     {
-        NOT_IMPLEMENTED;
-
-        return false;
+        float d;
+        return intersection(b, r, d);
     }
 
-    void extend(const Box3& b, const Vec3& point, Box3& dst)
+    bool intersection(const Box3& b, const Ray3& r, float& distance)
     {
-        if (operator <(point, b.min))
-            dst.min = point;
-        else if (operator <(b.max, point))
-            dst.max = point;
+        Vec3 rayInvDir = Vec3::One / r.direction;
+        Vec3 t0 = (b.min - r.origin) * rayInvDir;
+        Vec3 t1 = (b.max - r.origin) * rayInvDir;
+        Vec3 tMin = min(t0, t1);
+        Vec3 tMax = max(t0, t1);
+        float d0 = maxComponent(tMin);
+        float d1 = minComponent(tMax);
+
+        // intersection distance
+        distance = (d0 > 0.f) ? d0 : d1;
+
+        return (d0 <= d1) && (distance > 0.f);
     }
 
-    void extend(Box3& b, const Vec3& point)
+    void merge(const Box3& b, const Vec3& point, Box3& dst)
     {
-        extend(b, point, b);
+        if (point.x < b.min.x)
+            dst.min.x = point.x;
+        if (point.y < b.min.y)
+            dst.min.y = point.y;
+        if (point.z < b.min.z)
+            dst.min.z = point.z;
+        if (b.max.x < point.x)
+            dst.max.x = point.x;
+        if (b.max.y < point.y)
+            dst.max.y = point.y;
+        if (b.max.z < point.z)
+            dst.max.z = point.z;
+    }
+
+    void merge(Box3& b, const Vec3& point)
+    {
+        merge(b, point, b);
     }
 
     void merge(const Box3& b, const Sphere& s, Box3& dst)
@@ -2949,12 +3023,21 @@ namespace math
 
     void transform(const Box3& b, const Mat4x4& m, Box3& dst)
     {
-        NOT_IMPLEMENTED;
+        dst.min = Vec3(FLT_MAX);
+        dst.max = Vec3(-FLT_MAX);
+        Vec3 trMin;
+        Vec3 trMax;
+        transformPoint(b.min, m, trMin);
+        transformPoint(b.max, m, trMax);
+        merge(dst, trMin);
+        merge(dst, trMax);
     }
 
     void transform(Box3& b, const Mat4x4& m)
     {
-        NOT_IMPLEMENTED;
+        Box3 dst;
+        transform(b, m, dst);
+        b = dst;
     }
 
     ///////////////////////// Circle ///////////////////////////////
@@ -2977,10 +3060,12 @@ namespace math
     {
         // If the distance between the spheres' centers is less than or equal
         // to the sum of their radii, then the spheres intersect.
-        return distance(s1.center, s2.center) <= (s1.radius + s2.radius);
+        // Use squared distance, no need for an sqrt
+        float sum = s1.radius + s2.radius;
+        return distanceSquared(s1.center, s2.center) <= sum * sum;
     }
 
-    bool intersects(const Box3& b, const Sphere& s)
+    bool intersects(const Sphere& s, const Box3& b)
     {
         // Determine what point is closest; if the distance to that
         // point is less than the radius, then this sphere intersects.
@@ -3026,10 +3111,11 @@ namespace math
         cpY -= s.center.y;
         cpZ -= s.center.z;
 
-        return sqrt(cpX * cpX + cpY * cpY + cpZ * cpZ) <= s.radius;
+        // Use squared distance, no need for an sqrt
+        return cpX * cpX + cpY * cpY + cpZ * cpZ <= s.radius * s.radius;
     }
 
-    bool intersects(const Frustum& f, const Sphere& s)
+    bool intersects(const Sphere& s, const Frustum& f)
     {
         // TODO: find a more faster way to test this
         return ((side(s, f.near) == 1 &&    //
@@ -3046,12 +3132,12 @@ namespace math
                 intersects(f.top, s));
     }
 
-    bool intersects(const Plane& p, const Sphere& s)
+    bool intersects(const Sphere& s, const Plane& p)
     {
         return abs(distance(s.center, p)) <= s.radius;
     }
 
-    bool intersects(const Ray3& r, const Sphere& s)
+    bool intersects(const Sphere& s, const Ray3& r)
     {
         return distance(s.center, r) <= s.radius;
     }

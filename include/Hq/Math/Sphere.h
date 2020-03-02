@@ -7,9 +7,9 @@ namespace math
     /////////////////////////// Sphere ////////////////////////////////////////////
 
     bool intersects(const Sphere& s1, const Sphere& s2);
-    bool intersects(const Box3& b, const Sphere& s);
-    bool intersects(const Frustum& f, const Sphere& s);
-    bool intersects(const Plane& p, const Sphere& s);
-    bool intersects(const Ray3& r, const Sphere& s);
+    bool intersects(const Sphere& s, const Box3& b);
+    bool intersects(const Sphere& s, const Frustum& f);
+    bool intersects(const Sphere& s, const Plane& p);
+    bool intersects(const Sphere& s, const Ray3& r);
 }
 }

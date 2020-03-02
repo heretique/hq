@@ -41,5 +41,9 @@ namespace math
     Vec3  scale(const Vec3& v, float scale);
     void  scale(const Vec3& v, float scale, Vec3& dst);
     void  scale(Vec3& v, float scale);
+
+    float maxComponent(const Vec3& v);
+    float minComponent(const Vec3& v);
+    float meanComponent(const Vec3& v);
 }
 }

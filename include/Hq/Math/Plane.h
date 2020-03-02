@@ -10,20 +10,21 @@ namespace math
     Plane normalize(const Plane& p);
     void  normalize(const Plane& p, Plane& dst);
     void  normalize(Plane& p);
-    bool  intersects(const Ray3& ray, const Plane& plane);
+    bool  intersects(const Plane& p, const Ray3& r);
     bool  intersects(const Plane& p1, const Plane& p2);
-    bool  intersects(const Box3& b, const Plane& p);
-    bool  intersects(const Sphere& s, const Plane& p);
-    bool  intersects(const Frustum& f, const Plane& p);
+    bool  intersects(const Plane& p, const Box3& b);
+    bool  intersects(const Plane& p, const Sphere& s);
+    bool  intersects(const Plane& p, const Frustum& f);
+
     bool  intersection(const Plane& p1, const Plane& p2, const Plane& p3, Vec3& dst);
     bool  intersection(const Plane& p1, const Plane& p2, Ray3& dst);
     // out distance from sphere center
-    bool intersection(const Sphere& s, const Plane& p, float& distance);
-    bool intersection(const Box3& b, const Plane& p, uint8_t& count, Vec3* dst);
-    bool intersection(const Frustum& f, const Plane& p, uint8_t& count, Vec3* dst);
+    bool intersection(const Plane& p, const Sphere& s, float& distance);
+    bool intersection(const Plane& p, const Box3& b, uint8_t& count, Vec3* dst);
+    bool intersection(const Plane& p, const Frustum& f, uint8_t& count, Vec3* dst);
 
-    Vec3  projectPoint(const Vec3& point, const Plane& plane);
-    void  projectPoint(const Vec3& point, const Plane& plane, Vec3& dst);
+    Vec3  projectPoint(const Plane& plane, const Vec3& point);
+    void  projectPoint(const Plane& plane, const Vec3& point, Vec3& dst);
     Plane transform(const Plane& plane, const Mat4x4& tr);
     void  transform(const Plane& plane, const Mat4x4& tr, Plane& dst);
     void  transform(Plane& plane, const Mat4x4& tr);

@@ -228,6 +228,7 @@ namespace math
             , height(height)
         {
         }
+        explicit Rect(const Vec2& size);
         Rect(const Vec2& topLeft, const Vec2& size);
 
         template <class Serializer>
