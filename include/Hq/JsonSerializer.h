@@ -76,6 +76,25 @@ struct JsonSerializer
         _writer.EndArray();
     }
 
+    template <typename T, size_t N>
+    inline void operator() (T (&array)[N], const std::string& s)
+    {
+        _writer.String(s);
+        _writer.StartArray();
+        for (size_t i = 0; i < N; ++i)
+        {
+            T& value = array[i];
+            if (std::is_class_v<T>)
+                _writer.StartObject();
+
+            (*this)(value);
+
+            if (std::is_class_v<T>)
+                _writer.EndObject();
+        }
+        _writer.EndArray();
+    }
+
 	void operator() (std::string& value, const std::string& s);
 	void operator() (const std::string& value, const std::string& s);
     void operator() (u8& value, const std::string& s);

@@ -5,6 +5,8 @@
 #include <memory>
 #include <unordered_map>
 
+namespace hq
+{
 
 struct BinarySerializer
 {
@@ -33,6 +35,37 @@ struct BinarySerializer
     inline void operator () (const Serializable& serializable, const std::string& s)
     {
         const_cast<Serializable&>(serializable).Serialize(*this);
+    }
+
+    template <typename Key, typename Type>
+    inline void operator() (std::unordered_map<Key, Type>& value, const std::string& s)
+    {
+        size_t size = value.size();
+        m_out.write(reinterpret_cast<const char*>(&size), sizeof(size));
+        for (auto& pair : value)
+        {
+            (*this)(pair.first, "key");
+            (*this)(pair.second, "value");
+        }
+    }
+
+    template <class Type>
+    inline void operator() (std::unique_ptr<Type>& value, const std::string& s)
+    {
+        assert(value);
+        (*this)(*value, s);
+    }
+
+    template <typename T, size_t N>
+    inline void operator() (T (&array)[N], const std::string& s)
+    {
+        size_t size = N;
+        m_out.write(reinterpret_cast<const char*>(&size), sizeof(size));
+        for (size_t i = 0; i < N; ++i)
+        {
+            T& value = array[i];
+            (*this)(value);
+        }
     }
 
     template <>
@@ -93,23 +126,10 @@ struct BinarySerializer
         m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
     }
 
-    template <typename Key, typename Type>
-    inline void operator() (std::unordered_map<Key, Type>& value, const std::string& s)
+    template<>
+    inline void operator() (float& value)
     {
-        size_t size = value.size();
-        m_out.write(reinterpret_cast<const char*>(&size), sizeof(size));
-        for (auto& pair : value)
-        {
-            (*this)(pair.first, "key");
-            (*this)(pair.second, "value");
-        }
-    }
-
-    template <class Type>
-    inline void operator() (std::unique_ptr<Type>& value, const std::string& s)
-    {
-        assert(value);
-        (*this)(*value, s);
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
     }
 
 private:
@@ -208,3 +228,5 @@ struct BinaryDeserializer
 private:
     std::istream& m_in;
 };
+
+} // hq namespace
