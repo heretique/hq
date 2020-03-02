@@ -16,6 +16,7 @@ target_sources(hq
         Math/Math.cpp
         Math/Utils.cpp
         ../3rdparty/enkiTS/TaskScheduler.cpp
+        ../3rdparty/microbench/systemtime.cpp
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Allocator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/CompileMurmur.h
