@@ -254,11 +254,7 @@ namespace math
         {
         }
         Plane(const Vec3& normal, float distance);
-        constexpr Plane(float normalX, float normalY, float normalZ, float distance)
-            : normal(normalX, normalY, normalZ)
-            , distance(distance)
-        {
-        }
+        Plane(float normalX, float normalY, float normalZ, float distance);
 
         template <class Serializer>
         void Serialize(Serializer& serializer)

@@ -485,6 +485,18 @@ namespace math
         rotate(v, point, angle, v);
     }
 
+    Vec2 minVec(const Vec2& v1, const Vec2& v2)
+    {
+        return Vec2(min(v1.x, v2.x),
+                    min(v1.y, v2.y));
+    }
+
+    Vec2 maxVec(const Vec2& v1, const Vec2& v2)
+    {
+        return Vec2(max(v1.x, v2.x),
+                    max(v1.y, v2.y));
+    }
+
     float maxComponent(const Vec2& v) {
         return max(v.x, v.y);
     }
@@ -741,6 +753,20 @@ namespace math
         v.z = v.z * scale;
     }
 
+    Vec3 minVec(const Vec3& v1, const Vec3& v2)
+    {
+        return Vec3(min(v1.x, v2.x),
+                    min(v1.y, v2.y),
+                    min(v1.z, v2.z));
+    }
+
+    Vec3 maxVec(const Vec3& v1, const Vec3& v2)
+    {
+        return Vec3(max(v1.x, v2.x),
+                    max(v1.y, v2.y),
+                    max(v1.z, v2.z));
+    }
+
     float maxComponent(const Vec3& v) {
         return max3(v.x, v.y, v.z);
     }
@@ -979,6 +1005,22 @@ namespace math
         v.w = v.w * scale;
     }
 
+    Vec4 minVec(const Vec4& v1, const Vec4& v2)
+    {
+        return Vec4(min(v1.x, v2.x),
+                    min(v1.y, v2.y),
+                    min(v1.z, v2.z),
+                    min(v1.w, v2.w));
+    }
+
+    Vec4 maxVec(const Vec4& v1, const Vec4& v2)
+    {
+        return Vec4(max(v1.x, v2.x),
+                    max(v1.y, v2.y),
+                    max(v1.z, v2.z),
+                    max(v1.w, v2.w));
+    }
+
     float maxComponent(const Vec4& v) {
         return max4(v.x, v.y, v.z, v.w);
     }
@@ -1038,6 +1080,13 @@ namespace math
     {
     }
 
+    Plane::Plane(float normalX, float normalY, float normalZ, float distance)
+        : normal(normalX, normalY, normalZ)
+        , distance(distance)
+    {
+        normalize(normal);
+    }
+
     float distance(const Vec3& point, const Plane& plane)
     {
         return dot(plane.normal, point) + plane.distance;
@@ -1093,9 +1142,50 @@ namespace math
 
     bool intersection(const Plane& p1, const Plane& p2, const Plane& p3, Vec3& dst)
     {
-        NOT_IMPLEMENTED;
+        // The planes' normals must be all normalized
+        // Calculate the determinant of the matrix (i.e | n1 n2 n3 |).
+        float det = p1.normal.x * (p2.normal.y * p3.normal.z -
+                    p2.normal.z * p3.normal.y) - p2.normal.x *(p1.normal.y * p3.normal.z -
+                    p1.normal.z * p3.normal.y) + p3.normal.x * (p1.normal.y * p2.normal.z - p1.normal.z * p2.normal.y);
 
-        return false;
+        // If the determinant is zero, then the planes do not all intersect.
+        if (fabs(det) <= kEpsilon)
+            return false;
+
+        // Create 3 points, one on each plane.
+        // (We just pick the point on the plane directly along its normal from the origin).
+        float p1x = -p1.normal.x * p1.distance;
+        float p1y = -p1.normal.y * p1.distance;
+        float p1z = -p1.normal.z * p1.distance;
+        float p2x = -p2.normal.x * p2.distance;
+        float p2y = -p2.normal.y * p2.distance;
+        float p2z = -p2.normal.z * p2.distance;
+        float p3x = -p3.normal.x * p3.distance;
+        float p3y = -p3.normal.y * p3.distance;
+        float p3z = -p3.normal.z * p3.distance;
+
+        // Calculate the cross products of the normals.
+        float c1x = (p2.normal.y * p3.normal.z) - (p2.normal.z * p3.normal.y);
+        float c1y = (p2.normal.z * p3.normal.x) - (p2.normal.x * p3.normal.z);
+        float c1z = (p2.normal.x * p3.normal.y) - (p2.normal.y * p3.normal.x);
+        float c2x = (p3.normal.y * p1.normal.z) - (p3.normal.z * p1.normal.y);
+        float c2y = (p3.normal.z * p1.normal.x) - (p3.normal.x * p1.normal.z);
+        float c2z = (p3.normal.x * p1.normal.y) - (p3.normal.y * p1.normal.x);
+        float c3x = (p1.normal.y * p2.normal.z) - (p1.normal.z * p2.normal.y);
+        float c3y = (p1.normal.z * p2.normal.x) - (p1.normal.x * p2.normal.z);
+        float c3z = (p1.normal.x * p2.normal.y) - (p1.normal.y * p2.normal.x);
+
+        // Calculate the point of intersection using the formula:
+        // x = (| n1 n2 n3 |)^-1 * [(x1 * n1)(n2 x n3) + (x2 * n2)(n3 x n1) + (x3 * n3)(n1 x n2)]
+        float s1 = p1x * p1.normal.x + p1y * p1.normal.y + p1z * p1.normal.z;
+        float s2 = p2x * p2.normal.x + p2y * p2.normal.y + p2z * p2.normal.z;
+        float s3 = p3x * p3.normal.x + p3y * p3.normal.y + p3z * p3.normal.z;
+        float detI = 1.0f / det;
+        dst.x = (s1 * c1x + s2 * c2x + s3 * c3x) * detI;
+        dst.y = (s1 * c1y + s2 * c2y + s3 * c3y) * detI;
+        dst.z = (s1 * c1z + s2 * c2z + s3 * c3z) * detI;
+
+        return true;
     }
 
     bool intersection(const Plane& p1, const Plane& p2, Ray3& dst)
@@ -2222,7 +2312,7 @@ namespace math
         f.right        = Plane(Vec3(m[3] - m[0], m[7] - m[4], m[11] - m[8]), m[15] - m[12]);
     }
 
-    Frustum::Frustum(const Mat4x4& matrix)
+    Frustum::Frustum(const Mat4x4& matrix) // matrix is a view-projection
         : matrix(matrix)
     {
         updatePlanes(*this, matrix);
@@ -2255,17 +2345,17 @@ namespace math
 
     bool intersects(const Vec3& point, const Frustum& f)
     {
-        if (distance(point, f.near) <= 0)
+        if (distance(point, f.near) <= kEpsilon)
             return false;
-        if (distance(point, f.far) <= 0)
+        if (distance(point, f.far) <= kEpsilon)
             return false;
-        if (distance(point, f.left) <= 0)
+        if (distance(point, f.left) <= kEpsilon)
             return false;
-        if (distance(point, f.right) <= 0)
+        if (distance(point, f.right) <= kEpsilon)
             return false;
-        if (distance(point, f.top) <= 0)
+        if (distance(point, f.top) <= kEpsilon)
             return false;
-        if (distance(point, f.bottom) <= 0)
+        if (distance(point, f.bottom) <= kEpsilon)
             return false;
 
         return true;
@@ -2825,7 +2915,7 @@ namespace math
 
         // If the dot product of the plane's normal and this ray's direction is zero,
         // then the ray is parallel to the plane and does not intersect it.
-        if (dotP == 0.0f)
+        if (dotP <= kEpsilon)
         {
             return false;
         }
@@ -2966,11 +3056,12 @@ namespace math
 
     bool intersection(const Box3& b, const Ray3& r, float& distance)
     {
+        // slabs method intersection test
         Vec3 rayInvDir = Vec3::One / r.direction;
         Vec3 t0 = (b.min - r.origin) * rayInvDir;
         Vec3 t1 = (b.max - r.origin) * rayInvDir;
-        Vec3 tMin = min(t0, t1);
-        Vec3 tMax = max(t0, t1);
+        Vec3 tMin = minVec(t0, t1);
+        Vec3 tMax = maxVec(t0, t1);
         float d0 = maxComponent(tMin);
         float d1 = minComponent(tMax);
 
@@ -3025,12 +3116,14 @@ namespace math
     {
         dst.min = Vec3(FLT_MAX);
         dst.max = Vec3(-FLT_MAX);
-        Vec3 trMin;
-        Vec3 trMax;
-        transformPoint(b.min, m, trMin);
-        transformPoint(b.max, m, trMax);
-        merge(dst, trMin);
-        merge(dst, trMax);
+        Vec3 corners[8];
+        Vec3 trPoint;
+        getCorners(b, corners);
+        for (int i  = 0; i < 8; ++i)
+        {
+            transformPoint(corners[i], m, trPoint);
+            merge(dst, trPoint);
+        }
     }
 
     void transform(Box3& b, const Mat4x4& m)

@@ -34,6 +34,9 @@ namespace math
     void  scale(const Vec4& v, float scale, Vec4& dst);
     void  scale(Vec4& v, float scale);
 
+    Vec4 minVec(const Vec4& v1, const Vec4& v2);
+    Vec4 maxVec(const Vec4& v1, const Vec4& v2);
+
     float maxComponent(const Vec4& v);
     float minComponent(const Vec4& v);
     float meanComponent(const Vec4& v);
