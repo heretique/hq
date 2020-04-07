@@ -296,7 +296,7 @@ namespace math
         return Vec2(-v.x, -v.y);
     }
 
-    Vec2 operator +(const Vec2& lhs, const Vec2& rhs)
+    Vec2 operator+(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x + rhs.x, lhs.y + rhs.y);
     }
@@ -307,7 +307,7 @@ namespace math
         dst.y = lhs.y + rhs.y;
     }
 
-    Vec2 operator -(const Vec2& lhs, const Vec2& rhs)
+    Vec2 operator-(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x - rhs.x, lhs.y - rhs.y);
     }
@@ -318,7 +318,7 @@ namespace math
         dst.y = lhs.y - rhs.y;
     }
 
-    Vec2 operator *(const Vec2& lhs, const Vec2& rhs)
+    Vec2 operator*(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x * rhs.x, lhs.y * rhs.y);
     }
@@ -329,12 +329,12 @@ namespace math
         dst.y = lhs.y * rhs.y;
     }
 
-    Vec2 operator *(float f, const Vec2& v)
+    Vec2 operator*(float f, const Vec2& v)
     {
         return Vec2(f * v.x, f * v.y);
     }
 
-    Vec2 operator *(const Vec2& v, float f)
+    Vec2 operator*(const Vec2& v, float f)
     {
         return Vec2(f * v.x, f * v.y);
     }
@@ -351,7 +351,7 @@ namespace math
         dst.y = f * v.y;
     }
 
-    Vec2 operator /(const Vec2& lhs, const Vec2& rhs)
+    Vec2 operator/(const Vec2& lhs, const Vec2& rhs)
     {
         return Vec2(lhs.x / rhs.x, lhs.y / rhs.y);
     }
@@ -487,27 +487,177 @@ namespace math
 
     Vec2 minVec(const Vec2& v1, const Vec2& v2)
     {
-        return Vec2(min(v1.x, v2.x),
-                    min(v1.y, v2.y));
+        return Vec2(min(v1.x, v2.x), min(v1.y, v2.y));
     }
 
     Vec2 maxVec(const Vec2& v1, const Vec2& v2)
     {
-        return Vec2(max(v1.x, v2.x),
-                    max(v1.y, v2.y));
+        return Vec2(max(v1.x, v2.x), max(v1.y, v2.y));
     }
 
-    float maxComponent(const Vec2& v) {
+    float maxComponent(const Vec2& v)
+    {
         return max(v.x, v.y);
     }
 
-    float minComponent(const Vec2& v) {
+    float minComponent(const Vec2& v)
+    {
         return min(v.x, v.y);
     }
 
-    float meanComponent(const Vec2& v) {
+    float meanComponent(const Vec2& v)
+    {
         return (v.x + v.y) * (1.0f / 2.0f);
     }
+
+    /// int variant
+
+
+    Vec2i::Vec2i(const int* data)
+    {
+        assert(data);
+        x = data[0];
+        y = data[1];
+    }
+
+    int& Vec2i::operator[](size_t i)
+    {
+        assert(i < 2);
+        return data[i];
+    }
+
+    const int& Vec2i::operator[](size_t i) const
+    {
+        assert(i < 2);
+        return data[i];
+    }
+
+    const Vec2i Vec2i::Zero(0.f);
+    const Vec2i Vec2i::One(1.f);
+
+    bool isZero(const Vec2i& v)
+    {
+        return v.x == 0.f && v.y == 0.f;
+    }
+
+    bool isOne(const Vec2i& v)
+    {
+        return v.x == 1.f && v.y == 1.f;
+    }
+
+    Vec2i operator-(const Vec2i& v)
+    {
+        return Vec2i(-v.x, -v.y);
+    }
+
+    Vec2i operator+(const Vec2i& lhs, const Vec2i& rhs)
+    {
+        return Vec2i(lhs.x + rhs.x, lhs.y + rhs.y);
+    }
+
+    void add(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst)
+    {
+        dst.x = lhs.x + rhs.x;
+        dst.y = lhs.y + rhs.y;
+    }
+
+    Vec2i operator-(const Vec2i& lhs, const Vec2i& rhs)
+    {
+        return Vec2i(lhs.x - rhs.x, lhs.y - rhs.y);
+    }
+
+    void sub(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst)
+    {
+        dst.x = lhs.x - rhs.x;
+        dst.y = lhs.y - rhs.y;
+    }
+
+    Vec2i operator*(const Vec2i& lhs, const Vec2i& rhs)
+    {
+        return Vec2i(lhs.x * rhs.x, lhs.y * rhs.y);
+    }
+
+    void mul(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst)
+    {
+        dst.x = lhs.x * rhs.x;
+        dst.y = lhs.y * rhs.y;
+    }
+
+    Vec2i operator*(int f, const Vec2i& v)
+    {
+        return Vec2i(f * v.x, f * v.y);
+    }
+
+    Vec2i operator*(const Vec2i& v, int f)
+    {
+        return Vec2i(f * v.x, f * v.y);
+    }
+
+    void mul(int f, const Vec2i& v, Vec2i& dst)
+    {
+        dst.x = f * v.x;
+        dst.y = f * v.y;
+    }
+
+    void mul(const Vec2i& v, float f, Vec2i& dst)
+    {
+        dst.x = f * v.x;
+        dst.y = f * v.y;
+    }
+
+    Vec2i operator/(const Vec2i& lhs, const Vec2i& rhs)
+    {
+        return Vec2i(lhs.x / rhs.x, lhs.y / rhs.y);
+    }
+
+    void div(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst)
+    {
+        dst.x = lhs.x / rhs.x;
+        dst.y = lhs.y / rhs.y;
+    }
+
+    Vec2i clamp(const Vec2i& v, const Vec2i& min, const Vec2i& max)
+    {
+        return {clamp(v.x, min.x, max.x),  //
+                clamp(v.y, min.y, max.y)};
+    }
+
+    void clamp(const Vec2i& v, const Vec2i& min, const Vec2i& max, Vec2i& dst)
+    {
+        dst.x = clamp(v.x, min.x, max.x);
+        dst.y = clamp(v.y, min.y, max.y);
+    }
+
+    void clamp(Vec2i& v, const Vec2i& min, const Vec2i& max)
+    {
+        clamp(v, min, max, v);
+    }
+
+    Vec2i minVec(const Vec2i& v1, const Vec2i& v2)
+    {
+        return Vec2i(min(v1.x, v2.x), min(v1.y, v2.y));
+    }
+
+    Vec2i maxVec(const Vec2i& v1, const Vec2i& v2)
+    {
+        return Vec2i(max(v1.x, v2.x), max(v1.y, v2.y));
+    }
+
+    float maxComponent(const Vec2i& v)
+    {
+        return max(v.x, v.y);
+    }
+
+    float minComponent(const Vec2i& v)
+    {
+        return min(v.x, v.y);
+    }
+
+    float meanComponent(const Vec2i& v)
+    {
+        return (v.x + v.y) * (1.0f / 2.0f);
+    }
+
 
     ////////////// Vec3 /////////////
 
@@ -556,17 +706,17 @@ namespace math
         return {-v.x, -v.y, -v.z};
     }
 
-    bool operator <(const Vec3& lhs, const Vec3& rhs)
+    bool operator<(const Vec3& lhs, const Vec3& rhs)
     {
         return lhs.x < rhs.x || lhs.y < rhs.y || lhs.z < rhs.z;
     }
 
-    bool operator >(const Vec3& lhs, const Vec3& rhs)
+    bool operator>(const Vec3& lhs, const Vec3& rhs)
     {
         return lhs.x > rhs.x || lhs.y > rhs.y || lhs.z > rhs.z;
     }
 
-    Vec3 operator +(const Vec3& lhs, const Vec3& rhs)
+    Vec3 operator+(const Vec3& lhs, const Vec3& rhs)
     {
         return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
     }
@@ -578,7 +728,7 @@ namespace math
         dst.z = lhs.z + rhs.z;
     }
 
-    Vec3 operator -(const Vec3& lhs, const Vec3& rhs)
+    Vec3 operator-(const Vec3& lhs, const Vec3& rhs)
     {
         return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
     }
@@ -590,7 +740,7 @@ namespace math
         dst.z = lhs.z - rhs.z;
     }
 
-    Vec3 operator *(const Vec3& lhs, const Vec3& rhs)
+    Vec3 operator*(const Vec3& lhs, const Vec3& rhs)
     {
         return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z};
     }
@@ -602,12 +752,12 @@ namespace math
         dst.z = lhs.z * rhs.z;
     }
 
-    Vec3 operator *(float f, const Vec3& v)
+    Vec3 operator*(float f, const Vec3& v)
     {
         return Vec3(f * v.x, f * v.y, f * v.z);
     }
 
-    Vec3 operator *(const Vec3& v, float f)
+    Vec3 operator*(const Vec3& v, float f)
     {
         return Vec3(f * v.x, f * v.y, f * v.z);
     }
@@ -626,7 +776,7 @@ namespace math
         dst.z = f * v.z;
     }
 
-    Vec3 operator /(const Vec3& lhs, const Vec3& rhs)
+    Vec3 operator/(const Vec3& lhs, const Vec3& rhs)
     {
         return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z};
     }
@@ -755,28 +905,26 @@ namespace math
 
     Vec3 minVec(const Vec3& v1, const Vec3& v2)
     {
-        return Vec3(min(v1.x, v2.x),
-                    min(v1.y, v2.y),
-                    min(v1.z, v2.z));
+        return Vec3(min(v1.x, v2.x), min(v1.y, v2.y), min(v1.z, v2.z));
     }
 
     Vec3 maxVec(const Vec3& v1, const Vec3& v2)
     {
-        return Vec3(max(v1.x, v2.x),
-                    max(v1.y, v2.y),
-                    max(v1.z, v2.z));
+        return Vec3(max(v1.x, v2.x), max(v1.y, v2.y), max(v1.z, v2.z));
     }
 
-    float maxComponent(const Vec3& v) {
+    float maxComponent(const Vec3& v)
+    {
         return max3(v.x, v.y, v.z);
     }
 
-    float minComponent(const Vec3& v) {
+    float minComponent(const Vec3& v)
+    {
         return min3(v.x, v.y, v.z);
     }
 
-
-    float meanComponent(const Vec3& v) {
+    float meanComponent(const Vec3& v)
+    {
         return (v.r + v.g + v.b) * (1.0f / 3.0f);
     }
 
@@ -845,7 +993,7 @@ namespace math
         return {-v.x, -v.y, -v.z, -v.w};
     }
 
-    Vec4 operator +(const Vec4& lhs, const Vec4& rhs)
+    Vec4 operator+(const Vec4& lhs, const Vec4& rhs)
     {
         return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};
     }
@@ -858,7 +1006,7 @@ namespace math
         dst.w = lhs.w + rhs.w;
     }
 
-    Vec4 operator -(const Vec4& lhs, const Vec4& rhs)
+    Vec4 operator-(const Vec4& lhs, const Vec4& rhs)
     {
         return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w};
     }
@@ -871,7 +1019,7 @@ namespace math
         dst.w = lhs.w - rhs.w;
     }
 
-    Vec4 operator *(const Vec4& lhs, const Vec4& rhs)
+    Vec4 operator*(const Vec4& lhs, const Vec4& rhs)
     {
         return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w};
     }
@@ -884,7 +1032,7 @@ namespace math
         dst.w = lhs.w * rhs.w;
     }
 
-    Vec4 operator /(const Vec4& lhs, const Vec4& rhs)
+    Vec4 operator/(const Vec4& lhs, const Vec4& rhs)
     {
         return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w};
     }
@@ -1007,29 +1155,26 @@ namespace math
 
     Vec4 minVec(const Vec4& v1, const Vec4& v2)
     {
-        return Vec4(min(v1.x, v2.x),
-                    min(v1.y, v2.y),
-                    min(v1.z, v2.z),
-                    min(v1.w, v2.w));
+        return Vec4(min(v1.x, v2.x), min(v1.y, v2.y), min(v1.z, v2.z), min(v1.w, v2.w));
     }
 
     Vec4 maxVec(const Vec4& v1, const Vec4& v2)
     {
-        return Vec4(max(v1.x, v2.x),
-                    max(v1.y, v2.y),
-                    max(v1.z, v2.z),
-                    max(v1.w, v2.w));
+        return Vec4(max(v1.x, v2.x), max(v1.y, v2.y), max(v1.z, v2.z), max(v1.w, v2.w));
     }
 
-    float maxComponent(const Vec4& v) {
+    float maxComponent(const Vec4& v)
+    {
         return max4(v.x, v.y, v.z, v.w);
     }
 
-    float minComponent(const Vec4& v) {
+    float minComponent(const Vec4& v)
+    {
         return min4(v.x, v.y, v.z, v.w);
     }
 
-    float meanComponent(const Vec4& v) {
+    float meanComponent(const Vec4& v)
+    {
         return (v.r + v.g + v.b + v.a) * (1.0f / 4.0f);
     }
 
@@ -1055,13 +1200,12 @@ namespace math
 
     ////////////////// Rect /////////////////////
 
-    Rect::Rect(const Vec2 &size)
+    Rect::Rect(const Vec2& size)
         : x(0.f)
         , y(0.f)
         , width(size.x)
         , height(size.y)
     {
-
     }
 
     Rect::Rect(const Vec2& topLeft, const Vec2& size)
@@ -1144,9 +1288,9 @@ namespace math
     {
         // The planes' normals must be all normalized
         // Calculate the determinant of the matrix (i.e | n1 n2 n3 |).
-        float det = p1.normal.x * (p2.normal.y * p3.normal.z -
-                    p2.normal.z * p3.normal.y) - p2.normal.x *(p1.normal.y * p3.normal.z -
-                    p1.normal.z * p3.normal.y) + p3.normal.x * (p1.normal.y * p2.normal.z - p1.normal.z * p2.normal.y);
+        float det = p1.normal.x * (p2.normal.y * p3.normal.z - p2.normal.z * p3.normal.y) -
+                    p2.normal.x * (p1.normal.y * p3.normal.z - p1.normal.z * p3.normal.y) +
+                    p3.normal.x * (p1.normal.y * p2.normal.z - p1.normal.z * p2.normal.y);
 
         // If the determinant is zero, then the planes do not all intersect.
         if (fabs(det) <= kEpsilon)
@@ -1177,13 +1321,13 @@ namespace math
 
         // Calculate the point of intersection using the formula:
         // x = (| n1 n2 n3 |)^-1 * [(x1 * n1)(n2 x n3) + (x2 * n2)(n3 x n1) + (x3 * n3)(n1 x n2)]
-        float s1 = p1x * p1.normal.x + p1y * p1.normal.y + p1z * p1.normal.z;
-        float s2 = p2x * p2.normal.x + p2y * p2.normal.y + p2z * p2.normal.z;
-        float s3 = p3x * p3.normal.x + p3y * p3.normal.y + p3z * p3.normal.z;
+        float s1   = p1x * p1.normal.x + p1y * p1.normal.y + p1z * p1.normal.z;
+        float s2   = p2x * p2.normal.x + p2y * p2.normal.y + p2z * p2.normal.z;
+        float s3   = p3x * p3.normal.x + p3y * p3.normal.y + p3z * p3.normal.z;
         float detI = 1.0f / det;
-        dst.x = (s1 * c1x + s2 * c2x + s3 * c3x) * detI;
-        dst.y = (s1 * c1y + s2 * c2y + s3 * c3y) * detI;
-        dst.z = (s1 * c1z + s2 * c2z + s3 * c3z) * detI;
+        dst.x      = (s1 * c1x + s2 * c2x + s3 * c3x) * detI;
+        dst.y      = (s1 * c1y + s2 * c2y + s3 * c3y) * detI;
+        dst.z      = (s1 * c1z + s2 * c2z + s3 * c3z) * detI;
 
         return true;
     }
@@ -2312,7 +2456,7 @@ namespace math
         f.right        = Plane(Vec3(m[3] - m[0], m[7] - m[4], m[11] - m[8]), m[15] - m[12]);
     }
 
-    Frustum::Frustum(const Mat4x4& matrix) // matrix is a view-projection
+    Frustum::Frustum(const Mat4x4& matrix)  // matrix is a view-projection
         : matrix(matrix)
     {
         updatePlanes(*this, matrix);
@@ -2561,7 +2705,7 @@ namespace math
         invert(q, q);
     }
 
-    Quat operator *(const Quat& q1, const Quat& q2)
+    Quat operator*(const Quat& q1, const Quat& q2)
     {
         Quat result;
         mul(q1, q2, result);
@@ -2978,6 +3122,78 @@ namespace math
         return result;
     }
 
+    float width(const Box2& b)
+    {
+        return b.max.x - b.min.x;
+    }
+    float height(const Box2& b) {
+        return b.max.y - b.min.y;
+    }
+
+    void moveTo(const Box2& b, const Vec2& point, Box2& dst) {
+        float w = width(b);
+        float h = height(b);
+        dst.min = point;
+        dst.max = point + Vec2(w, h);
+    }
+
+    void moveTo(Box2& b, const Vec2& point) {
+        moveTo(b, point, b);
+    }
+
+    void merge(const Box2& b, const Vec2& point, Box2& dst)
+    {
+        if (point.x < b.min.x)
+            dst.min.x = point.x;
+        if (point.y < b.min.y)
+            dst.min.y = point.y;
+        if (b.max.x < point.x)
+            dst.max.x = point.x;
+        if (b.max.y < point.y)
+            dst.max.y = point.y;
+    }
+
+    void merge(Box2& b, const Vec2& point) {
+        merge(b, point, b);
+    }
+
+    /// int variant
+
+    int width(const Box2i& b)
+    {
+        return b.max.x - b.min.x;
+    }
+    int height(const Box2i& b) {
+        return b.max.y - b.min.y;
+    }
+
+    void moveTo(const Box2i& b, const Vec2i& point, Box2i& dst) {
+        int w = width(b);
+        int h = height(b);
+        dst.min = point;
+        dst.max = point + Vec2i(w, h);
+    }
+
+    void moveTo(Box2i& b, const Vec2i& point) {
+        moveTo(b, point, b);
+    }
+
+    void merge(const Box2i& b, const Vec2i& point, Box2i& dst)
+    {
+        if (point.x < b.min.x)
+            dst.min.x = point.x;
+        if (point.y < b.min.y)
+            dst.min.y = point.y;
+        if (b.max.x < point.x)
+            dst.max.x = point.x;
+        if (b.max.y < point.y)
+            dst.max.y = point.y;
+    }
+
+    void merge(Box2i& b, const Vec2i& point) {
+        merge(b, point, b);
+    }
+
     ////////////////////////// Box3 ///////////////////////////////
 
     Box3::Box3(const Vec3& min, const Vec3& max)
@@ -3057,13 +3273,13 @@ namespace math
     bool intersection(const Box3& b, const Ray3& r, float& distance)
     {
         // slabs method intersection test
-        Vec3 rayInvDir = Vec3::One / r.direction;
-        Vec3 t0 = (b.min - r.origin) * rayInvDir;
-        Vec3 t1 = (b.max - r.origin) * rayInvDir;
-        Vec3 tMin = minVec(t0, t1);
-        Vec3 tMax = maxVec(t0, t1);
-        float d0 = maxComponent(tMin);
-        float d1 = minComponent(tMax);
+        Vec3  rayInvDir = Vec3::One / r.direction;
+        Vec3  t0        = (b.min - r.origin) * rayInvDir;
+        Vec3  t1        = (b.max - r.origin) * rayInvDir;
+        Vec3  tMin      = minVec(t0, t1);
+        Vec3  tMax      = maxVec(t0, t1);
+        float d0        = maxComponent(tMin);
+        float d1        = minComponent(tMax);
 
         // intersection distance
         distance = (d0 > 0.f) ? d0 : d1;
@@ -3119,7 +3335,7 @@ namespace math
         Vec3 corners[8];
         Vec3 trPoint;
         getCorners(b, corners);
-        for (int i  = 0; i < 8; ++i)
+        for (int i = 0; i < 8; ++i)
         {
             transformPoint(corners[i], m, trPoint);
             merge(dst, trPoint);

@@ -24,10 +24,10 @@ public:
 
     size_t hash() const;
 
-    template <class Archive>
-    void serialize(Archive& ar)
+    template <class Serializer>
+    void Serialize(Serializer& serializer)
     {
-        ar(_hash);
+        SERIALIZE(_hash);
     }
 
 private:

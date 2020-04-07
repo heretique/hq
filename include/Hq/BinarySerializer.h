@@ -4,6 +4,7 @@
 #include <sstream>
 #include <memory>
 #include <unordered_map>
+#include <entt/fwd.hpp>
 
 namespace hq
 {
@@ -86,6 +87,16 @@ struct BinarySerializer
             m_out.write(value.c_str(), len);
     }
     template <>
+    inline void operator() (int& value, const std::string& s)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+    template <>
+    inline void operator() (const int& value, const std::string& s)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+    template <>
     inline void operator() (uint8_t& value, const std::string& s)
     {
         m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
@@ -121,13 +132,50 @@ struct BinarySerializer
         m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
     }
     template <>
+    inline void operator() (const float& value, const std::string& s)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+    template <>
     inline void operator() (double& value, const std::string& s)
     {
         m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
     }
+    template <>
+    inline void operator() (const double& value, const std::string& s)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+
+    template <>
+    inline void operator() (entt::entity& value, const std::string& s)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+    template <>
+    inline void operator() (const entt::entity& value, const std::string& s)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+
 
     template<>
     inline void operator() (float& value)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+    template<>
+    inline void operator() (const float& value)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+    template<>
+    inline void operator() (entt::entity& value)
+    {
+        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+    template<>
+    inline void operator() (const entt::entity& value)
     {
         m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
     }

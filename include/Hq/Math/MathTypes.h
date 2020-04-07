@@ -56,6 +56,54 @@ namespace math
         operator bool();
     };
 
+    struct Vec2i
+    {
+        union {
+            int data[2];
+            struct
+            {
+                int x, y;
+            };
+            struct
+            {
+                int u, v;
+            };
+        };
+
+        constexpr Vec2i()
+            : x(0.f)
+            , y(0.f)
+        {
+        }
+        explicit constexpr Vec2i(int a)
+            : x(a)
+            , y(a)
+        {
+        }
+        explicit Vec2i(const int* data);
+        constexpr Vec2i(int x, int y)
+            : x(x)
+            , y(y)
+        {
+        }
+
+        int&       operator[](size_t i);
+        const int& operator[](size_t i) const;
+
+        static const Vec2i Zero;
+        static const Vec2i One;
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(x);
+            SERIALIZE(y);
+        }
+
+    private:
+        operator bool();
+    };
+
     /// Represents a vector or a point in 3D space.
     /// Has also r, g, b components representing color
     struct Vec3
@@ -471,6 +519,24 @@ namespace math
         Box2(const Vec2& min, const Vec2& max);
         Vec2 center() const;
         Vec2 extent() const;
+
+        template <class Serializer>
+        void Serialize(Serializer& serializer)
+        {
+            SERIALIZE(min);
+            SERIALIZE(max);
+        }
+    };
+
+    // mostly used for UI
+    struct Box2i
+    {
+        Vec2i      min;
+        Vec2i      max;
+        constexpr Box2i() {}
+        Box2i(const Vec2i& min, const Vec2i& max);
+        Vec2i center() const;
+        Vec2i extent() const;
 
         template <class Serializer>
         void Serialize(Serializer& serializer)

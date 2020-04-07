@@ -26,6 +26,18 @@ void JsonSerializer::operator()(const std::string& value, const std::string& s)
     _writer.String(value);
 }
 
+void JsonSerializer::operator()(int &value, const std::string &s)
+{
+    _writer.String(s);
+    _writer.Int(value);
+}
+
+void JsonSerializer::operator()(const int &value, const std::string &s)
+{
+    _writer.String(s);
+    _writer.Int(value);
+}
+
 void JsonSerializer::operator()(u8& value, const std::string& s)
 {
     _writer.String(s);
@@ -68,10 +80,34 @@ void JsonSerializer::operator()(float& value, const std::string& s)
     _writer.Double(value);
 }
 
+void JsonSerializer::operator()(const float &value, const std::string &s)
+{
+    _writer.String(s);
+    _writer.Double(value);
+}
+
 void JsonSerializer::operator()(double& value, const std::string& s)
 {
     _writer.String(s);
     _writer.Double(value);
+}
+
+void JsonSerializer::operator()(const double &value, const std::string &s)
+{
+    _writer.String(s);
+    _writer.Double(value);
+}
+
+void JsonSerializer::operator()(entt::entity &value, const std::string &s)
+{
+    _writer.String(s);
+    _writer.Uint(static_cast<std::underlying_type_t<entt::entity>>(value));
+}
+
+void JsonSerializer::operator()(const entt::entity &value, const std::string &s)
+{
+    _writer.String(s);
+    _writer.Uint(static_cast<std::underlying_type_t<entt::entity>>(value));
 }
 
 void JsonSerializer::operator()(std::string& value)
@@ -82,6 +118,16 @@ void JsonSerializer::operator()(std::string& value)
 void JsonSerializer::operator()(const std::string& value)
 {
     _writer.String(value);
+}
+
+void JsonSerializer::operator()(int &value)
+{
+    _writer.Int(value);
+}
+
+void JsonSerializer::operator()(const int &value)
+{
+    _writer.Int(value);
 }
 
 void JsonSerializer::operator()(u8& value)
@@ -119,9 +165,29 @@ void JsonSerializer::operator()(float& value)
     _writer.Double(value);
 }
 
+void JsonSerializer::operator()(const float &value)
+{
+    _writer.Double(value);
+}
+
 void JsonSerializer::operator()(double& value)
 {
     _writer.Double(value);
+}
+
+void JsonSerializer::operator()(const double &value)
+{
+    _writer.Double(value);
+}
+
+void JsonSerializer::operator()(entt::entity &value)
+{
+    _writer.Uint(static_cast<std::underlying_type_t<entt::entity>>(value));
+}
+
+void JsonSerializer::operator()(const entt::entity &value)
+{
+    _writer.Uint(static_cast<std::underlying_type_t<entt::entity>>(value));
 }
 
 //////////////// JsonDeserializer
@@ -149,6 +215,20 @@ void JsonDeserializer::operator()(std::string& value, const std::string& s)
         return;
 
     value = val.GetString();
+}
+
+void JsonDeserializer::operator()(int &value, const std::string &s)
+{
+    using namespace rapidjson;
+    assert(!_stack.empty());
+    if (!_stack.back()->HasMember(s))
+        return;
+
+    const Value& val = (*_stack.back())[s];
+    if (!val.IsNumber())
+        return;
+
+    value = val.GetInt();
 }
 
 void JsonDeserializer::operator()(u8& value, const std::string& s)
@@ -221,6 +301,20 @@ void JsonDeserializer::operator()(double& value, const std::string& s)
     value = val.GetDouble();
 }
 
+void JsonDeserializer::operator()(entt::entity &value, const std::string &s)
+{
+    using namespace rapidjson;
+    assert(!_stack.empty());
+    if (!_stack.back()->HasMember(s))
+        return;
+
+    const Value& val = (*_stack.back())[s];
+    if (!val.IsNumber())
+        return;
+
+    value = static_cast<entt::entity>(val.GetUint());
+}
+
 void JsonDeserializer::operator()(std::string& value)
 {
     using namespace rapidjson;
@@ -231,6 +325,18 @@ void JsonDeserializer::operator()(std::string& value)
         return;
 
     value = val.GetString();
+}
+
+void JsonDeserializer::operator()(int &value)
+{
+    using namespace rapidjson;
+    assert(!_stack.empty());
+
+    const Value& val = *_stack.back();
+    if (!val.IsNumber())
+        return;
+
+    value = val.GetInt();
 }
 
 void JsonDeserializer::operator()(u8& value)
@@ -291,6 +397,17 @@ void JsonDeserializer::operator()(double& value)
         return;
 
     value = val.GetDouble();
+}
+
+void JsonDeserializer::operator()(entt::entity &value)
+{
+    using namespace rapidjson;
+    assert(!_stack.empty());
+
+    const Value& val = *_stack.back();
+    if (!val.IsNumber())
+        return;
+    value = static_cast<entt::entity>(val.GetUint());
 }
 
 

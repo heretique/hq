@@ -12,6 +12,7 @@
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/document.h>
+#include <entt/fwd.hpp>
 
 namespace hq {
 
@@ -97,6 +98,8 @@ struct JsonSerializer
 
 	void operator() (std::string& value, const std::string& s);
 	void operator() (const std::string& value, const std::string& s);
+    void operator() (int& value, const std::string& s);
+    void operator() (const int& value, const std::string& s);
     void operator() (u8& value, const std::string& s);
     void operator() (const u8& value, const std::string& s);
     void operator() (u32& value, const std::string& s);
@@ -104,10 +107,16 @@ struct JsonSerializer
     void operator() (u64& value, const std::string& s);
     void operator() (const u64& value, const std::string& s);
 	void operator() (float& value, const std::string& s);
+    void operator() (const float& value, const std::string& s);
 	void operator() (double& value, const std::string& s);
+    void operator() (const double& value, const std::string& s);
+    void operator() (entt::entity& value, const std::string& s);
+    void operator() (const entt::entity& value, const std::string& s);
 
     void operator() (std::string& value);
     void operator() (const std::string& value);
+    void operator() (int& value);
+    void operator() (const int& value);
     void operator() (u8& value);
     void operator() (const u8& value);
     void operator() (u32& value);
@@ -115,7 +124,12 @@ struct JsonSerializer
     void operator() (u64& value);
     void operator() (const u64& value);
     void operator() (float& value);
+    void operator() (const float& value);
     void operator() (double& value);
+    void operator() (const double& value);
+    void operator() (entt::entity& value);
+    void operator() (const entt::entity& value);
+
 private:
     rapidjson::OStreamWrapper _osw;
     rapidjson::Writer<rapidjson::OStreamWrapper> _writer;
@@ -220,18 +234,23 @@ struct JsonDeserializer
 	}
 
     void operator() (std::string& value, const std::string& s);
+    void operator() (int& value, const std::string& s);
     void operator() (u8& value, const std::string& s);
     void operator() (u32& value, const std::string& s);
     void operator() (u64& value, const std::string& s);
     void operator() (float& value, const std::string& s);
     void operator() (double& value, const std::string& s);
+    void operator() (entt::entity& value, const std::string& s);
 
     void operator() (std::string& value);
+    void operator() (int& value);
     void operator() (u8& value);
     void operator() (u32& value);
     void operator() (u64& value);
     void operator() (float& value);
     void operator() (double& value);
+    void operator() (entt::entity& value);
+
 private:
     rapidjson::IStreamWrapper _isw;
     std::vector<const rapidjson::Value*> _stack;
