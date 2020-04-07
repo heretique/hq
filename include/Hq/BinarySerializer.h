@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Hq/BasicTypes.h"
+
 #include <string>
 #include <sstream>
+#include <vector>
 #include <memory>
 #include <unordered_map>
 #include <entt/fwd.hpp>
@@ -69,116 +72,40 @@ struct BinarySerializer
         }
     }
 
-    template <>
-    inline void operator() (std::string& value, const std::string& s)
-    {
-        size_t len = value.length();
-        m_out.write(reinterpret_cast<const char*>(&len), sizeof(len));
-        if (len)
-            m_out.write(value.c_str(), len);
-    }
 
-    template <>
-    inline void operator() (const std::string& value, const std::string& s)
-    {
-        size_t len = value.length();
-        m_out.write(reinterpret_cast<const char*>(&len), sizeof(len));
-        if (len)
-            m_out.write(value.c_str(), len);
-    }
-    template <>
-    inline void operator() (int& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (const int& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (uint8_t& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (const uint8_t& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (uint32_t& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (const uint32_t& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (uint64_t& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (const uint64_t& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (float& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (const float& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (double& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (const double& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
+	void operator() (std::string& value, const std::string& s);
+	void operator() (const std::string& value, const std::string& s);
+	void operator() (int& value, const std::string& s);
+	void operator() (const int& value, const std::string& s);
+	void operator() (u8& value, const std::string& s);
+	void operator() (const u8& value, const std::string& s);
+	void operator() (u32& value, const std::string& s);
+	void operator() (const u32& value, const std::string& s);
+	void operator() (u64& value, const std::string& s);
+	void operator() (const u64& value, const std::string& s);
+	void operator() (float& value, const std::string& s);
+	void operator() (const float& value, const std::string& s);
+	void operator() (double& value, const std::string& s);
+	void operator() (const double& value, const std::string& s);
+	void operator() (entt::entity& value, const std::string& s);
+	void operator() (const entt::entity& value, const std::string& s);
 
-    template <>
-    inline void operator() (entt::entity& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (const entt::entity& value, const std::string& s)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-
-
-    template<>
-    inline void operator() (float& value)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template<>
-    inline void operator() (const float& value)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template<>
-    inline void operator() (entt::entity& value)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-    template<>
-    inline void operator() (const entt::entity& value)
-    {
-        m_out.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
+	void operator() (std::string& value);
+	void operator() (const std::string& value);
+	void operator() (int& value);
+	void operator() (const int& value);
+	void operator() (u8& value);
+	void operator() (const u8& value);
+	void operator() (u32& value);
+	void operator() (const u32& value);
+	void operator() (u64& value);
+	void operator() (const u64& value);
+	void operator() (float& value);
+	void operator() (const float& value);
+	void operator() (double& value);
+	void operator() (const double& value);
+	void operator() (entt::entity& value);
+	void operator() (const entt::entity& value);
 
 private:
     std::ostream& m_out;
@@ -231,48 +158,24 @@ struct BinaryDeserializer
         (*this)((*value.get()), s);
     }
 
-    template <>
-    inline void operator() (std::string& value, const std::string& s)
-    {
-        size_t len = 0;
-        m_in.read(reinterpret_cast<char*>(&len), sizeof(len));
-        if (len)
-        {
-            std::vector<char> tmp(len);
-            m_in.read(tmp.data(), len); // deserialize characters of string
-            value.assign(tmp.data(), len);
-        }
-    }
-    template <>
-    inline void operator() (uint8_t& value, const std::string& s)
-    {
-        value = 0;
-        m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (uint32_t& value, const std::string& s)
-    {
-        value = 0;
-        m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (uint64_t& value, const std::string& s)
-    {
-        value = 0;
-        m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (float& value, const std::string& s)
-    {
-        value = 0.f;
-        m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
-    }
-    template <>
-    inline void operator() (double& value, const std::string& s)
-    {
-        value = 0.0;
-        m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
-    }
+	void operator() (std::string& value, const std::string& s);
+	void operator() (int& value, const std::string& s);
+	void operator() (u8& value, const std::string& s);
+	void operator() (u32& value, const std::string& s);
+	void operator() (u64& value, const std::string& s);
+	void operator() (float& value, const std::string& s);
+	void operator() (double& value, const std::string& s);
+	void operator() (entt::entity& value, const std::string& s);
+
+	void operator() (std::string& value);
+	void operator() (int& value);
+	void operator() (u8& value);
+	void operator() (u32& value);
+	void operator() (u64& value);
+	void operator() (float& value);
+	void operator() (double& value);
+	void operator() (entt::entity& value);
+
 private:
     std::istream& m_in;
 };

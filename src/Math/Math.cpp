@@ -1293,7 +1293,7 @@ namespace math
                     p3.normal.x * (p1.normal.y * p2.normal.z - p1.normal.z * p2.normal.y);
 
         // If the determinant is zero, then the planes do not all intersect.
-        if (fabs(det) <= kEpsilon)
+		if (abs(det) <= kEpsilon)
             return false;
 
         // Create 3 points, one on each plane.
@@ -3330,8 +3330,8 @@ namespace math
 
     void transform(const Box3& b, const Mat4x4& m, Box3& dst)
     {
-        dst.min = Vec3(FLT_MAX);
-        dst.max = Vec3(-FLT_MAX);
+		dst.min = Vec3(kFloatMax);
+		dst.max = Vec3(-kFloatMax);
         Vec3 corners[8];
         Vec3 trPoint;
         getCorners(b, corners);

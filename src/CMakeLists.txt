@@ -8,6 +8,7 @@ target_sources(hq
         LinearAllocator.cpp
         JobManager.cpp
         JsonSerializer.cpp
+        BinarySerializer.cpp
         PoolAllocator.cpp
         ProxyAllocator.cpp
         Rng.cpp
