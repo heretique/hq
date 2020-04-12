@@ -10,57 +10,67 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/istreamwrapper.h>
-#include <rapidjson/writer.h>
+#include <rapidjson/prettywriter.h>
 #include <rapidjson/document.h>
 #include <entt/fwd.hpp>
+#include <entt/core/type_info.hpp>
 
-namespace hq {
+namespace hq
+{
+
+const std::string kTypeLiteral = "__type__";
 
 struct JsonSerializer
 {
     JsonSerializer(std::ostream& out);
-	~JsonSerializer();
+    ~JsonSerializer();
 
-	template <typename Serializable>
-	inline void operator () (Serializable& serializable)
-	{
-        _writer.StartObject();
-		serializable.Serialize(*this);
-        _writer.EndObject();
-	}
-
-	template <typename Serializable>
-	inline void operator () (Serializable& serializable, const std::string& s)
-	{
+    template <typename Serializable>
+    inline void operator()(Serializable& serializable)
+    {
+        std::string s = std::to_string(entt::type_info<Serializable>::id());
         _writer.String(s);
         _writer.StartObject();
-		serializable.Serialize(*this);
+        _writer.String(kTypeLiteral);
+        _writer.String(s);
+        serializable.Serialize(*this);
         _writer.EndObject();
-	}
+    }
+
+    template <typename Serializable>
+    inline void operator()(Serializable& serializable, const std::string& s)
+    {
+        _writer.String(s);
+        _writer.StartObject();
+        _writer.String(kTypeLiteral);
+        _writer.String(std::to_string(entt::type_info<Serializable>::id()));
+        serializable.Serialize(*this);
+        _writer.EndObject();
+    }
 
     template <typename K, typename T>
-    inline void operator() (std::unordered_map<K, T>& value, const std::string& s)
-	{
+    inline void operator()(std::unordered_map<K, T>& value, const std::string& s)
+    {
         _writer.String(s);
         _writer.StartArray();
-		for (auto& pair : value)
-		{
+        for (auto& pair : value)
+        {
             _writer.StartObject();
-			(*this)(pair.first, "key");
-			(*this)(pair.second, "value");
+            (*this)(pair.first, "key");
+            (*this)(pair.second, "value");
             _writer.EndObject();
-		}
+        }
         _writer.EndArray();
-	}
+    }
 
     template <typename T>
-    inline void operator() (std::unique_ptr<T>& value, const std::string& s)
-	{
-		(*this)(*value, s);
-	}
+    inline void operator()(std::unique_ptr<T>& value, const std::string& s)
+    {
+        (*this)(*value, s);
+    }
 
     template <typename T>
-    inline void operator() (std::vector<T>& container, const std::string& s)
+    inline void operator()(std::vector<T>& container, const std::string& s)
     {
         _writer.String(s);
         _writer.StartArray();
@@ -78,7 +88,7 @@ struct JsonSerializer
     }
 
     template <typename T, size_t N>
-    inline void operator() (T (&array)[N], const std::string& s)
+    inline void operator()(T (&array)[N], const std::string& s)
     {
         _writer.String(s);
         _writer.StartArray();
@@ -96,83 +106,79 @@ struct JsonSerializer
         _writer.EndArray();
     }
 
-	void operator() (std::string& value, const std::string& s);
-	void operator() (const std::string& value, const std::string& s);
-    void operator() (int& value, const std::string& s);
-    void operator() (const int& value, const std::string& s);
-    void operator() (u8& value, const std::string& s);
-    void operator() (const u8& value, const std::string& s);
-    void operator() (u32& value, const std::string& s);
-    void operator() (const u32& value, const std::string& s);
-    void operator() (u64& value, const std::string& s);
-    void operator() (const u64& value, const std::string& s);
-	void operator() (float& value, const std::string& s);
-    void operator() (const float& value, const std::string& s);
-	void operator() (double& value, const std::string& s);
-    void operator() (const double& value, const std::string& s);
-    void operator() (entt::entity& value, const std::string& s);
-    void operator() (const entt::entity& value, const std::string& s);
+    void operator()(std::string& value, const std::string& s);
+    void operator()(const std::string& value, const std::string& s);
+    void operator()(int& value, const std::string& s);
+    void operator()(const int& value, const std::string& s);
+    void operator()(u8& value, const std::string& s);
+    void operator()(const u8& value, const std::string& s);
+    void operator()(u32& value, const std::string& s);
+    void operator()(const u32& value, const std::string& s);
+    void operator()(u64& value, const std::string& s);
+    void operator()(const u64& value, const std::string& s);
+    void operator()(float& value, const std::string& s);
+    void operator()(const float& value, const std::string& s);
+    void operator()(double& value, const std::string& s);
+    void operator()(const double& value, const std::string& s);
+    void operator()(entt::entity& value, const std::string& s);
+    void operator()(const entt::entity& value, const std::string& s);
 
-    void operator() (std::string& value);
-    void operator() (const std::string& value);
-    void operator() (int& value);
-    void operator() (const int& value);
-    void operator() (u8& value);
-    void operator() (const u8& value);
-    void operator() (u32& value);
-    void operator() (const u32& value);
-    void operator() (u64& value);
-    void operator() (const u64& value);
-    void operator() (float& value);
-    void operator() (const float& value);
-    void operator() (double& value);
-    void operator() (const double& value);
-    void operator() (entt::entity& value);
-    void operator() (const entt::entity& value);
+    void operator()(std::string& value);
+    void operator()(const std::string& value);
+    void operator()(int& value);
+    void operator()(const int& value);
+    void operator()(u8& value);
+    void operator()(const u8& value);
+    void operator()(u32& value);
+    void operator()(const u32& value);
+    void operator()(u64& value);
+    void operator()(const u64& value);
+    void operator()(float& value);
+    void operator()(const float& value);
+    void operator()(double& value);
+    void operator()(const double& value);
+    void operator()(entt::entity& value);
+    void operator()(const entt::entity& value);
 
 private:
-    rapidjson::OStreamWrapper _osw;
-    rapidjson::Writer<rapidjson::OStreamWrapper> _writer;
+    rapidjson::OStreamWrapper                          _osw;
+    rapidjson::PrettyWriter<rapidjson::OStreamWrapper> _writer;
 };
-
-
-
-
 
 struct JsonDeserializer
 {
     JsonDeserializer(std::istream& in);
-	~JsonDeserializer();
+    ~JsonDeserializer();
 
-	template <typename Serializable>
-	inline void operator () (Serializable& serializable)
-	{
+    template <typename Serializable>
+    inline void operator()(Serializable& serializable)
+    {
         if (!_document.IsObject())
-			return;
+            return;
 
         _stack.push_back(&_document);
-		serializable.Serialize(*this);
+        serializable.Serialize(*this);
         _stack.pop_back();
         assert(_stack.empty());
-	}
+    }
 
-	template <typename Serializable>
-	inline void operator () (Serializable& serializable, const std::string& s)
-	{
-		using namespace rapidjson;
+    template <typename Serializable>
+    inline void operator()(Serializable& serializable, const std::string& s)
+    {
+        using namespace rapidjson;
         assert(!_stack.empty());
         if (!_stack.back()->HasMember(s))
-			return;
+            return;
 
         const Value& val = (*_stack.back())[s];
-		assert(val.IsObject());
+        assert(val.IsObject());
         _stack.push_back(&val);
-		serializable.Serialize(*this);
+        serializable.Serialize(*this);
         _stack.pop_back();
-	}
+    }
 
     template <typename T>
-    inline void operator() (std::vector<T>& container, const std::string& s)
+    inline void operator()(std::vector<T>& container, const std::string& s)
     {
         using namespace rapidjson;
         assert(!_stack.empty());
@@ -197,63 +203,86 @@ struct JsonDeserializer
     }
 
     template <typename K, typename T>
-    inline void operator() (std::unordered_map<K, T>& value, const std::string& s)
-	{
-		using namespace rapidjson;
+    inline void operator()(std::unordered_map<K, T>& value, const std::string& s)
+    {
+        using namespace rapidjson;
         assert(!_stack.empty());
         if (!_stack.back()->HasMember(s))
-			return;
+            return;
 
         const Value& val = (*_stack.back())[s];
-		assert(val.IsArray());
-		for (SizeType i = 0; i < val.Size(); ++i)
-		{
-			const Value& element = val[i];
-			assert(element.IsObject());
+        assert(val.IsArray());
+        for (SizeType i = 0; i < val.Size(); ++i)
+        {
+            const Value& element = val[i];
+            assert(element.IsObject());
             _stack.push_back(&element);
             K key;
             T mapVal;
-			(*this)(key, "key");
-			(*this)(mapVal, "value");
-			value.insert(std::make_pair(std::move(key), std::move(mapVal)));
+            (*this)(key, "key");
+            (*this)(mapVal, "value");
+            value.insert(std::make_pair(std::move(key), std::move(mapVal)));
             _stack.pop_back();
-		}
-	}
+        }
+    }
 
     template <class T>
-    inline void operator() (std::unique_ptr<T>& value, const std::string& s)
-	{
-		using namespace rapidjson;
+    inline void operator()(std::unique_ptr<T>& value, const std::string& s)
+    {
+        using namespace rapidjson;
         assert(!_stack.empty());
         if (!_stack.back()->HasMember(s))
-			return;
+            return;
 
         const Value& val = (*_stack.back())[s];
-        value = std::make_unique<T>();
-		(*this)((*value.get()), s);
-	}
+        value            = std::make_unique<T>();
+        (*this)((*value.get()), s);
+    }
 
-    void operator() (std::string& value, const std::string& s);
-    void operator() (int& value, const std::string& s);
-    void operator() (u8& value, const std::string& s);
-    void operator() (u32& value, const std::string& s);
-    void operator() (u64& value, const std::string& s);
-    void operator() (float& value, const std::string& s);
-    void operator() (double& value, const std::string& s);
-    void operator() (entt::entity& value, const std::string& s);
+    template <typename T, size_t N>
+    inline void operator()(T (&array)[N], const std::string& s)
+    {
+        using namespace rapidjson;
+        assert(!_stack.empty());
+        if (!_stack.back()->HasMember(s))
+            return;
 
-    void operator() (std::string& value);
-    void operator() (int& value);
-    void operator() (u8& value);
-    void operator() (u32& value);
-    void operator() (u64& value);
-    void operator() (float& value);
-    void operator() (double& value);
-    void operator() (entt::entity& value);
+        const Value& val = (*_stack.back())[s];
+        assert(val.IsArray());
+        for (SizeType i = 0; i < val.Size(); ++i)
+        {
+            const Value& element = val[i];
+            if (element.IsObject())
+                _stack.push_back(&element);
+
+            (*this)(array[i]);
+
+            if (element.IsObject())
+                _stack.pop_back();
+        }
+    }
+
+    void operator()(std::string& value, const std::string& s);
+    void operator()(int& value, const std::string& s);
+    void operator()(u8& value, const std::string& s);
+    void operator()(u32& value, const std::string& s);
+    void operator()(u64& value, const std::string& s);
+    void operator()(float& value, const std::string& s);
+    void operator()(double& value, const std::string& s);
+    void operator()(entt::entity& value, const std::string& s);
+
+    void operator()(std::string& value);
+    void operator()(int& value);
+    void operator()(u8& value);
+    void operator()(u32& value);
+    void operator()(u64& value);
+    void operator()(float& value);
+    void operator()(double& value);
+    void operator()(entt::entity& value);
 
 private:
-    rapidjson::IStreamWrapper _isw;
+    rapidjson::IStreamWrapper            _isw;
     std::vector<const rapidjson::Value*> _stack;
-    rapidjson::Document _document;
+    rapidjson::Document                  _document;
 };
-} // hq namespace
+}  // hq namespace

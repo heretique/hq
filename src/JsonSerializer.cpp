@@ -8,10 +8,12 @@ JsonSerializer::JsonSerializer(std::ostream& out)
     : _osw(out),
       _writer(_osw)
 {
+    _writer.StartObject();
 }
 
 JsonSerializer::~JsonSerializer()
 {
+    _writer.EndObject();
 }
 
 void JsonSerializer::operator()(std::string& value, const std::string& s)

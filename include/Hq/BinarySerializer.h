@@ -158,6 +158,19 @@ struct BinaryDeserializer
         (*this)((*value.get()), s);
     }
 
+    template <typename T, size_t N>
+    inline void operator() (T (&array)[N], const std::string& s)
+    {
+        size_t count = 0;
+        m_in.read(reinterpret_cast<char*>(&count), sizeof(count));
+        assert(count == N);
+        for (size_t i = 0; i < count; ++i)
+        {
+            T& value = array[i];
+            (*this)(value);
+        }
+    }
+
 	void operator() (std::string& value, const std::string& s);
 	void operator() (int& value, const std::string& s);
 	void operator() (u8& value, const std::string& s);

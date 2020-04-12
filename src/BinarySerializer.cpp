@@ -1,4 +1,5 @@
 #include "Hq/BinarySerializer.h"
+#include "entt/entity/entity.hpp"
 
 namespace hq {
 
@@ -192,7 +193,13 @@ void BinaryDeserializer::operator() (std::string& value, const std::string& s)
 		std::vector<char> tmp(len);
 		m_in.read(tmp.data(), len); // deserialize characters of string
 		value.assign(tmp.data(), len);
-	}
+    }
+}
+
+void BinaryDeserializer::operator()(int &value, const std::string &s)
+{
+    value = 0;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
 }
 
 void BinaryDeserializer::operator() (u8& value, const std::string& s)
@@ -222,9 +229,67 @@ void BinaryDeserializer::operator() (float& value, const std::string& s)
 void BinaryDeserializer::operator() (double& value, const std::string& s)
 {
 	value = 0.0;
-	m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
 }
 
+void BinaryDeserializer::operator()(entt::entity &value, const std::string &s)
+{
+    value = entt::null;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+}
 
+void BinaryDeserializer::operator()(std::string &value)
+{
+    size_t len = 0;
+    m_in.read(reinterpret_cast<char*>(&len), sizeof(len));
+    if (len)
+    {
+        std::vector<char> tmp(len);
+        m_in.read(tmp.data(), len); // deserialize characters of string
+        value.assign(tmp.data(), len);
+    }
+}
+
+void BinaryDeserializer::operator()(int &value)
+{
+    value = 0;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+}
+
+void BinaryDeserializer::operator()(u8 &value)
+{
+    value = 0;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+}
+
+void BinaryDeserializer::operator()(u32 &value)
+{
+    value = 0;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+}
+
+void BinaryDeserializer::operator()(u64 &value)
+{
+    value = 0;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+}
+
+void BinaryDeserializer::operator()(float &value)
+{
+    value = 0.0f;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+}
+
+void BinaryDeserializer::operator()(double &value)
+{
+    value = 0.0;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+}
+
+void BinaryDeserializer::operator()(entt::entity &value)
+{
+    value = entt::null;
+    m_in.read(reinterpret_cast<char*>(&value), sizeof(value));
+}
 
 } // hq namespace
