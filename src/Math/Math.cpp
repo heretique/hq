@@ -25,9 +25,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-namespace hq
-{
-namespace math
+namespace hq::math
 {
     ////////////////////// Base functions ////////////////////////////////
 
@@ -35,17 +33,17 @@ namespace math
 
     namespace
     {
-        constexpr float kSinC2  = -0.16666667163372039794921875f;
-        constexpr float kSinC4  = 8.333347737789154052734375e-3f;
-        constexpr float kSinC6  = -1.9842604524455964565277099609375e-4f;
-        constexpr float kSinC8  = 2.760012648650445044040679931640625e-6f;
-        constexpr float kSinC10 = -2.50293279435709337121807038784027099609375e-8f;
+        constexpr float kSinC2  = -0.16666667163372039794921875F;
+        constexpr float kSinC4  = 8.333347737789154052734375e-3F;
+        constexpr float kSinC6  = -1.9842604524455964565277099609375e-4F;
+        constexpr float kSinC8  = 2.760012648650445044040679931640625e-6F;
+        constexpr float kSinC10 = -2.50293279435709337121807038784027099609375e-8F;
 
-        constexpr float kCosC2  = -0.5f;
-        constexpr float kCosC4  = 4.166664183139801025390625e-2f;
-        constexpr float kCosC6  = -1.388833043165504932403564453125e-3f;
-        constexpr float kCosC8  = 2.47562347794882953166961669921875e-5f;
-        constexpr float kCosC10 = -2.59630184018533327616751194000244140625e-7f;
+        constexpr float kCosC2  = -0.5F;
+        constexpr float kCosC4  = 4.166664183139801025390625e-2F;
+        constexpr float kCosC6  = -1.388833043165504932403564453125e-3F;
+        constexpr float kCosC8  = 2.47562347794882953166961669921875e-5F;
+        constexpr float kCosC10 = -2.59630184018533327616751194000244140625e-7F;
 
     }  // namespace
 
@@ -103,8 +101,8 @@ namespace math
         const float tmp0   = mad(kAcosC3, absa, kAcosC2);
         const float tmp1   = mad(tmp0, absa, kAcosC1);
         const float tmp2   = mad(tmp1, absa, kAcosC0);
-        const float tmp3   = tmp2 * sqrt(1.0f - absa);
-        const float negate = float(_a < 0.0f);
+        const float tmp3   = tmp2 * sqrt(1.0F - absa);
+        const float negate = float(_a < 0.0F);
         const float tmp4   = tmp3 - 2.0f * negate * tmp3;
         const float result = negate * kPi + tmp4;
 
@@ -113,12 +111,12 @@ namespace math
 
     namespace
     {
-        constexpr float kAtan2C0 = -0.013480470f;
-        constexpr float kAtan2C1 = 0.057477314f;
-        constexpr float kAtan2C2 = -0.121239071f;
-        constexpr float kAtan2C3 = 0.195635925f;
-        constexpr float kAtan2C4 = -0.332994597f;
-        constexpr float kAtan2C5 = 0.999995630f;
+        constexpr float kAtan2C0 = -0.013480470F;
+        constexpr float kAtan2C1 = 0.057477314F;
+        constexpr float kAtan2C2 = -0.121239071F;
+        constexpr float kAtan2C3 = 0.195635925F;
+        constexpr float kAtan2C4 = -0.332994597F;
+        constexpr float kAtan2C5 = 0.999995630F;
 
     }  // namespace
 
@@ -129,9 +127,9 @@ namespace math
         const float maxaxy = max(ax, ay);
         const float minaxy = min(ax, ay);
 
-        if (maxaxy == 0.0f)
+        if (maxaxy == 0.0F)
         {
-            return 0.0f * sign(_y);
+            return 0.0F * sign(_y);
         }
 
         const float mxy    = minaxy / maxaxy;
@@ -3450,5 +3448,4 @@ namespace math
     {
         return distance(s.center, r) <= s.radius;
     }
-}
 }

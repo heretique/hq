@@ -10,7 +10,8 @@ namespace math
     /// Represents a vector or a point in 2D space
     struct Vec2
     {
-        union {
+        union
+        {
             float data[2];
             struct
             {
@@ -22,11 +23,7 @@ namespace math
             };
         };
 
-        constexpr Vec2()
-            : x(0.f)
-            , y(0.f)
-        {
-        }
+        Vec2() = default;
         explicit constexpr Vec2(float a)
             : x(a)
             , y(a)
@@ -58,7 +55,8 @@ namespace math
 
     struct Vec2i
     {
-        union {
+        union
+        {
             int data[2];
             struct
             {
@@ -70,11 +68,7 @@ namespace math
             };
         };
 
-        constexpr Vec2i()
-            : x(0.f)
-            , y(0.f)
-        {
-        }
+        Vec2i() = default;
         explicit constexpr Vec2i(int a)
             : x(a)
             , y(a)
@@ -108,7 +102,8 @@ namespace math
     /// Has also r, g, b components representing color
     struct Vec3
     {
-        union {
+        union
+        {
             float data[3];
             struct
             {
@@ -165,7 +160,8 @@ namespace math
     /// Has also r, g, b, a components representing color and opacity
     struct Vec4
     {
-        union {
+        union
+        {
             float data[4];
             struct
             {
@@ -247,7 +243,8 @@ namespace math
     /// Represents a rectangle in 2D space
     struct Rect
     {
-        union {
+        union
+        {
             struct
             {
                 float x, y, width, height;
@@ -315,7 +312,8 @@ namespace math
     /// 3x3 Matric (useful for representing rotations in 3D space)
     struct Mat3x3
     {
-        union {
+        union
+        {
             float data[9];
             struct
             {
@@ -354,7 +352,8 @@ namespace math
     /// 4x4 Matrix representing 3D transformations
     struct Mat4x4
     {
-        union {
+        union
+        {
             float data[16];
             struct
             {
@@ -394,7 +393,8 @@ namespace math
     /// Quaternion structure representing rotations in 3D space
     struct Quat
     {
-        union {
+        union
+        {
             float data[4];
             struct
             {
@@ -482,7 +482,7 @@ namespace math
         Vec2 origin;
         Vec2 direction;
 
-        constexpr Ray2() {}
+        constexpr Ray2() { }
         Ray2(const Vec2& origin, const Vec2& direction);
 
         template <class Serializer>
@@ -499,7 +499,7 @@ namespace math
         Vec3 origin;
         Vec3 direction;
 
-        constexpr Ray3() {}
+        constexpr Ray3() { }
         Ray3(const Vec3& origin, const Vec3& direction);
 
         template <class Serializer>
@@ -513,9 +513,9 @@ namespace math
     /// Represents a (bounding) box in 2D space
     struct Box2
     {
-        Vec2      min;
-        Vec2      max;
-        constexpr Box2() {}
+        Vec2 min;
+        Vec2 max;
+        Box2() = default;
         Box2(const Vec2& min, const Vec2& max);
         Vec2 center() const;
         Vec2 extent() const;
@@ -531,9 +531,9 @@ namespace math
     // mostly used for UI
     struct Box2i
     {
-        Vec2i      min;
-        Vec2i      max;
-        constexpr Box2i() {}
+        Vec2i min;
+        Vec2i max;
+        Box2i() = default;
         Box2i(const Vec2i& min, const Vec2i& max);
         Vec2i center() const;
         Vec2i extent() const;
@@ -551,7 +551,7 @@ namespace math
     {
         Vec3      min;
         Vec3      max;
-        constexpr Box3() {}
+        constexpr Box3() { }
         Box3(const Vec3& min, const Vec3& max);
         Vec3 center() const;
         Vec3 extent() const;
