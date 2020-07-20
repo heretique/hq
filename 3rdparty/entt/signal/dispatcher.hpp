@@ -81,17 +81,23 @@ class dispatcher {
     template<typename Event>
     pool_handler<Event> & assure() {
         static_assert(std::is_same_v<Event, std::decay_t<Event>>);
-        static std::size_t index{pools.size()};
 
-        if(const auto length = pools.size(); !(index < length) || pools[index]->type_id() != type_info<Event>::id()) {
-            for(index = {}; index < length && pools[index]->type_id() != type_info<Event>::id(); ++index);
+        if constexpr(has_type_index_v<Event>) {
+            const auto index = type_index<Event>::value();
 
-            if(index == pools.size()) {
-                pools.emplace_back(new pool_handler<Event>{});
+            if(!(index < pools.size())) {
+                pools.resize(index+1);
             }
-        }
 
-        return static_cast<pool_handler<Event> &>(*pools[index]);
+            if(!pools[index]) {
+                pools[index].reset(new pool_handler<Event>{});
+            }
+
+            return static_cast<pool_handler<Event> &>(*pools[index]);
+        } else {
+            auto it = std::find_if(pools.begin(), pools.end(), [id = type_info<Event>::id()](const auto &cpool) { return id == cpool->type_id(); });
+            return static_cast<pool_handler<Event> &>(it == pools.cend() ? *pools.emplace_back(new pool_handler<Event>{}) : **it);
+        }
     }
 
 public:
@@ -187,7 +193,9 @@ public:
     void clear() {
         if constexpr(sizeof...(Event) == 0) {
             for(auto &&cpool: pools) {
-                cpool->clear();
+                if(cpool) {
+                    cpool->clear();
+                }
             }
         } else {
             (assure<Event>().clear(), ...);
@@ -217,7 +225,9 @@ public:
      */
     void update() const {
         for(auto pos = pools.size(); pos; --pos) {
-            pools[pos-1]->publish();
+            if(auto &&cpool = pools[pos-1]; cpool) {
+                cpool->publish();
+            }
         }
     }
 

@@ -141,13 +141,13 @@ public:
 
 template<typename Entity>
 constexpr bool operator==(const Entity entity, null other) ENTT_NOEXCEPT {
-    return other == entity;
+    return other.operator==(entity);
 }
 
 
 template<typename Entity>
 constexpr bool operator!=(const Entity entity, null other) ENTT_NOEXCEPT {
-    return other != entity;
+    return !(other == entity);
 }
 
 
@@ -171,7 +171,7 @@ ENTT_OPAQUE_TYPE(entity, id_type);
  * any allowed type. Similarly, there exist comparision operators between the
  * null entity and any other entity identifier.
  */
-constexpr auto null = internal::null{};
+inline constexpr auto null = internal::null{};
 
 
 }

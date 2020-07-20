@@ -61,8 +61,15 @@ struct basic_collector<> {
      * @return The updated collector.
      */
     template<typename AnyOf>
-    static constexpr auto replace() ENTT_NOEXCEPT {
+    static constexpr auto update() ENTT_NOEXCEPT {
         return basic_collector<matcher<type_list<>, type_list<>, AnyOf>>{};
+    }
+
+    /*! @copydoc update */
+    template<typename AnyOf>
+    [[deprecated("use ::update instead")]]
+    static constexpr auto replace() ENTT_NOEXCEPT {
+        return update<AnyOf>();
     }
 };
 
@@ -96,9 +103,17 @@ struct basic_collector<matcher<type_list<Reject...>, type_list<Require...>, Rule
      * @return The updated collector.
      */
     template<typename AnyOf>
-    static constexpr auto replace() ENTT_NOEXCEPT {
+    static constexpr auto update() ENTT_NOEXCEPT {
         return basic_collector<matcher<type_list<>, type_list<>, AnyOf>, current_type, Other...>{};
     }
+
+    /*! @copydoc update */
+    template<typename AnyOf>
+    [[deprecated("use ::update instead")]]
+    static constexpr auto replace() ENTT_NOEXCEPT {
+        return update<AnyOf>();
+    }
+
 
     /**
      * @brief Updates the filter of the last added matcher.
@@ -115,7 +130,7 @@ struct basic_collector<matcher<type_list<Reject...>, type_list<Require...>, Rule
 
 
 /*! @brief Variable template used to ease the definition of collectors. */
-constexpr basic_collector<> collector{};
+inline constexpr basic_collector<> collector{};
 
 
 /**
@@ -130,8 +145,8 @@ constexpr basic_collector<> collector{};
  * collector:
  *
  * * Observing matcher: an observer will return at least all the living entities
- *   for which one or more of the given components have been explicitly
- *   replaced and not yet destroyed.
+ *   for which one or more of the given components have been updated and not yet
+ *   destroyed.
  * * Grouping matcher: an observer will return at least all the living entities
  *   that would have entered the given group if it existed and that would have
  *   not yet left it.
@@ -190,7 +205,7 @@ class basic_observer {
         template<std::size_t Index>
         static void discard_if(basic_observer &obs, const basic_registry<Entity> &, const Entity entt) {
             if(auto *value = obs.view.try_get(entt); value && !(*value &= (~(1 << Index)))) {
-                obs.view.destroy(entt);
+                obs.view.erase(entt);
             }
         }
 
@@ -226,7 +241,7 @@ class basic_observer {
         template<std::size_t Index>
         static void discard_if(basic_observer &obs, const basic_registry<Entity> &, const Entity entt) {
             if(auto *value = obs.view.try_get(entt); value && !(*value &= (~(1 << Index)))) {
-                obs.view.destroy(entt);
+                obs.view.erase(entt);
             }
         }
 
@@ -268,7 +283,7 @@ public:
     /*! @brief Unsigned integer type. */
     using size_type = std::size_t;
     /*! @brief Input iterator type. */
-    using iterator_type = typename sparse_set<Entity>::iterator_type;
+    using iterator = typename sparse_set<Entity>::iterator;
 
     /*! @brief Default constructor. */
     basic_observer()
@@ -370,7 +385,7 @@ public:
      *
      * @return An iterator to the first entity of the observer.
      */
-    iterator_type begin() const ENTT_NOEXCEPT {
+    iterator begin() const ENTT_NOEXCEPT {
         return view.sparse_set<entity_type>::begin();
     }
 
@@ -384,7 +399,7 @@ public:
      * @return An iterator to the entity following the last entity of the
      * observer.
      */
-    iterator_type end() const ENTT_NOEXCEPT {
+    iterator end() const ENTT_NOEXCEPT {
         return view.sparse_set<entity_type>::end();
     }
 
