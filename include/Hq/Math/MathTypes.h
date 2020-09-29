@@ -12,7 +12,7 @@ namespace math
     {
         union
         {
-            float data[2];
+            float data[2] {};
             struct
             {
                 float x, y;
@@ -23,7 +23,7 @@ namespace math
             };
         };
 
-        Vec2() = default;
+        constexpr          Vec2() {};
         explicit constexpr Vec2(float a)
             : x(a)
             , y(a)
@@ -57,7 +57,7 @@ namespace math
     {
         union
         {
-            int data[2];
+            int data[2] {};
             struct
             {
                 int x, y;
@@ -66,9 +66,13 @@ namespace math
             {
                 int u, v;
             };
+            struct
+            {
+                int width, height;
+            };
         };
 
-        Vec2i() = default;
+        constexpr          Vec2i() {};
         explicit constexpr Vec2i(int a)
             : x(a)
             , y(a)
@@ -479,8 +483,8 @@ namespace math
     /// Represents a ray in 2D space given by a starting point and a direction
     struct Ray2
     {
-        Vec2 origin;
-        Vec2 direction;
+        Vec2 origin {};
+        Vec2 direction {};
 
         constexpr Ray2() { }
         Ray2(const Vec2& origin, const Vec2& direction);

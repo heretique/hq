@@ -14,6 +14,7 @@ target_sources(hq
         Rng.cpp
         StackAllocator.cpp
         StringHash.cpp
+        Ecs/Ecs.cpp
         Math/Math.cpp
         Math/Utils.cpp
         ../3rdparty/enkiTS/TaskScheduler.cpp
@@ -47,6 +48,7 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/BinarySerializer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/JsonSerializer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Utils.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Ecs/HierarchicalComponent.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/AABB.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/MathTypes.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Math/Math.h
