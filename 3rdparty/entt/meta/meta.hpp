@@ -12,6 +12,7 @@
 #include "../config/config.h"
 #include "../core/fwd.hpp"
 #include "../core/utility.hpp"
+#include "../core/type_info.hpp"
 #include "ctx.hpp"
 #include "internal.hpp"
 #include "range.hpp"
@@ -342,9 +343,9 @@ public:
     template<typename Type>
     [[nodiscard]] const Type * try_cast() const {
         if(node) {
-            if(const auto type_id = internal::meta_info<Type>::resolve()->type_id; node->type_id == type_id) {
+            if(const auto info = internal::meta_info<Type>::resolve()->info; node->info == info) {
                 return static_cast<const Type *>(storage.data());
-            } else if(const auto *base = internal::find_if<&internal::meta_type_node::base>([type_id](const auto *curr) { return curr->type()->type_id == type_id; }, node); base) {
+            } else if(const auto *base = internal::find_if<&internal::meta_type_node::base>([info](const auto *curr) { return curr->type()->info == info; }, node); base) {
                 return static_cast<const Type *>(base->cast(storage.data()));
             }
         }
@@ -365,9 +366,7 @@ public:
      *
      * @warning
      * Attempting to perform a cast that isn't viable results in undefined
-     * behavior.<br/>
-     * An assertion will abort the execution at runtime in debug mode in case
-     * the cast is not feasible.
+     * behavior.
      *
      * @tparam Type Type to which to cast the instance.
      * @return A reference to the contained instance.
@@ -394,9 +393,9 @@ public:
     template<typename Type>
     [[nodiscard]] meta_any convert() const {
         if(node) {
-            if(const auto type_id = internal::meta_info<Type>::resolve()->type_id; node->type_id == type_id) {
+            if(const auto info = internal::meta_info<Type>::resolve()->info; node->info == info) {
                 return *this;
-            } else if(const auto * const conv = internal::find_if<&internal::meta_type_node::conv>([type_id](const auto *curr) { return curr->type()->type_id == type_id; }, node); conv) {
+            } else if(const auto * const conv = internal::find_if<&internal::meta_type_node::conv>([info](const auto *curr) { return curr->type()->info == info; }, node); conv) {
                 return conv->conv(storage.data());
             }
         }
@@ -411,7 +410,7 @@ public:
      */
     template<typename Type>
     bool convert() {
-        bool valid = (node && node->type_id == internal::meta_info<Type>::resolve()->type_id);
+        bool valid = (node && node->info == internal::meta_info<Type>::resolve()->info);
 
         if(!valid) {
             if(auto any = std::as_const(*this).convert<Type>(); any) {
@@ -487,7 +486,7 @@ public:
      * @return False if the two objects differ in their content, true otherwise.
      */
     [[nodiscard]] bool operator==(const meta_any &other) const {
-        return (!node && !other.node) || (node && other.node && node->type_id == other.node->type_id && node->compare(storage.data(), other.storage.data()));
+        return (!node && !other.node) || (node && other.node && node->info == other.node->info && node->compare(storage.data(), other.storage.data()));
     }
 
     /**
@@ -541,13 +540,12 @@ struct meta_handle {
      * @param value An instance of an object to use to initialize the handle.
      */
     template<typename Type, typename = std::enable_if_t<!std::is_same_v<std::remove_cv_t<std::remove_reference_t<Type>>, meta_handle>>>
-    meta_handle(Type &&value) ENTT_NOEXCEPT
+    meta_handle(Type &value) ENTT_NOEXCEPT
         : meta_handle{}
     {
         if constexpr(std::is_same_v<std::remove_cv_t<std::remove_reference_t<Type>>, meta_any>) {
             any = value.ref();
         } else {
-            static_assert(std::is_lvalue_reference_v<Type>, "Lvalue reference required");
             any = std::ref(value);
         }
     }
@@ -735,7 +733,7 @@ struct meta_ctor {
      * @param sz Number of parameters to use to construct the instance.
      * @return A meta any containing the new instance, if any.
      */
-    [[nodiscard]] meta_any invoke(meta_any * const args, const std::size_t sz) const {
+    [[nodiscard]] meta_any invoke(meta_any * const args, const size_type sz) const {
         return sz == size() ? node->invoke(args) : meta_any{};
     }
 
@@ -954,8 +952,8 @@ struct meta_func {
      * @param sz Number of parameters to use to invoke the function.
      * @return A meta any containing the returned value, if any.
      */
-    meta_any invoke(meta_handle instance, meta_any * const args, const std::size_t sz) const {
-        return sz == size() ? node->invoke(instance, args) : meta_any{};
+    meta_any invoke(meta_handle instance, meta_any * const args, const size_type sz) const {
+        return sz == size() ? node->invoke(std::move(instance), args) : meta_any{};
     }
 
     /**
@@ -971,7 +969,7 @@ struct meta_func {
     template<typename... Args>
     meta_any invoke(meta_handle instance, Args &&... args) const {
         std::array<meta_any, sizeof...(Args)> arguments{std::forward<Args>(args)...};
-        return invoke(instance, arguments.data(), sizeof...(Args));
+        return invoke(std::move(instance), arguments.data(), sizeof...(Args));
     }
 
     /*! @copydoc meta_ctor::prop */
@@ -1004,17 +1002,20 @@ private:
 
 /*! @brief Opaque wrapper for meta types. */
 class meta_type {
-    template<typename... Args, std::size_t... Indexes>
-    [[nodiscard]] auto ctor(std::index_sequence<Indexes...>) const {
-        internal::meta_range range{node->ctor};
+    bool can_cast_or_convert(const meta_type type, const type_info info) const ENTT_NOEXCEPT {
+        for(auto curr: type.conv()) {
+            if(curr.type().info() == info) {
+                return true;
+            }
+        }
 
-        return std::find_if(range.begin(), range.end(), [](const auto &candidate) {
-            return candidate.size == sizeof...(Args) && ([](auto *from, auto *to) {
-                return (from->type_id == to->type_id)
-                        || internal::find_if<&node_type::base>([to](const auto *curr) { return curr->type()->type_id == to->type_id; }, from)
-                        || internal::find_if<&node_type::conv>([to](const auto *curr) { return curr->type()->type_id == to->type_id; }, from);
-            }(internal::meta_info<Args>::resolve(), candidate.arg(Indexes)) && ...);
-        }).operator->();
+        for(auto curr: type.base()) {
+            if(curr.type().info() == info || can_cast_or_convert(curr.type(), info)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 public:
@@ -1029,11 +1030,11 @@ public:
     {}
 
     /**
-     * @brief Returns the type id of the underlying type.
-     * @return The type id of the underlying type.
+     * @brief Returns the type info object of the underlying type.
+     * @return The type info object of the underlying type.
      */
-    [[nodiscard]] id_type type_id() const ENTT_NOEXCEPT {
-        return node->type_id;
+    [[nodiscard]] type_info info() const ENTT_NOEXCEPT {
+        return node->info;
     }
 
     /**
@@ -1042,6 +1043,14 @@ public:
      */
     [[nodiscard]] id_type id() const ENTT_NOEXCEPT {
         return node->id;
+    }
+
+    /**
+     * @brief Returns the size of the underlying type if known.
+     * @return The size of the underlying type if known, 0 otherwise.
+     */
+    [[nodiscard]] size_type size_of() const ENTT_NOEXCEPT {
+        return node->size_of;
     }
 
     /**
@@ -1240,8 +1249,8 @@ public:
      */
     template<typename Type>
     [[nodiscard]] meta_conv conv() const {
-        return internal::find_if<&node_type::conv>([type_id = internal::meta_info<Type>::resolve()->type_id](const auto *curr) {
-            return curr->type()->type_id == type_id;
+        return internal::find_if<&node_type::conv>([info = internal::meta_info<Type>::resolve()->info](const auto *curr) {
+            return curr->type()->info == info;
         }, node);
     }
 
@@ -1260,7 +1269,13 @@ public:
      */
     template<typename... Args>
     [[nodiscard]] meta_ctor ctor() const {
-        return ctor<Args...>(std::index_sequence_for<Args...>{});
+        for(const auto &candidate: internal::meta_range{node->ctor}) {
+            if(size_type index{}; candidate.size == sizeof...(Args) && ([this](auto *from, auto *to) { return from->info == to->info || can_cast_or_convert(from, to->info); }(internal::meta_info<Args>::resolve(), candidate.arg(index++)) && ...)) {
+                return &candidate;
+            }
+        }
+
+        return nullptr;
     }
 
     /**
@@ -1296,7 +1311,9 @@ public:
     /**
      * @brief Returns the meta function associated with a given identifier.
      *
-     * The meta functions of the base classes will also be visited, if any.
+     * The meta functions of the base classes will also be visited, if any.<br/>
+     * In the case of overloaded meta functions, the first one with the required
+     * id will be returned.
      *
      * @param id Unique identifier.
      * @return The meta function associated with the given identifier, if any.
@@ -1318,7 +1335,7 @@ public:
      * @param sz Number of parameters to use to construct the instance.
      * @return A meta any containing the new instance, if any.
      */
-    [[nodiscard]] meta_any construct(meta_any * const args, const std::size_t sz) const {
+    [[nodiscard]] meta_any construct(meta_any * const args, const size_type sz) const {
         meta_any any{};
 
         internal::find_if<&node_type::ctor>([args, sz, &any](const auto *curr) {
@@ -1359,9 +1376,33 @@ public:
      * @param sz Number of parameters to use to invoke the function.
      * @return A meta any containing the returned value, if any.
      */
-    meta_any invoke(const id_type id, meta_handle instance, meta_any * const args, const std::size_t sz) const {
-        auto const candidate = func(id);
-        return candidate ? candidate.invoke(std::move(instance), args, sz) : meta_any{};
+    meta_any invoke(const id_type id, meta_handle instance, meta_any * const args, const size_type sz) const {
+        const internal::meta_func_node* candidate{};
+        size_type extent{sz + 1u};
+        bool ambiguous{};
+
+        for(auto *it = internal::find_if<&node_type::func>([id, sz](const auto *curr) { return curr->id == id && curr->size == sz; }, node); it && it->id == id && it->size == sz; it = it->next) {
+            size_type direct{};
+            size_type ext{};
+
+            for(size_type next{}; next < sz && next == (direct + ext); ++next) {
+                const auto type = args[next].type();
+                const auto req = it->arg(next)->info;
+                type.info() == req ? ++direct : (ext += can_cast_or_convert(type, req));
+            }
+
+            if((direct + ext) == sz) {
+                if(ext < extent) {
+                    candidate = it;
+                    extent = ext;
+                    ambiguous = false;
+                } else if(ext == extent) {
+                    ambiguous = true;
+                }
+            }
+        }
+
+        return (candidate && !ambiguous) ? candidate->invoke(instance, args) : meta_any{};
     }
 
     /**
@@ -1454,7 +1495,7 @@ public:
      * otherwise.
      */
     [[nodiscard]] bool operator==(const meta_type &other) const ENTT_NOEXCEPT {
-        return (!node && !other.node) || (node && other.node && node->type_id == other.node->type_id);
+        return (!node && !other.node) || (node && other.node && node->info == other.node->info);
     }
 
     /**

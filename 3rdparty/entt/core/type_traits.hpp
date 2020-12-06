@@ -13,6 +13,30 @@ namespace entt {
 
 
 /**
+ * @brief A type-only `sizeof` wrapper that returns 0 where `sizeof` complains.
+ * @tparam Type The type of which to return the size.
+ * @tparam The size of the type if `sizeof` accepts it, 0 otherwise.
+ */
+template<typename Type, typename = void>
+struct size_of: std::integral_constant<std::size_t, 0u> {};
+
+
+/*! @copydoc size_of */
+template<typename Type>
+struct size_of<Type, std::void_t<decltype(sizeof(Type))>>
+    : std::integral_constant<std::size_t, sizeof(Type)>
+{};
+
+
+/**
+ * @brief Helper variable template.
+ * @tparam Type The type of which to return the size.
+ */
+template<class Type>
+inline constexpr auto size_of_v = size_of<Type>::value;
+
+
+/**
  * @brief Using declaration to be used to _repeat_ the same type a number of
  * times equal to the size of a given parameter pack.
  * @tparam Type A type to repeat.
@@ -39,7 +63,7 @@ using integral_constant = std::integral_constant<decltype(Value), Value>;
 
 
 /**
- * @brief Alias template to ease the creation of named values.
+ * @brief Alias template to facilitate the creation of named values.
  * @tparam Value A constant value at least convertible to `id_type`.
  */
 template<id_type Value>
@@ -72,32 +96,27 @@ template<std::size_t N>
 inline constexpr choice_t<N> choice{};
 
 
-/*! @brief A class to use to push around lists of types, nothing more. */
-template<typename...>
-struct type_list {};
-
-
-/*! @brief Primary template isn't defined on purpose. */
-template<typename>
-struct type_list_size;
-
-
 /**
- * @brief Compile-time number of elements in a type list.
+ * @brief A class to use to push around lists of types, nothing more.
  * @tparam Type Types provided by the type list.
  */
 template<typename... Type>
-struct type_list_size<type_list<Type...>>
-        : std::integral_constant<std::size_t, sizeof...(Type)>
-{};
+struct type_list {
+    /*! @brief Type list type. */
+    using type = type_list;
+    /*! @brief Compile-time number of elements in the type list. */
+    static constexpr auto size = sizeof...(Type);
+};
 
 
 /**
- * @brief Helper variable template.
- * @tparam List Type list.
+ * @brief Concatenates multiple type lists.
+ * @tparam Type Types provided by the first type list.
+ * @tparam Other Types provided by the second type list.
+ * @return A type list composed by the types of both the type lists.
  */
-template<class List>
-inline constexpr auto type_list_size_v = type_list_size<List>::value;
+template<typename... Type, typename... Other>
+constexpr type_list<Type..., Other...> operator+(type_list<Type...>, type_list<Other...>) { return {}; }
 
 
 /*! @brief Primary template isn't defined on purpose. */
@@ -183,11 +202,39 @@ using type_list_unique_t = typename type_list_unique<Type>::type;
 
 
 /**
+ * @brief Provides the member constant `value` to true if a type list contains a
+ * given type, false otherwise.
+ * @tparam List Type list.
+ * @tparam Type Type to look for.
+ */
+template<typename List, typename Type>
+struct type_list_contains;
+
+
+/**
+ * @copybrief type_list_contains
+ * @tparam Type Types provided by the type list.
+ * @tparam Other Type to look for.
+ */
+template<typename... Type, typename Other>
+struct type_list_contains<type_list<Type...>, Other>: std::disjunction<std::is_same<Type, Other>...> {};
+
+
+/**
+ * @brief Helper variable template.
+ * @tparam List Type list.
+ * @tparam Type Type to look for.
+ */
+template<class List, typename Type>
+inline constexpr auto type_list_contains_v = type_list_contains<List, Type>::value;
+
+
+/**
  * @brief Provides the member constant `value` to true if a given type is
  * equality comparable, false otherwise.
  * @tparam Type Potentially equality comparable type.
  */
-template<typename Type, typename = std::void_t<>>
+template<typename Type, typename = void>
 struct is_equality_comparable: std::false_type {};
 
 
@@ -206,13 +253,63 @@ template<class Type>
 inline constexpr auto is_equality_comparable_v = is_equality_comparable<Type>::value;
 
 
+/*! @brief Same as std::is_invocable, but with tuples. */
+template<typename, typename>
+struct is_applicable: std::false_type {};
+
+
+/**
+ * @copybrief is_applicable
+ * @tparam Func A valid function type.
+ * @tparam Args The list of arguments to use to probe the function type.
+ */
+template<typename Func, typename... Args>
+struct is_applicable<Func, std::tuple<Args...>>: std::is_invocable<Func, Args...> {};
+
+
+/**
+ * @brief Helper variable template.
+ * @tparam Func A valid function type.
+ * @tparam Args The list of arguments to use to probe the function type.
+ */
+template<typename Func, typename Args>
+inline constexpr auto is_applicable_v = is_applicable<Func, Args>::value;
+
+
+/*! @brief Same as std::is_invocable_r, but with tuples for arguments. */
+template<typename, typename, typename>
+struct is_applicable_r: std::false_type {};
+
+
+/**
+ * @copybrief is_applicable_r
+ * @tparam Ret The type to which the return type of the function should be
+ * convertible.
+ * @tparam Func A valid function type.
+ * @tparam Args The list of arguments to use to probe the function type.
+ */
+template<typename Ret, typename Func, typename... Args>
+struct is_applicable_r<Ret, Func, std::tuple<Args...>>: std::is_invocable_r<Ret, Func, Args...> {};
+
+
+/**
+ * @brief Helper variable template.
+ * @tparam Ret The type to which the return type of the function should be
+ * convertible.
+ * @tparam Func A valid function type.
+ * @tparam Args The list of arguments to use to probe the function type.
+ */
+template<typename Ret, typename Func, typename Args>
+inline constexpr auto is_applicable_r_v = is_applicable_r<Ret, Func, Args>::value;
+
+
 /**
  * @brief Provides the member constant `value` to true if a given type is empty
  * and the empty type optimization is enabled, false otherwise.
  * @tparam Type Potential empty type.
  */
 template<typename Type, typename = void>
-struct is_eto_eligible
+struct is_empty
     : ENTT_IS_EMPTY(Type)
 {};
 
@@ -222,7 +319,36 @@ struct is_eto_eligible
  * @tparam Type Potential empty type.
  */
 template<typename Type>
-inline constexpr auto is_eto_eligible_v = is_eto_eligible<Type>::value;
+inline constexpr auto is_empty_v = is_empty<Type>::value;
+
+
+/**
+ * @brief Transcribes the constness of a type to another type.
+ * @tparam To The type to which to transcribe the constness.
+ * @tparam From The type from which to transcribe the constness.
+ */
+template<typename To, typename From>
+struct constness_as {
+    /*! @brief The type resulting from the transcription of the constness */
+    using type = std::remove_const_t<To>;
+};
+
+
+/*! @copydoc constness_as */
+template<typename To, typename From>
+struct constness_as<To, const From> {
+    /*! @brief The type resulting from the transcription of the constness */
+    using type = std::add_const_t<To>;
+};
+
+
+/**
+ * @brief Alias template to facilitate the transcription of the constness.
+ * @tparam To The type to which to transcribe the constness.
+ * @tparam From The type from which to transcribe the constness.
+ */
+template<typename To, typename From>
+using constness_as_t = typename constness_as<To, From>::type;
 
 
 /**

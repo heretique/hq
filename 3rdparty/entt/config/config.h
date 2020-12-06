@@ -32,7 +32,7 @@
 
 
 #ifndef ENTT_PAGE_SIZE
-#   define ENTT_PAGE_SIZE 32768
+#   define ENTT_PAGE_SIZE 4096
 #endif
 
 
@@ -67,13 +67,6 @@
 #       define ENTT_PRETTY_FUNCTION_PREFIX '<'
 #       define ENTT_PRETTY_FUNCTION_SUFFIX '>'
 #   endif
-#endif
-
-
-#ifndef ENTT_STANDALONE
-#   define ENTT_FAST_PATH(...) false
-#else
-#   define ENTT_FAST_PATH(Cond) Cond
 #endif
 
 

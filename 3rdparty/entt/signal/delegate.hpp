@@ -281,9 +281,7 @@ public:
      *
      * @warning
      * Attempting to trigger an invalid delegate results in undefined
-     * behavior.<br/>
-     * An assertion will abort the execution at runtime in debug mode if the
-     * delegate has not yet been set.
+     * behavior.
      *
      * @param args Arguments to use to invoke the underlying function.
      * @return The value returned by the underlying function.
@@ -350,7 +348,11 @@ delegate(connect_arg_t<Candidate>, Type &&) ENTT_NOEXCEPT
 -> delegate<std::remove_pointer_t<internal::function_pointer_t<decltype(Candidate), Type>>>;
 
 
-/*! @brief Deduction guide. */
+/**
+ * @brief Deduction guide.
+ * @tparam Ret Return type of a function type.
+ * @tparam Args Types of arguments of a function type.
+ */
 template<typename Ret, typename... Args>
 delegate(Ret(*)(const void *, Args...), const void * = nullptr) ENTT_NOEXCEPT
 -> delegate<Ret(Args...)>;

@@ -3,15 +3,18 @@
 
 
 #include <array>
-#include <vector>
 #include <cstddef>
-#include <utility>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 #include "../config/config.h"
+#include "../core/type_traits.hpp"
 #include "entity.hpp"
 #include "fwd.hpp"
+#include "registry.hpp"
 
 
 namespace entt {
@@ -29,24 +32,18 @@ namespace entt {
  */
 template<typename Entity>
 class basic_snapshot {
-    /*! @brief A registry is allowed to create snapshots. */
-    friend class basic_registry<Entity>;
-
     using traits_type = entt_traits<Entity>;
 
     template<typename Component, typename Archive, typename It>
     void get(Archive &archive, std::size_t sz, It first, It last) const {
+        const auto view = reg->template view<std::add_const_t<Component>>();
         archive(typename traits_type::entity_type(sz));
 
         while(first != last) {
             const auto entt = *(first++);
 
             if(reg->template has<Component>(entt)) {
-                if constexpr(std::is_empty_v<Component>) {
-                    archive(entt);
-                } else {
-                    archive(entt, reg->template get<Component>(entt));
-                }
+                std::apply(archive, std::tuple_cat(std::make_tuple(entt), view.get(entt)));
             }
         }
     }
@@ -95,14 +92,14 @@ public:
     template<typename Archive>
     const basic_snapshot & entities(Archive &archive) const {
         const auto sz = reg->size();
-        auto first = reg->data();
-        const auto last = first + sz;
 
         archive(typename traits_type::entity_type(sz));
 
-        while(first != last) {
-            archive(*(first++));
+        for(auto first = reg->data(), last = first + sz; first != last; ++first) {
+            archive(*first);
         }
+
+        archive(reg->destroyed());
 
         return *this;
     }
@@ -161,9 +158,6 @@ private:
  */
 template<typename Entity>
 class basic_snapshot_loader {
-    /*! @brief A registry is allowed to create snapshot loaders. */
-    friend class basic_registry<Entity>;
-
     using traits_type = entt_traits<Entity>;
 
     template<typename Type, typename Archive>
@@ -173,7 +167,7 @@ class basic_snapshot_loader {
 
         entity_type entt{};
 
-        if constexpr(std::is_empty_v<Type>) {
+        if constexpr(std::tuple_size_v<decltype(reg->template view<Type>().get({}))> == 0) {
             while(length--) {
                 archive(entt);
                 const auto entity = reg->valid(entt) ? entt : reg->create(entt);
@@ -234,7 +228,10 @@ public:
             archive(all[pos]);
         }
 
-        reg->assign(all.cbegin(), all.cend());
+        entity_type destroyed;
+        archive(destroyed);
+
+        reg->assign(all.cbegin(), all.cend(), destroyed);
 
         return *this;
     }
@@ -302,9 +299,7 @@ class basic_continuous_loader {
     using traits_type = entt_traits<Entity>;
 
     void destroy(Entity entt) {
-        const auto it = remloc.find(entt);
-
-        if(it == remloc.cend()) {
+        if(const auto it = remloc.find(entt); it == remloc.cend()) {
             const auto local = reg->create();
             remloc.emplace(entt, std::make_pair(local, true));
             reg->destroy(local);
@@ -318,7 +313,10 @@ class basic_continuous_loader {
             const auto local = reg->create();
             remloc.emplace(entt, std::make_pair(local, true));
         } else {
-            remloc[entt].first = reg->valid(remloc[entt].first) ? remloc[entt].first : reg->create();
+            if(!reg->valid(remloc[entt].first)) {
+                remloc[entt].first = reg->create();
+            }
+
             // set the dirty flag
             remloc[entt].second = true;
         }
@@ -388,7 +386,7 @@ class basic_continuous_loader {
 
         entity_type entt{};
 
-        if constexpr(std::is_empty_v<Other>) {
+        if constexpr(std::tuple_size_v<decltype(reg->template view<Other>().get({}))> == 0) {
             while(length--) {
                 archive(entt);
                 restore(entt);
@@ -450,6 +448,9 @@ public:
                 destroy(entt);
             }
         }
+
+        // discards the head of the list of destroyed entities
+        archive(entt);
 
         return *this;
     }

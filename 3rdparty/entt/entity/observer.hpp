@@ -9,6 +9,7 @@
 #include <type_traits>
 #include "../config/config.h"
 #include "../core/type_traits.hpp"
+#include "../signal/delegate.hpp"
 #include "registry.hpp"
 #include "storage.hpp"
 #include "utility.hpp"
@@ -177,9 +178,9 @@ class basic_observer {
     template<typename... Reject, typename... Require, typename AnyOf>
     struct matcher_handler<matcher<type_list<Reject...>, type_list<Require...>, AnyOf>> {
         template<std::size_t Index>
-        static void maybe_valid_if(basic_observer &obs, const basic_registry<Entity> &reg, const Entity entt) {
+        static void maybe_valid_if(basic_observer &obs, basic_registry<Entity> &reg, const Entity entt) {
             if(reg.template has<Require...>(entt) && !reg.template any<Reject...>(entt)) {
-                if(auto *comp = obs.view.try_get(entt); !comp) {
+                if(!obs.view.contains(entt)) {
                     obs.view.emplace(entt);
                 }
 
@@ -188,9 +189,9 @@ class basic_observer {
         }
 
         template<std::size_t Index>
-        static void discard_if(basic_observer &obs, const basic_registry<Entity> &, const Entity entt) {
-            if(auto *value = obs.view.try_get(entt); value && !(*value &= (~(1 << Index)))) {
-                obs.view.erase(entt);
+        static void discard_if(basic_observer &obs, basic_registry<Entity> &, const Entity entt) {
+            if(obs.view.contains(entt) && !(obs.view.get(entt) &= (~(1 << Index)))) {
+                obs.view.remove(entt);
             }
         }
 
@@ -213,7 +214,7 @@ class basic_observer {
     template<typename... Reject, typename... Require, typename... NoneOf, typename... AllOf>
     struct matcher_handler<matcher<type_list<Reject...>, type_list<Require...>, type_list<NoneOf...>, AllOf...>> {
         template<std::size_t Index, typename... Ignore>
-        static void maybe_valid_if(basic_observer &obs, const basic_registry<Entity> &reg, const Entity entt) {
+        static void maybe_valid_if(basic_observer &obs, basic_registry<Entity> &reg, const Entity entt) {
             if([&reg, entt]() {
                 if constexpr(sizeof...(Ignore) == 0) {
                     return reg.template has<AllOf..., Require...>(entt) && !reg.template any<NoneOf..., Reject...>(entt);
@@ -222,7 +223,7 @@ class basic_observer {
                 }
             }())
             {
-                if(auto *comp = obs.view.try_get(entt); !comp) {
+                if(!obs.view.contains(entt)) {
                     obs.view.emplace(entt);
                 }
 
@@ -231,9 +232,9 @@ class basic_observer {
         }
 
         template<std::size_t Index>
-        static void discard_if(basic_observer &obs, const basic_registry<Entity> &, const Entity entt) {
-            if(auto *value = obs.view.try_get(entt); value && !(*value &= (~(1 << Index)))) {
-                obs.view.erase(entt);
+        static void discard_if(basic_observer &obs, basic_registry<Entity> &, const Entity entt) {
+            if(obs.view.contains(entt) && !(obs.view.get(entt) &= (~(1 << Index)))) {
+                obs.view.remove(entt);
             }
         }
 
@@ -258,7 +259,7 @@ class basic_observer {
     };
 
     template<typename... Matcher>
-    static void disconnect(basic_observer &obs, basic_registry<Entity> &reg) {
+    static void disconnect(basic_registry<Entity> &reg, basic_observer &obs) {
         (matcher_handler<Matcher>::disconnect(obs, reg), ...);
     }
 
@@ -266,7 +267,7 @@ class basic_observer {
     void connect(basic_registry<Entity> &reg, std::index_sequence<Index...>) {
         static_assert(sizeof...(Matcher) < std::numeric_limits<payload_type>::digits, "Too many matchers");
         (matcher_handler<Matcher>::template connect<Index>(*this, reg), ...);
-        release = &basic_observer::disconnect<Matcher...>;
+        release.template connect<&basic_observer::disconnect<Matcher...>>(reg);
     }
 
 public:
@@ -275,11 +276,12 @@ public:
     /*! @brief Unsigned integer type. */
     using size_type = std::size_t;
     /*! @brief Random access iterator type. */
-    using iterator = typename sparse_set<Entity>::iterator;
+    using iterator = typename basic_sparse_set<Entity>::iterator;
 
     /*! @brief Default constructor. */
     basic_observer()
-        : target{}, release{}, view{}
+        : release{},
+          view{}
     {}
 
     /*! @brief Default copy constructor, deleted on purpose. */
@@ -294,9 +296,7 @@ public:
      */
     template<typename... Matcher>
     basic_observer(basic_registry<entity_type> &reg, basic_collector<Matcher...>)
-        : target{&reg},
-          release{},
-          view{}
+        : basic_observer{}
     {
         connect<Matcher...>(reg, std::index_sequence_for<Matcher...>{});
     }
@@ -325,15 +325,14 @@ public:
     void connect(basic_registry<entity_type> &reg, basic_collector<Matcher...>) {
         disconnect();
         connect<Matcher...>(reg, std::index_sequence_for<Matcher...>{});
-        target = &reg;
         view.clear();
     }
 
     /*! @brief Disconnects an observer from the registry it keeps track of. */
     void disconnect() {
         if(release) {
-            release(*this, *target);
-            release = nullptr;
+            release(*this);
+            release.reset();
         }
     }
 
@@ -356,7 +355,7 @@ public:
     /**
      * @brief Direct access to the list of entities of the observer.
      *
-     * The returned pointer is such that range `[data(), data() + size()]` is
+     * The returned pointer is such that range `[data(), data() + size())` is
      * always a valid range, even if the container is empty.
      *
      * @note
@@ -378,7 +377,7 @@ public:
      * @return An iterator to the first entity of the observer.
      */
     [[nodiscard]] iterator begin() const ENTT_NOEXCEPT {
-        return view.sparse_set<entity_type>::begin();
+        return view.basic_sparse_set<entity_type>::begin();
     }
 
     /**
@@ -392,7 +391,7 @@ public:
      * observer.
      */
     [[nodiscard]] iterator end() const ENTT_NOEXCEPT {
-        return view.sparse_set<entity_type>::end();
+        return view.basic_sparse_set<entity_type>::end();
     }
 
     /*! @brief Clears the underlying container. */
@@ -436,9 +435,8 @@ public:
     }
 
 private:
-    basic_registry<entity_type> *target;
-    void(* release)(basic_observer &, basic_registry<entity_type> &);
-    storage<entity_type, payload_type> view;
+    delegate<void(basic_observer &)> release;
+    basic_storage<entity_type, payload_type> view;
 };
 
 

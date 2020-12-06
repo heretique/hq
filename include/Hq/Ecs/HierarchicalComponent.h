@@ -15,6 +15,15 @@ struct HierarchicalComponent
     entt::entity firstChild {entt::null};
     entt::entity prevSibling {entt::null};
     entt::entity nextSibling {entt::null};
+
+    template <class Serializer>
+    void Serialize(Serializer& serializer)
+    {
+        SERIALIZE(parent);
+        SERIALIZE(firstChild);
+        SERIALIZE(prevSibling);
+        SERIALIZE(nextSibling);
+    }
 };
 
 template <typename HierarchicalComp, typename VisitorF>
@@ -33,6 +42,24 @@ void VisitHierarchyDepthFirst(entt::registry& registry, entt::entity entity, Vis
             childComp = registry.try_get<HierarchicalComp>(nextChild);
         } while (childComp && ((nextChild = childComp->nextSibling) != entt::null));
     }
+}
+
+template <typename HierarchicalComp, typename VisitorF>
+void VisitHierarchyDepthFirstPost(entt::registry& registry, entt::entity entity, VisitorF& visitor)
+{
+    assert(registry.has<HierarchicalComp>(entity));
+    const HierarchicalComp& component = registry.get<HierarchicalComp>(entity);
+    HierarchicalComp*       childComp = nullptr;
+    entt::entity            nextChild = component.firstChild;
+    if (nextChild != entt::null)
+    {
+        do
+        {
+            VisitHierarchyDepthFirst<HierarchicalComp, VisitorF>(registry, nextChild, visitor);
+            childComp = registry.try_get<HierarchicalComp>(nextChild);
+        } while (childComp && ((nextChild = childComp->nextSibling) != entt::null));
+    }
+    visitor(registry, entity);
 }
 
 template <typename HierarchicalComp, typename VisitorPredicateF>

@@ -17,9 +17,15 @@
 
 namespace hq
 {
-
 const std::string kTypeLiteral = "__type__";
 
+/// Json serializer that uses visitor pattern for serialization.
+/// Use a member templated `Serialize` method to define members to be serialized
+/// template <class Serializer>
+/// void Serialize(Serializer& serializer)
+/// {
+///     SERIALIZE(data);
+/// }
 struct JsonSerializer
 {
     JsonSerializer(std::ostream& out);
@@ -28,7 +34,7 @@ struct JsonSerializer
     template <typename Serializable>
     inline void operator()(Serializable& serializable)
     {
-        std::string s = std::to_string(entt::type_info<Serializable>::id());
+        std::string s(entt::type_id<Serializable>().name());
         _writer.String(s);
         _writer.StartObject();
         _writer.String(kTypeLiteral);
@@ -43,7 +49,7 @@ struct JsonSerializer
         _writer.String(s);
         _writer.StartObject();
         _writer.String(kTypeLiteral);
-        _writer.String(std::to_string(entt::type_info<Serializable>::id()));
+        _writer.String(std::string(entt::type_id<Serializable>().name()));
         serializable.Serialize(*this);
         _writer.EndObject();
     }
@@ -145,6 +151,13 @@ private:
     rapidjson::PrettyWriter<rapidjson::OStreamWrapper> _writer;
 };
 
+/// Json deserializer that uses visitor pattern for deserialization.
+/// Use a member templated `Serialize` method to define members to be serialized
+/// template <class Serializer>
+/// void Serialize(Serializer& serializer)
+/// {
+///     SERIALIZE(data);
+/// }
 struct JsonDeserializer
 {
     JsonDeserializer(std::istream& in);

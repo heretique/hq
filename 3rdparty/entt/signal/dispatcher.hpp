@@ -34,11 +34,12 @@ class dispatcher {
         virtual void publish() = 0;
         virtual void disconnect(void *) = 0;
         virtual void clear() ENTT_NOEXCEPT = 0;
-        [[nodiscard]] virtual id_type type_id() const ENTT_NOEXCEPT = 0;
     };
 
     template<typename Event>
     struct pool_handler final: basic_pool {
+        static_assert(std::is_same_v<Event, std::decay_t<Event>>, "Invalid event type");
+
         using signal_type = sigh<void(Event &)>;
         using sink_type = typename signal_type::sink_type;
 
@@ -79,10 +80,6 @@ class dispatcher {
             }
         }
 
-        [[nodiscard]] id_type type_id() const ENTT_NOEXCEPT override {
-            return type_info<Event>::id();
-        }
-
     private:
         signal_type signal{};
         std::vector<Event> events;
@@ -90,24 +87,17 @@ class dispatcher {
 
     template<typename Event>
     [[nodiscard]] pool_handler<Event> & assure() {
-        static_assert(std::is_same_v<Event, std::decay_t<Event>>, "Invalid event type");
+        const auto index = type_seq<Event>::value();
 
-        if constexpr(ENTT_FAST_PATH(has_type_index_v<Event>)) {
-            const auto index = type_index<Event>::value();
-
-            if(!(index < pools.size())) {
-                pools.resize(index+1u);
-            }
-
-            if(!pools[index]) {
-                pools[index].reset(new pool_handler<Event>{});
-            }
-
-            return static_cast<pool_handler<Event> &>(*pools[index]);
-        } else {
-            auto it = std::find_if(pools.begin(), pools.end(), [id = type_info<Event>::id()](const auto &cpool) { return id == cpool->type_id(); });
-            return static_cast<pool_handler<Event> &>(it == pools.cend() ? *pools.emplace_back(new pool_handler<Event>{}) : **it);
+        if(!(index < pools.size())) {
+            pools.resize(std::size_t(index)+1u);
         }
+
+        if(!pools[index]) {
+            pools[index].reset(new pool_handler<Event>{});
+        }
+
+        return static_cast<pool_handler<Event> &>(*pools[index]);
     }
 
 public:

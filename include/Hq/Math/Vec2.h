@@ -9,17 +9,17 @@ namespace math
     bool isZero(const Vec2& v);
     bool isOne(const Vec2& v);
     Vec2 operator-(const Vec2& v);
-    Vec2 operator +(const Vec2& lhs, const Vec2& rhs);
+    Vec2 operator+(const Vec2& lhs, const Vec2& rhs);
     void add(const Vec2& lhs, const Vec2& rhs, Vec2& dst);
-    Vec2 operator -(const Vec2& lhs, const Vec2& rhs);
+    Vec2 operator-(const Vec2& lhs, const Vec2& rhs);
     void sub(const Vec2& lhs, const Vec2& rhs, Vec2& dst);
-    Vec2 operator *(const Vec2& lhs, const Vec2& rhs);
+    Vec2 operator*(const Vec2& lhs, const Vec2& rhs);
     void mul(const Vec2& lhs, const Vec2& rhs, Vec2& dst);
-    Vec2 operator *(float f, const Vec2& v);
-    Vec2 operator *(const Vec2& v, float f);
+    Vec2 operator*(float f, const Vec2& v);
+    Vec2 operator*(const Vec2& v, float f);
     void mul(float f, const Vec2& v, Vec2& dst);
     void mul(const Vec2& v, float f, Vec2& dst);
-    Vec2 operator /(const Vec2& lhs, const Vec2& rhs);
+    Vec2 operator/(const Vec2& lhs, const Vec2& rhs);
     void div(const Vec2& lhs, const Vec2& rhs, Vec2& dst);
 
     float angle(const Vec2& v1, const Vec2& v2);
@@ -48,33 +48,33 @@ namespace math
     float minComponent(const Vec2& v);
     float meanComponent(const Vec2& v);
 
-
     // int variant
-    bool isZero(const Vec2i& v);
-    bool isOne(const Vec2i& v);
+    bool  isZero(const Vec2i& v);
+    bool  isOne(const Vec2i& v);
     Vec2i operator-(const Vec2i& v);
-    Vec2i operator +(const Vec2i& lhs, const Vec2i& rhs);
-    void add(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst);
-    Vec2i operator -(const Vec2i& lhs, const Vec2i& rhs);
-    void sub(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst);
-    Vec2i operator *(const Vec2i& lhs, const Vec2i& rhs);
-    void mul(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst);
-    Vec2i operator *(int f, const Vec2i& v);
-    Vec2i operator *(const Vec2i& v, int f);
-    void mul(int f, const Vec2i& v, Vec2i& dst);
-    void mul(const Vec2i& v, int f, Vec2i& dst);
-    Vec2i operator /(const Vec2i& lhs, const Vec2i& rhs);
-    void div(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst);
+    Vec2i operator+(const Vec2i& lhs, const Vec2i& rhs);
+    void  add(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst);
+    Vec2i operator-(const Vec2i& lhs, const Vec2i& rhs);
+    void  sub(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst);
+    Vec2i operator*(const Vec2i& lhs, const Vec2i& rhs);
+    void  mul(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst);
+    Vec2i operator*(int f, const Vec2i& v);
+    Vec2i operator*(const Vec2i& v, int f);
+    void  mul(int f, const Vec2i& v, Vec2i& dst);
+    void  mul(const Vec2i& v, int f, Vec2i& dst);
+    Vec2i operator/(const Vec2i& lhs, const Vec2i& rhs);
+    Vec2i operator/(const Vec2i& lhs, int v);
+    void  div(const Vec2i& lhs, const Vec2i& rhs, Vec2i& dst);
 
-    Vec2i  clamp(const Vec2i& v, const Vec2i& min, const Vec2i& max);
+    Vec2i clamp(const Vec2i& v, const Vec2i& min, const Vec2i& max);
     void  clamp(const Vec2i& v, const Vec2i& min, const Vec2i& max, Vec2i& dst);
     void  clamp(Vec2i& v, const Vec2i& min, const Vec2i& max);
 
     Vec2i minVec(const Vec2i& v1, const Vec2i& v2);
     Vec2i maxVec(const Vec2i& v1, const Vec2i& v2);
 
-    float maxComponent(const Vec2i& v);
-    float minComponent(const Vec2i& v);
-    float meanComponent(const Vec2i& v);
+    int maxComponent(const Vec2i& v);
+    int minComponent(const Vec2i& v);
+    int meanComponent(const Vec2i& v);
 }
 }

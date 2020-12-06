@@ -16,6 +16,6 @@ inline float rfpart(float v)
 
 inline bool cmpf(float a, float b, float epsilon)
 {
-    return fabs(a - b) < epsilon;
+    return std::fabs(a - b) < epsilon;
 }
 }  // namespace hq

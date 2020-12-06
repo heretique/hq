@@ -4,6 +4,7 @@
 
 namespace hq
 {
+/// Simple naive spinlock implementation
 class SpinLock
 {
 public:

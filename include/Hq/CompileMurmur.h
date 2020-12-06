@@ -131,6 +131,7 @@ namespace murmur
     }
 }  // murmur namespace
 
+/// Compile time murmur hash
 template <int N>
 constexpr uint32_t MURMUR3_32(const char (&s)[N], uint32_t seed = 0)
 {

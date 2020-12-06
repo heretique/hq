@@ -37,7 +37,7 @@ class meta_storage {
     using steal_fn_type = void(meta_storage &, meta_storage &);
     using destroy_fn_type = void(meta_storage &);
 
-    template<typename Type, typename = std::void_t<>>
+    template<typename Type, typename = void>
     struct type_traits {
         template<typename... Args>
         static void instance(meta_storage &buffer, Args &&... args) {
@@ -260,10 +260,11 @@ struct meta_func_node {
 
 struct meta_type_node {
     using size_type = std::size_t;
-    const id_type type_id;
+    const type_info info;
     id_type id;
     meta_type_node * next;
     meta_prop_node * prop;
+    const size_type size_of;
     const bool is_void;
     const bool is_integral;
     const bool is_floating_point;
@@ -361,24 +362,19 @@ private:
 template<auto Member, typename Op>
 auto find_if(const Op &op, const meta_type_node *node)
 -> std::decay_t<decltype(node->*Member)> {
-    std::decay_t<decltype(node->*Member)> ret = nullptr;
-
     for(auto &&curr: meta_range{node->*Member}) {
         if(op(&curr)) {
-            ret = &curr;
-            break;
+            return &curr;
         }
     }
 
-    if(!ret) {
-        for(auto &&curr: meta_range{node->base}) {
-            if(ret = find_if<Member>(op, curr.type()); ret) {
-                break;
-            }
+    for(auto &&curr: meta_range{node->base}) {
+        if(auto *ret = find_if<Member>(op, curr.type()); ret) {
+            return ret;
         }
     }
 
-    return ret;
+    return nullptr;
 }
 
 
@@ -404,10 +400,11 @@ class ENTT_API meta_node {
 public:
     [[nodiscard]] static meta_type_node * resolve() ENTT_NOEXCEPT {
         static meta_type_node node{
-            type_info<Type>::id(),
+            type_id<Type>(),
             {},
             nullptr,
             nullptr,
+            size_of_v<Type>,
             std::is_void_v<Type>,
             std::is_integral_v<Type>,
             std::is_floating_point_v<Type>,

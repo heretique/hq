@@ -4,9 +4,11 @@
 
 namespace hq
 {
+/// pack 4 bytes to u32
 inline u32 packUint32(u8 x, u8 y, u8 z, u8 w)
 {
-    union {
+    union
+    {
         u32 ui32;
         u8  arr[4];
     } un;

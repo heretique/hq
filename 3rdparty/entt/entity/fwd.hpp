@@ -8,7 +8,15 @@
 namespace entt {
 
 
-template <typename>
+template<typename>
+class basic_sparse_set;
+
+
+template<typename, typename, typename>
+class basic_storage;
+
+
+template<typename>
 class basic_registry;
 
 
@@ -28,11 +36,11 @@ template<typename>
 class basic_observer;
 
 
-template <typename>
-struct basic_actor;
-
-
 template<typename>
+class basic_organizer;
+
+
+template<typename, typename...>
 struct basic_handle;
 
 
@@ -53,6 +61,18 @@ enum class entity: id_type {};
 
 
 /*! @brief Alias declaration for the most common use case. */
+using sparse_set = basic_sparse_set<entity>;
+
+
+/**
+ * @brief Alias declaration for the most common use case.
+ * @tparam Args Other template parameters.
+ */
+template<typename... Args>
+using storage = basic_storage<entity, Args...>;
+
+
+/*! @brief Alias declaration for the most common use case. */
 using registry = basic_registry<entity>;
 
 
@@ -61,7 +81,7 @@ using observer = basic_observer<entity>;
 
 
 /*! @brief Alias declaration for the most common use case. */
-using actor [[deprecated("Consider using the handle class instead")]] = basic_actor<entity>;
+using organizer = basic_organizer<entity>;
 
 
 /*! @brief Alias declaration for the most common use case. */
@@ -70,6 +90,22 @@ using handle = basic_handle<entity>;
 
 /*! @brief Alias declaration for the most common use case. */
 using const_handle = basic_handle<const entity>;
+
+
+/**
+ * @brief Alias declaration for the most common use case.
+ * @tparam Args Other template parameters.
+ */
+template<typename... Args>
+using handle_view = basic_handle<entity, Args...>;
+
+
+/**
+ * @brief Alias declaration for the most common use case.
+ * @tparam Args Other template parameters.
+ */
+template<typename... Args>
+using const_handle_view = basic_handle<const entity, Args...>;
 
 
 /*! @brief Alias declaration for the most common use case. */
@@ -86,10 +122,10 @@ using continuous_loader = basic_continuous_loader<entity>;
 
 /**
  * @brief Alias declaration for the most common use case.
- * @tparam Types Types of components iterated by the view.
+ * @tparam Args Other template parameters.
  */
-template<typename... Types>
-using view = basic_view<entity, Types...>;
+template<typename... Args>
+using view = basic_view<entity, Args...>;
 
 
 /*! @brief Alias declaration for the most common use case. */
@@ -98,10 +134,10 @@ using runtime_view = basic_runtime_view<entity>;
 
 /**
  * @brief Alias declaration for the most common use case.
- * @tparam Types Types of components iterated by the group.
+ * @tparam Args Other template parameters.
  */
-template<typename... Types>
-using group = basic_group<entity, Types...>;
+template<typename... Args>
+using group = basic_group<entity, Args...>;
 
 
 }

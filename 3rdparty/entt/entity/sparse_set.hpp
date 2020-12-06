@@ -40,7 +40,7 @@ namespace entt {
  * @tparam Entity A valid entity type (see entt_traits for more details).
  */
 template<typename Entity>
-class sparse_set {
+class basic_sparse_set {
     static_assert(ENTT_PAGE_SIZE && ((ENTT_PAGE_SIZE & (ENTT_PAGE_SIZE - 1)) == 0), "ENTT_PAGE_SIZE must be a power of two");
     static constexpr auto entt_per_page = ENTT_PAGE_SIZE / sizeof(Entity);
 
@@ -48,7 +48,7 @@ class sparse_set {
     using page_type = std::unique_ptr<Entity[]>;
 
     class sparse_set_iterator final {
-        friend class sparse_set<Entity>;
+        friend class basic_sparse_set<Entity>;
 
         using packed_type = std::vector<Entity>;
         using index_type = typename traits_type::difference_type;
@@ -173,6 +173,10 @@ class sparse_set {
         return sparse[pos];
     }
 
+    virtual void swap_at(const std::size_t, const std::size_t) {}
+    virtual void swap_and_pop(const std::size_t) {}
+    virtual void clear_all() {}
+
 public:
     /*! @brief Underlying entity identifier. */
     using entity_type = Entity;
@@ -184,16 +188,16 @@ public:
     using reverse_iterator = const entity_type *;
 
     /*! @brief Default constructor. */
-    sparse_set() = default;
+    basic_sparse_set() = default;
 
     /*! @brief Default move constructor. */
-    sparse_set(sparse_set &&) = default;
+    basic_sparse_set(basic_sparse_set &&) = default;
 
     /*! @brief Default destructor. */
-    virtual ~sparse_set() = default;
+    virtual ~basic_sparse_set() = default;
 
     /*! @brief Default move assignment operator. @return This sparse set. */
-    sparse_set & operator=(sparse_set &&) = default;
+    basic_sparse_set & operator=(basic_sparse_set &&) = default;
 
     /**
      * @brief Increases the capacity of a sparse set.
@@ -266,7 +270,7 @@ public:
     /**
      * @brief Direct access to the internal packed array.
      *
-     * The returned pointer is such that range `[data(), data() + size()]` is
+     * The returned pointer is such that range `[data(), data() + size())` is
      * always a valid range, even if the container is empty.
      *
      * @note
@@ -361,9 +365,7 @@ public:
      *
      * @warning
      * Attempting to get the position of an entity that doesn't belong to the
-     * sparse set results in undefined behavior.<br/>
-     * An assertion will abort the execution at runtime in debug mode if the
-     * sparse set doesn't contain the given entity.
+     * sparse set results in undefined behavior.
      *
      * @param entt A valid entity identifier.
      * @return The position of the entity in the sparse set.
@@ -378,9 +380,7 @@ public:
      *
      * @warning
      * Attempting to assign an entity that already belongs to the sparse set
-     * results in undefined behavior.<br/>
-     * An assertion will abort the execution at runtime in debug mode if the
-     * sparse set already contains the given entity.
+     * results in undefined behavior.
      *
      * @param entt A valid entity identifier.
      */
@@ -395,9 +395,7 @@ public:
      *
      * @warning
      * Attempting to assign an entity that already belongs to the sparse set
-     * results in undefined behavior.<br/>
-     * An assertion will abort the execution at runtime in debug mode if the
-     * sparse set already contains the given entity.
+     * results in undefined behavior.
      *
      * @tparam It Type of input iterator.
      * @param first An iterator to the first element of the range of entities.
@@ -408,10 +406,9 @@ public:
         auto next = static_cast<typename traits_type::entity_type>(packed.size());
         packed.insert(packed.end(), first, last);
 
-        while(first != last) {
-            const auto entt = *(first++);
-            ENTT_ASSERT(!contains(entt));
-            assure(page(entt))[offset(entt)] = entity_type{next++};
+        for(; first != last; ++first) {
+            ENTT_ASSERT(!contains(*first));
+            assure(page(*first))[offset(*first)] = entity_type{next++};
         }
     }
 
@@ -420,20 +417,40 @@ public:
      *
      * @warning
      * Attempting to remove an entity that doesn't belong to the sparse set
-     * results in undefined behavior.<br/>
-     * An assertion will abort the execution at runtime in debug mode if the
-     * sparse set doesn't contain the given entity.
+     * results in undefined behavior.
      *
      * @param entt A valid entity identifier.
      */
-    void erase(const entity_type entt) {
+    void remove(const entity_type entt) {
         ENTT_ASSERT(contains(entt));
-        const auto curr = page(entt);
-        const auto pos = offset(entt);
-        packed[size_type{to_integral(sparse[curr][pos])}] = packed.back();
-        sparse[page(packed.back())][offset(packed.back())] = sparse[curr][pos];
-        sparse[curr][pos] = null;
+        auto &ref = sparse[page(entt)][offset(entt)];
+        const auto pos = size_type{to_integral(ref)};
+        const auto other = packed.back();
+
+        sparse[page(other)][offset(other)] = ref;
+        packed[pos] = other;
+        ref = null;
+
         packed.pop_back();
+        swap_and_pop(pos);
+    }
+
+    /**
+     * @brief Removes multiple entities from a pool.
+     * @tparam It Type of input iterator.
+     * @param first An iterator to the first element of the range of entities.
+     * @param last An iterator past the last element of the range of entities.
+     */
+    template<typename It>
+    void remove(It first, It last) {
+        if(std::distance(first, last) == std::distance(packed.begin(), packed.end())) {
+            // no validity check, let it be misused
+            clear();
+        } else {
+            for(; first != last; ++first) {
+                remove(*first);
+            }
+        }
     }
 
     /**
@@ -444,26 +461,22 @@ public:
      *
      * @warning
      * Attempting to swap entities that don't belong to the sparse set results
-     * in undefined behavior.<br/>
-     * An assertion will abort the execution at runtime in debug mode if the
-     * sparse set doesn't contain the given entities.
+     * in undefined behavior.
      *
      * @param lhs A valid entity identifier.
      * @param rhs A valid entity identifier.
      */
-    virtual void swap(const entity_type lhs, const entity_type rhs) {
-        auto &from = sparse[page(lhs)][offset(lhs)];
-        auto &to = sparse[page(rhs)][offset(rhs)];
-        std::swap(packed[size_type{to_integral(from)}], packed[size_type{to_integral(to)}]);
-        std::swap(from, to);
+    void swap(const entity_type lhs, const entity_type rhs) {
+        const auto from = index(lhs);
+        const auto to = index(rhs);
+        std::swap(sparse[page(lhs)][offset(lhs)], sparse[page(rhs)][offset(rhs)]);
+        std::swap(packed[from], packed[to]);
+        swap_at(from, to);
     }
 
     /**
-     * @brief Sort elements according to the given comparison function.
-     *
-     * Sort the elements so that iterating the range with a couple of iterators
-     * returns them in the expected order. See `begin` and `end` for more
-     * details.
+     * @brief Sort the first count elements according to the given comparison
+     * function.
      *
      * The comparison function object must return `true` if the first element
      * is _less_ than the second one, `false` otherwise. The signature of the
@@ -476,7 +489,7 @@ public:
      * Moreover, the comparison function object shall induce a
      * _strict weak ordering_ on the values.
      *
-     * The sort function oject must offer a member function template
+     * The sort function object must offer a member function template
      * `operator()` that accepts three arguments:
      *
      * * An iterator to the first element of the range to sort.
@@ -486,80 +499,46 @@ public:
      * @tparam Compare Type of comparison function object.
      * @tparam Sort Type of sort function object.
      * @tparam Args Types of arguments to forward to the sort function object.
-     * @param first An iterator to the first element of the range to sort.
-     * @param last An iterator past the last element of the range to sort.
+     * @param count Number of elements to sort.
      * @param compare A valid comparison function object.
      * @param algo A valid sort function object.
      * @param args Arguments to forward to the sort function object, if any.
      */
     template<typename Compare, typename Sort = std_sort, typename... Args>
-    void sort(iterator first, iterator last, Compare compare, Sort algo = Sort{}, Args &&... args) {
-        ENTT_ASSERT(!(last < first));
-        ENTT_ASSERT(!(last > end()));
+    void sort_n(const size_type count, Compare compare, Sort algo = Sort{}, Args &&... args) {
+        ENTT_ASSERT(!(count > size()));
 
-        const auto length = std::distance(first, last);
-        const auto skip = std::distance(last, end());
-        const auto to = packed.rend() - skip;
-        const auto from = to - length;
+        algo(packed.rend() - count, packed.rend(), std::move(compare), std::forward<Args>(args)...);
 
-        algo(from, to, std::move(compare), std::forward<Args>(args)...);
-
-        for(size_type pos = skip, end = skip+length; pos < end; ++pos) {
-            sparse[page(packed[pos])][offset(packed[pos])] = entity_type{static_cast<typename traits_type::entity_type>(pos)};
-        }
-    }
-
-    /**
-     * @brief Sort elements according to the given comparison function.
-     *
-     * @sa sort
-     *
-     * This function is a slightly slower version of `sort` that invokes the
-     * caller to indicate which entities are swapped.<br/>
-     * It's recommended when the caller wants to sort its own data structures to
-     * align them with the order induced in the sparse set.
-     *
-     * The signature of the callback should be equivalent to the following:
-     *
-     * @code{.cpp}
-     * bool(const Entity, const Entity);
-     * @endcode
-     *
-     * @tparam Apply Type of function object to invoke to notify the caller.
-     * @tparam Compare Type of comparison function object.
-     * @tparam Sort Type of sort function object.
-     * @tparam Args Types of arguments to forward to the sort function object.
-     * @param first An iterator to the first element of the range to sort.
-     * @param last An iterator past the last element of the range to sort.
-     * @param apply A valid function object to use as a callback.
-     * @param compare A valid comparison function object.
-     * @param algo A valid sort function object.
-     * @param args Arguments to forward to the sort function object, if any.
-     */
-    template<typename Apply, typename Compare, typename Sort = std_sort, typename... Args>
-    void arrange(iterator first, iterator last, Apply apply, Compare compare, Sort algo = Sort{}, Args &&... args) {
-        ENTT_ASSERT(!(last < first));
-        ENTT_ASSERT(!(last > end()));
-
-        const auto length = std::distance(first, last);
-        const auto skip = std::distance(last, end());
-        const auto to = packed.rend() - skip;
-        const auto from = to - length;
-
-        algo(from, to, std::move(compare), std::forward<Args>(args)...);
-
-        for(size_type pos = skip, end = skip+length; pos < end; ++pos) {
+        for(size_type pos{}; pos < count; ++pos) {
             auto curr = pos;
             auto next = index(packed[curr]);
 
             while(curr != next) {
-                apply(packed[curr], packed[next]);
+                swap_at(next, index(packed[next]));
                 sparse[page(packed[curr])][offset(packed[curr])] = entity_type{static_cast<typename traits_type::entity_type>(curr)};
 
                 curr = next;
                 next = index(packed[curr]);
             }
         }
+    }
+
+    /**
+     * @brief Sort all elements according to the given comparison function.
+     * 
+     * @sa sort_n
+     *
+     * @tparam Compare Type of comparison function object.
+     * @tparam Sort Type of sort function object.
+     * @tparam Args Types of arguments to forward to the sort function object.
+     * @param compare A valid comparison function object.
+     * @param algo A valid sort function object.
+     * @param args Arguments to forward to the sort function object, if any.
+     */
+    template<typename Compare, typename Sort = std_sort, typename... Args>
+    void sort(Compare compare, Sort algo = Sort{}, Args &&... args) {
+        sort_n(size(), std::move(compare), std::move(algo), std::forward<Args>(args)...);
     }
 
     /**
@@ -577,7 +556,7 @@ public:
      *
      * @param other The sparse sets that imposes the order of the entities.
      */
-    void respect(const sparse_set &other) {
+    void respect(const basic_sparse_set &other) {
         const auto to = other.end();
         auto from = other.begin();
 
@@ -596,13 +575,14 @@ public:
         }
     }
 
-    /**
-     * @brief Clears a sparse set.
-     */
+    /*! @brief Clears a sparse set. */
     void clear() ENTT_NOEXCEPT {
         sparse.clear();
         packed.clear();
+        clear_all();
     }
+
+    virtual void* getPtr(const Entity) { return nullptr; }
 
 private:
     std::vector<page_type> sparse;

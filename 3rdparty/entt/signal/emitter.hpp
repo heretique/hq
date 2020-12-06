@@ -34,7 +34,7 @@ namespace entt {
  * required to specify in advance the full list of accepted types.<br/>
  * Moreover, whenever an event is published, an emitter provides the listeners
  * with a reference to itself along with a reference to the event. Therefore
- * listeners have an handy way to work with it without incurring in the need of 
+ * listeners have an handy way to work with it without incurring in the need of
  * capturing a reference to the emitter.
  *
  * @tparam Derived Actual type of emitter that extends the class template.
@@ -45,11 +45,12 @@ class emitter {
         virtual ~basic_pool() = default;
         virtual bool empty() const ENTT_NOEXCEPT = 0;
         virtual void clear() ENTT_NOEXCEPT = 0;
-        virtual id_type type_id() const ENTT_NOEXCEPT = 0;
     };
 
     template<typename Event>
     struct pool_handler final: basic_pool {
+        static_assert(std::is_same_v<Event, std::decay_t<Event>>, "Invalid event type");
+
         using listener_type = std::function<void(Event &, Derived &)>;
         using element_type = std::pair<bool, listener_type>;
         using container_type = std::list<element_type>;
@@ -114,10 +115,6 @@ class emitter {
             on_list.remove_if([](auto &&element) { return element.first; });
         }
 
-        [[nodiscard]] id_type type_id() const ENTT_NOEXCEPT override {
-            return type_info<Event>::id();
-        }
-
     private:
         bool publishing{false};
         container_type once_list{};
@@ -126,24 +123,17 @@ class emitter {
 
     template<typename Event>
     [[nodiscard]] const pool_handler<Event> & assure() const {
-        static_assert(std::is_same_v<Event, std::decay_t<Event>>, "Invalid event type");
+        const auto index = type_seq<Event>::value();
 
-        if constexpr(ENTT_FAST_PATH(has_type_index_v<Event>)) {
-            const auto index = type_index<Event>::value();
-
-            if(!(index < pools.size())) {
-                pools.resize(index+1u);
-            }
-
-            if(!pools[index]) {
-                pools[index].reset(new pool_handler<Event>{});
-            }
-
-            return static_cast<pool_handler<Event> &>(*pools[index]);
-        } else {
-            auto it = std::find_if(pools.begin(), pools.end(), [id = type_info<Event>::id()](const auto &cpool) { return id == cpool->type_id(); });
-            return static_cast<pool_handler<Event> &>(it == pools.cend() ? *pools.emplace_back(new pool_handler<Event>{}) : **it);
+        if(!(index < pools.size())) {
+            pools.resize(std::size_t(index)+1u);
         }
+
+        if(!pools[index]) {
+            pools[index].reset(new pool_handler<Event>{});
+        }
+
+        return static_cast<pool_handler<Event> &>(*pools[index]);
     }
 
     template<typename Event>
