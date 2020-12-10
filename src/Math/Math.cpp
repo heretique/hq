@@ -1436,6 +1436,17 @@ const Mat3x3 Mat3x3::Identity = Mat3x3(Vec3(1.f, 0.f, 0.f),  //
 
 ///////////////////// Mat4x4 //////////////////////
 
+
+bool operator==(const Mat4x4& lhs, const Mat4x4& rhs)
+{
+    return 0 == memcmp(lhs.data, rhs.data, sizeof(lhs.data));
+}
+
+bool operator!=(const Mat4x4& lhs, const Mat4x4& rhs)
+{
+    return !(lhs == rhs);
+}
+
 Mat4x4::Mat4x4()
 {
     memset(data, 0, sizeof(data));
@@ -3162,6 +3173,11 @@ void merge(Box2& b, const Vec2& point)
 }
 
 /// int variant
+Box2i::Box2i(const Vec2i& min, const Vec2i& max)
+    : min(min)
+    , max(max)
+{
+}
 
 Vec2i Box2i::center() const
 {

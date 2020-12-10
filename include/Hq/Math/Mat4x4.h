@@ -6,6 +6,9 @@ namespace math
 {
     //////////////////// Mat4x4 ////////////////////////////////
 
+    bool operator==(const Mat4x4& lhs, const Mat4x4& rhs);
+    bool operator!=(const Mat4x4& lhs, const Mat4x4& rhs);
+
     bool  isIdentity(const Mat4x4& matrix);
     void  setIdentity(Mat4x4& dst);
     void  mul(const Mat4x4& matrix, float scalar, Mat4x4& dst);

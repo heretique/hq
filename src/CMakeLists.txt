@@ -43,6 +43,7 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/StackAllocator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Streams.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/StringHash.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/StateMachine.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/PrintContainers.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/BasicTypes.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/BinarySerializer.h
