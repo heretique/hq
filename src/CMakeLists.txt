@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
-add_library(hq "")
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
+add_library(hq STATIC "")
 target_sources(hq
     PRIVATE
         FreelistAllocator.cpp
