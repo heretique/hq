@@ -27,6 +27,7 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/concurrentqueue.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/DynFreeList.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Enumerate.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Flags.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/FreeList.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/FreelistAllocator.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Handle.h
