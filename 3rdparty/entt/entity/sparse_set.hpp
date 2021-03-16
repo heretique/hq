@@ -526,7 +526,7 @@ public:
 
     /**
      * @brief Sort all elements according to the given comparison function.
-     * 
+     *
      * @sa sort_n
      *
      * @tparam Compare Type of comparison function object.
@@ -582,7 +582,10 @@ public:
         clear_all();
     }
 
-    virtual void* getPtr(const Entity) { return nullptr; }
+    virtual void* getPtr(const Entity)
+    {
+        return nullptr;
+    }
 
 private:
     std::vector<page_type> sparse;

@@ -169,12 +169,18 @@ class basic_storage: public basic_sparse_set<Entity> {
     }
 
     void swap_and_pop(const std::size_t pos) final {
-        instances[pos] = std::move(instances.back());
+        auto other = std::move(instances.back());
+        instances[pos] = std::move(other);
         instances.pop_back();
     }
 
     void clear_all() ENTT_NOEXCEPT final {
         instances.clear();
+    }
+
+    void* getPtr(const entity_type entt)
+    {
+        return (void*)&(instances[underlying_type::index(entt)]);
     }
 
 public:
@@ -349,10 +355,6 @@ public:
         return const_cast<value_type &>(std::as_const(*this).get(entt));
     }
 
-    void* getPtr(const entity_type entt) {
-        return (void*)&(instances[underlying_type::index(entt)]);
-    }
-
     /**
      * @brief Assigns an entity to a storage and constructs its object.
      *
@@ -470,7 +472,7 @@ public:
 
     /**
      * @brief Sort all elements according to the given comparison function.
-     * 
+     *
      * @sa sort_n
      *
      * @tparam Compare Type of comparison function object.
@@ -790,8 +792,7 @@ private:
 
 
 /**
- * @brief Applies component-to-storage conversion and defines the resulting type
- * as the member typedef type.
+ * @brief Defines the component-to-storage conversion.
  *
  * Formally:
  *
@@ -819,11 +820,13 @@ struct storage_traits {
  */
 template<typename Type>
 [[nodiscard]] auto get_as_tuple([[maybe_unused]] Type &container, [[maybe_unused]] const typename Type::entity_type entity) {
-    if constexpr(std::is_same_v<typename Type::storage_category, empty_storage_tag>) {
-        return std::make_tuple();
-    } else {
-        static_assert(std::is_same_v<typename Type::storage_category, dense_storage_tag>, "Unknown storage category");
+    static_assert(std::is_same_v<std::remove_const_t<Type>, typename storage_traits<typename Type::entity_type, typename Type::value_type>::storage_type>);
+
+    if constexpr(std::is_base_of_v<dense_storage_tag, typename Type::storage_category>) {
         return std::forward_as_tuple(container.get(entity));
+    } else {
+        static_assert(std::is_base_of_v<empty_storage_tag, typename Type::storage_category>, "Unknown storage category");
+        return std::make_tuple();
     }
 }
 
