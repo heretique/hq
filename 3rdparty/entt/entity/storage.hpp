@@ -178,6 +178,11 @@ protected:
         instances.pop_back();
     }
 
+    void* getPtr(const entity_type entt)
+    {
+        return (void*)&(instances[underlying_type::index(entt)]);
+    }
+
 public:
     /*! @brief Type of the objects assigned to entities. */
     using value_type = Type;

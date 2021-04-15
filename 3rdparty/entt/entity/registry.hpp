@@ -1588,7 +1588,7 @@ public:
         }
     }
 
-private:
+protected:
     std::vector<basic_any<0u>> vars{};
     mutable std::vector<pool_data> pools{};
     std::vector<group_data> groups{};

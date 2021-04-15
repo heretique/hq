@@ -607,6 +607,11 @@ public:
         remove(begin(), end(), ud);
     }
 
+    virtual void* getPtr(const Entity)
+    {
+        return nullptr;
+    }
+
 private:
     std::vector<page_type> sparse;
     std::vector<entity_type> packed;
