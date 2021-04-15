@@ -220,25 +220,25 @@ struct basic_handle {
 
     /**
      * @brief Checks if a handle has all the given components.
-     * @sa basic_registry::has
+     * @sa basic_registry::all_of
      * @tparam Component Components for which to perform the check.
      * @return True if the handle has all the components, false otherwise.
      */
     template<typename... Component>
-    [[nodiscard]] decltype(auto) has() const {
-        return reg->template has<Component...>(entt);
+    [[nodiscard]] decltype(auto) all_of() const {
+        return reg->template all_of<Component...>(entt);
     }
 
     /**
      * @brief Checks if a handle has at least one of the given components.
-     * @sa basic_registry::any
+     * @sa basic_registry::any_of
      * @tparam Component Components for which to perform the check.
      * @return True if the handle has at least one of the given components,
      * false otherwise.
      */
     template<typename... Component>
-    [[nodiscard]] decltype(auto) any() const {
-        return reg->template any<Component...>(entt);
+    [[nodiscard]] decltype(auto) any_of() const {
+        return reg->template any_of<Component...>(entt);
     }
 
     /**
@@ -324,7 +324,8 @@ bool operator!=(const basic_handle<Type> &lhs, const basic_handle<Other> &rhs) E
  * @tparam Entity A valid entity type (see entt_traits for more details).
  */
 template<typename Entity>
-basic_handle(basic_registry<Entity> &, Entity) -> basic_handle<Entity>;
+basic_handle(basic_registry<Entity> &, Entity)
+-> basic_handle<Entity>;
 
 
 /**
@@ -332,7 +333,8 @@ basic_handle(basic_registry<Entity> &, Entity) -> basic_handle<Entity>;
  * @tparam Entity A valid entity type (see entt_traits for more details).
  */
 template<typename Entity>
-basic_handle(const basic_registry<Entity> &, Entity) -> basic_handle<const Entity>;
+basic_handle(const basic_registry<Entity> &, Entity)
+-> basic_handle<const Entity>;
 
 
 }

@@ -48,19 +48,18 @@ private:
 
 /**
  * @brief Deduction guide.
- *
- * It allows to deduce the constness of a registry directly from the instance
- * provided to the constructor.
- *
  * @tparam Entity A valid entity type (see entt_traits for more details).
  */
 template<typename Entity>
-as_view(basic_registry<Entity> &) ENTT_NOEXCEPT -> as_view<Entity>;
+as_view(basic_registry<Entity> &) -> as_view<Entity>;
 
 
-/*! @copydoc as_view */
+/**
+ * @brief Deduction guide.
+ * @tparam Entity A valid entity type (see entt_traits for more details).
+ */
 template<typename Entity>
-as_view(const basic_registry<Entity> &) ENTT_NOEXCEPT -> as_view<const Entity>;
+as_view(const basic_registry<Entity> &) -> as_view<const Entity>;
 
 
 /**
@@ -103,19 +102,18 @@ private:
 
 /**
  * @brief Deduction guide.
- *
- * It allows to deduce the constness of a registry directly from the instance
- * provided to the constructor.
- *
  * @tparam Entity A valid entity type (see entt_traits for more details).
  */
 template<typename Entity>
-as_group(basic_registry<Entity> &) ENTT_NOEXCEPT -> as_group<Entity>;
+as_group(basic_registry<Entity> &) -> as_group<Entity>;
 
 
-/*! @copydoc as_group */
+/**
+ * @brief Deduction guide.
+ * @tparam Entity A valid entity type (see entt_traits for more details).
+ */
 template<typename Entity>
-as_group(const basic_registry<Entity> &) ENTT_NOEXCEPT -> as_group<const Entity>;
+as_group(const basic_registry<Entity> &) -> as_group<const Entity>;
 
 
 
@@ -145,7 +143,8 @@ void invoke(basic_registry<Entity> &reg, const Entity entt) {
  */
 template<typename Entity, typename Component>
 Entity to_entity(const basic_registry<Entity> &reg, const Component &component) {
-    return *(reg.template data<Component>() + (&component - reg.template raw<Component>()));
+    const auto view = reg.template view<const Component>();
+    return *(view.data() + (&component - view.raw()));
 }
 
 
