@@ -45,6 +45,7 @@ target_sources(hq
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Flags.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/FreeList.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/FreelistAllocator.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/FSM.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Handle.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Hash.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/Hq/Hq.h
