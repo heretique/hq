@@ -3,6 +3,7 @@
 #include "entt/fwd.hpp"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/registry.hpp"
+#include "hq/BasicTypes.h"
 
 #include <queue>
 
@@ -30,7 +31,7 @@ template <typename HierarchicalComp, typename VisitorF>
 void VisitHierarchyDepthFirst(entt::registry& registry, entt::entity entity, VisitorF& visitor)
 {
     visitor(registry, entity);
-    assert(registry.has<HierarchicalComp>(entity));
+    assert(registry.any_of<HierarchicalComp>(entity));
     const HierarchicalComp& component = registry.get<HierarchicalComp>(entity);
     HierarchicalComp*       childComp = nullptr;
     entt::entity            nextChild = component.firstChild;
@@ -47,7 +48,7 @@ void VisitHierarchyDepthFirst(entt::registry& registry, entt::entity entity, Vis
 template <typename HierarchicalComp, typename VisitorF>
 void VisitHierarchyDepthFirstPost(entt::registry& registry, entt::entity entity, VisitorF& visitor)
 {
-    assert(registry.has<HierarchicalComp>(entity));
+    assert(registry.any_of<HierarchicalComp>(entity));
     const HierarchicalComp& component = registry.get<HierarchicalComp>(entity);
     HierarchicalComp*       childComp = nullptr;
     entt::entity            nextChild = component.firstChild;
@@ -67,7 +68,7 @@ void VisitHierarchyDepthFirstWithPredicate(entt::registry& registry, entt::entit
 {
     if (visitor(registry, entity))
     {
-        assert(registry.has<HierarchicalComp>(entity));
+        assert(registry.any_of<HierarchicalComp>(entity));
         const HierarchicalComp& component = registry.get<HierarchicalComp>(entity);
         HierarchicalComp*       childComp = nullptr;
         entt::entity            nextChild = component.firstChild;
@@ -93,7 +94,7 @@ void VisitHierarchyBreadthFirst(entt::registry& registry, entt::entity entity, V
         currentEntity = queue.front();
         queue.pop();
         visitor(registry, currentEntity);
-        assert(registry.has<HierarchicalComp>(currentEntity));
+        assert(registry.any_of<HierarchicalComp>(currentEntity));
         const HierarchicalComp& component = registry.get<HierarchicalComp>(currentEntity);
         HierarchicalComp*       childComp = nullptr;
         entt::entity            nextChild = component.firstChild;
@@ -120,7 +121,7 @@ void VisitHierarchyBreadthFirstWithPredicate(entt::registry& registry, entt::ent
         queue.pop();
         if (visitor(registry, currentEntity))
         {
-            assert(registry.has<HierarchicalComp>(currentEntity));
+            assert(registry.any_of<HierarchicalComp>(currentEntity));
             const HierarchicalComp& component = registry.get<HierarchicalComp>(currentEntity);
             HierarchicalComp*       childComp = nullptr;
             entt::entity            nextChild = component.firstChild;

@@ -178,11 +178,6 @@ protected:
         instances.pop_back();
     }
 
-    void* getPtr(const entity_type entt)
-    {
-        return (void*)&(instances[underlying_type::index(entt)]);
-    }
-
 public:
     /*! @brief Type of the objects assigned to entities. */
     using value_type = Type;
@@ -497,6 +492,12 @@ public:
     template<typename Compare, typename Sort = std_sort, typename... Args>
     void sort(Compare compare, Sort algo = Sort{}, Args &&... args) {
         sort_n(this->size(), std::move(compare), std::move(algo), std::forward<Args>(args)...);
+    }
+
+ protected:
+    void* getPtr(const entity_type entt)
+    {
+        return (void*)&(instances[underlying_type::index(entt)]);
     }
 
 private:
