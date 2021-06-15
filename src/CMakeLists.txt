@@ -19,20 +19,6 @@ target_sources(hq
         Ecs/Ecs.cpp
         Math/Math.cpp
         Math/Utils.cpp
-        ../3rdparty/fmt/format.cc
-        ../3rdparty/fmt/os.cc
-        ../3rdparty/imgui/imgui.cpp
-        ../3rdparty/imgui/imgui_demo.cpp
-        ../3rdparty/imgui/imgui_draw.cpp
-        ../3rdparty/imgui/imgui_tables.cpp
-        ../3rdparty/imgui/imgui_widgets.cpp
-        ../3rdparty/ImGuizmo/ImCurveEdit.cpp
-        ../3rdparty/ImGuizmo/ImGradient.cpp
-        ../3rdparty/ImGuizmo/ImGuizmo.cpp
-        ../3rdparty/ImGuizmo/ImSequencer.cpp
-        ../3rdparty/implot/implot.cpp
-        ../3rdparty/implot/implot_demo.cpp
-        ../3rdparty/implot/implot_items.cpp
         ../3rdparty/microbench/systemtime.cpp
         ../3rdparty/enkiTS/TaskScheduler.cpp
         ../3rdparty/microbench/systemtime.cpp
@@ -106,4 +92,5 @@ target_include_directories(hq
         ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_features(hq PUBLIC cxx_std_17)
-target_link_libraries(hq PUBLIC RTTR::Core_Lib)
+find_package(rttr CONFIG REQUIRED)
+target_link_libraries(hq PUBLIC RTTR::Core)

@@ -5,7 +5,6 @@ include(CMakeToolsHelpers OPTIONAL)
 
 option(WITH_TESTS "Enables tests" OFF)
 
-add_subdirectory(3rdparty/rttr)
 add_subdirectory(src)
 
 if (WITH_TESTS)
